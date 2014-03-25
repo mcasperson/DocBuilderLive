@@ -19,6 +19,7 @@ var SPEC_REST_EXPAND:Object={
     ]
 }
 var SPECNODE_REST:string = REST_BASE + "/contentspecnode/get/json/";
+var TOPIC_REST:string = REST_BASE + "/topic/get/json/";
 
 interface SysInfo {
     lastRevision:number;
@@ -43,13 +44,24 @@ interface SpecNode {
     entityRevision:number;
     nodeType:string;
     title:string;
-    children_OTM:SpecNode[];
+    children_OTM:SpecNodeItem[];
 }
 
 class RenderedTopicDetails {
     public topicId:number;
     public topicRevision:number;
     public includesTitle: boolean;
+
+    constructor();
+    constructor(specNode?:SpecNode, includesTitle?:boolean) {
+        this.topicId = specNode !== undefined ? specNode.entityId : -1;
+        this.topicRevision = specNode !== undefined ? specNode.entityRevision : -1;
+        this.includesTitle = includesTitle || false;
+    }
+
+    toString():string {
+        return "ID:" + this.topicId + " REV: " + this.topicRevision + " TITLE: " + this.includesTitle;
+    }
 }
 
 class DocBuilderLive {
@@ -114,12 +126,12 @@ class DocBuilderLive {
                     if (index >= data.children_OTM.items.length) {
                         callback(data);
                     } else {
-                        var element:SpecNode = data.children_OTM.items[index];
+                        var element:SpecNode = data.children_OTM.items[index].item;
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             this.populateChild(
                                 element.id,
                                 (node:SpecNode):void =>  {
-                                    data.children_OTM.items[index] = node;
+                                    data.children_OTM.items[index].item = node;
                                     expandChildren(++index);
                                 },
                                 errorCallback

@@ -19,10 +19,17 @@ var SPEC_REST_EXPAND = {
     ]
 };
 var SPECNODE_REST = REST_BASE + "/contentspecnode/get/json/";
+var TOPIC_REST = REST_BASE + "/topic/get/json/";
 
 var RenderedTopicDetails = (function () {
-    function RenderedTopicDetails() {
+    function RenderedTopicDetails(specNode, includesTitle) {
+        this.topicId = specNode !== undefined ? specNode.entityId : -1;
+        this.topicRevision = specNode !== undefined ? specNode.entityRevision : -1;
+        this.includesTitle = includesTitle || false;
     }
+    RenderedTopicDetails.prototype.toString = function () {
+        return "ID:" + this.topicId + " REV: " + this.topicRevision + " TITLE: " + this.includesTitle;
+    };
     return RenderedTopicDetails;
 })();
 
@@ -79,10 +86,10 @@ var DocBuilderLive = (function () {
                     if (index >= data.children_OTM.items.length) {
                         callback(data);
                     } else {
-                        var element = data.children_OTM.items[index];
+                        var element = data.children_OTM.items[index].item;
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             _this.populateChild(element.id, function (node) {
-                                data.children_OTM.items[index] = node;
+                                data.children_OTM.items[index].item = node;
                                 expandChildren(++index);
                             }, errorCallback);
                         } else {
