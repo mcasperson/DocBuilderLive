@@ -27,12 +27,16 @@ var RenderedTopicDetails = (function () {
 var DocBuilderLive = (function () {
     function DocBuilderLive(specId) {
         var _this = this;
+        this.errorCallback = function (title, message) {
+            window.alert(title + "\n" + message);
+        };
         this.specId = specId;
         this.getLastModifiedTime(function (lastRevisionDate) {
             _this.lastRevisionDate = lastRevisionDate;
-        }, function (title, message) {
-            window.alert(title + "\n" + message);
-        });
+            _this.getSpec(function (spec) {
+                _this.getTopics(spec);
+            }, _this.errorCallback);
+        }, this.errorCallback);
     }
     DocBuilderLive.prototype.getLastModifiedTime = function (callback, errorCallback, retryCount) {
         var _this = this;
@@ -87,7 +91,7 @@ var DocBuilderLive = (function () {
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
-                    _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                    _this.populateChild(id, callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
@@ -127,12 +131,19 @@ var DocBuilderLive = (function () {
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
-                    _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                    _this.getSpec(callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
             }
         });
+    };
+
+    /**
+    * Given a spec, create iframes for all topics that have not been previously rendered
+    * @param spec The spec with all children expanded
+    */
+    DocBuilderLive.prototype.getTopics = function (spec) {
     };
 
     DocBuilderLive.prototype.getTopic = function (id, callback) {

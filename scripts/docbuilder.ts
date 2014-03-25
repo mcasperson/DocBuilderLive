@@ -24,11 +24,21 @@ interface SysInfo {
     lastRevisionDate:number;
 }
 
+interface Spec {
+    children_OTM:SpecNodeCollection;
+}
+
+interface SpecNodeCollection {
+    items:SpecNode[];
+}
+
 interface SpecNode {
     id:number;
     entityId:number;
     entityRevision:number;
     nodeType:string;
+    title:string;
+    children_OTM:SpecNode[];
 }
 
 class RenderedTopicDetails {
@@ -43,16 +53,23 @@ class DocBuilderLive {
     private specId:number;
     private topics:collections.Dictionary<RenderedTopicDetails, HTMLIFrameElement>;
     private titles:collections.Dictionary<string, HTMLIFrameElement>;
+    private errorCallback = (title:string, message:string):void => {
+        window.alert(title + "\n" + message);
+    }
 
     constructor(specId:number) {
         this.specId = specId;
         this.getLastModifiedTime(
-            (lastRevisionDate:Date)=>{
+            (lastRevisionDate:Date) => {
                 this.lastRevisionDate = lastRevisionDate;
+                this.getSpec(
+                    (spec:Spec):void => {
+                        this.getTopics(spec);
+                    },
+                    this.errorCallback
+                )
             },
-            (title:string, message:string) => {
-                window.alert(title + "\n" + message);
-            }
+            this.errorCallback
         );
     }
 
@@ -81,7 +98,7 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    populateChild(id:number, callback: (node) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    populateChild(id:number, callback: (node:SpecNode) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -96,7 +113,7 @@ class DocBuilderLive {
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             this.populateChild(
                                 element.id,
-                                (node):void =>  {
+                                (node:SpecNode):void =>  {
                                     data.children_OTM.items[index] = node;
                                     expandChildren(++index);
                                 },
@@ -108,9 +125,9 @@ class DocBuilderLive {
 
                 expandChildren(0);
             },
-            error: ()=>{
+            error: () => {
                 if (retryCount < RETRY_COUNT) {
-                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                    this.populateChild(id, callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
@@ -124,12 +141,12 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    getSpec(callback: (spec) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    getSpec(callback: (spec:Spec) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
-            success: (data) => {
+            success: (data:Spec) => {
                 var expandChildren = (index:number):void => {
                     if (index >= data.children_OTM.items.length) {
                         callback(data);
@@ -138,7 +155,7 @@ class DocBuilderLive {
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             this.populateChild(
                                 element.id,
-                                (node):void => {
+                                (node:SpecNode):void => {
                                     data.children_OTM.items[index] = node;
                                     expandChildren(++index);
                                 },
@@ -152,7 +169,7 @@ class DocBuilderLive {
             },
             error: ()=>{
                 if (retryCount < RETRY_COUNT) {
-                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                    this.getSpec(callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
@@ -160,7 +177,15 @@ class DocBuilderLive {
         });
     }
 
-    getTopic(id:number, callback: (topic:Object) => void) {
+    /**
+     * Given a spec, create iframes for all topics that have not been previously rendered
+     * @param spec The spec with all children expanded
+     */
+    getTopics(spec:Spec):void {
+
+    }
+
+    getTopic(id:number, callback: (topic:Object) => void):void {
 
     }
 
