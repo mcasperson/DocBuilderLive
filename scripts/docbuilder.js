@@ -2,7 +2,8 @@
 /// <reference path="collections.ts" />
 var RETRY_COUNT = 5;
 var SERVER = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var REVISION_DETAILS = "/pressgang-ccms/rest/1/sysinfo/get/json";
+var REVISION_DETAILS_REST = "/pressgang-ccms/rest/1/sysinfo/get/json";
+var SPEC_REST = "/contentspec/get/json/";
 
 var RenderedTopicDetails = (function () {
     function RenderedTopicDetails() {
@@ -25,14 +26,14 @@ var DocBuilderLive = (function () {
         if (typeof retryCount === "undefined") { retryCount = 0; }
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + REVISION_DETAILS,
+            url: SERVER + REVISION_DETAILS_REST,
             dataType: "json",
             success: function (data) {
                 callback(new Date(data.lastRevisionDate));
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
-                    _this.getLastModifiedTime(callback, errorCallback, retryCount);
+                    _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
@@ -40,7 +41,24 @@ var DocBuilderLive = (function () {
         });
     };
 
-    DocBuilderLive.prototype.getSpec = function (callback) {
+    DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
+        var _this = this;
+        if (typeof retryCount === "undefined") { retryCount = 0; }
+        jQuery.ajax({
+            type: 'GET',
+            url: SERVER + SPEC_REST,
+            dataType: "json",
+            success: function (data) {
+                callback(new Date(data.lastRevisionDate));
+            },
+            error: function () {
+                if (retryCount < RETRY_COUNT) {
+                    _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
     };
 
     DocBuilderLive.prototype.getTopic = function (id, callback) {

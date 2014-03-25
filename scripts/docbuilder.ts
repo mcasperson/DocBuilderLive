@@ -3,7 +3,8 @@
 
 var RETRY_COUNT:number = 5;
 var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var REVISION_DETAILS:string = "/pressgang-ccms/rest/1/sysinfo/get/json";
+var REVISION_DETAILS_REST:string = "/pressgang-ccms/rest/1/sysinfo/get/json";
+var SPEC_REST:string="/contentspec/get/json/";
 
 interface SysInfo {
     lastRevision:number;
@@ -36,17 +37,16 @@ class DocBuilderLive {
     }
 
     getLastModifiedTime(callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
-
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + REVISION_DETAILS,
+            url: SERVER + REVISION_DETAILS_REST,
             dataType: "json",
             success: (data:SysInfo)=>{
                callback(new Date(data.lastRevisionDate));
             },
             error: ()=>{
                 if (retryCount < RETRY_COUNT) {
-                    this.getLastModifiedTime(callback, errorCallback, retryCount);
+                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
                 } else {
                     errorCallback("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
@@ -54,8 +54,22 @@ class DocBuilderLive {
         });
     }
 
-    getSpec(callback: (topic:Object) => void):void {
-
+    getSpec(callback: (spec:Object) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+        jQuery.ajax({
+            type: 'GET',
+            url: SERVER + SPEC_REST,
+            dataType: "json",
+            success: (data:SysInfo)=>{
+                callback(new Date(data.lastRevisionDate));
+            },
+            error: ()=>{
+                if (retryCount < RETRY_COUNT) {
+                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
     }
 
     getTopic(id:number, callback: (topic:Object) => void) {
