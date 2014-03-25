@@ -1,12 +1,14 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
-var CHAPTER_NODE_TYPE = "CHAPTER";
-var CONTAINER_NODE_TYPES = [CHAPTER_NODE_TYPE];
+var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
 var RETRY_COUNT = 5;
-var SERVER = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var REVISION_DETAILS_REST = "/pressgang-ccms/rest/1/sysinfo/get/json";
-var SPEC_REST = "/pressgang-ccms/rest/1/contentspec/get/json/";
+
+//var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
+var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
+var REST_BASE = "/pressgang-ccms/rest/1";
+var REVISION_DETAILS_REST = REST_BASE + "/sysinfo/get/json";
+var SPEC_REST = REST_BASE + "/contentspec/get/json/";
 var SPEC_REST_EXPAND = {
     branches: [
         {
@@ -16,7 +18,7 @@ var SPEC_REST_EXPAND = {
         }
     ]
 };
-var SPECNODE_REST = "/contentspecnode/get/json/";
+var SPECNODE_REST = REST_BASE + "/contentspecnode/get/json/";
 
 var RenderedTopicDetails = (function () {
     function RenderedTopicDetails() {
@@ -83,6 +85,8 @@ var DocBuilderLive = (function () {
                                 data.children_OTM.items[index] = node;
                                 expandChildren(++index);
                             }, errorCallback);
+                        } else {
+                            expandChildren(++index);
                         }
                     }
                 };
@@ -117,12 +121,14 @@ var DocBuilderLive = (function () {
                     if (index >= data.children_OTM.items.length) {
                         callback(data);
                     } else {
-                        var element = data.children_OTM.items[index];
+                        var element = data.children_OTM.items[index].item;
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             _this.populateChild(element.id, function (node) {
-                                data.children_OTM.items[index] = node;
+                                data.children_OTM.items[index].item = node;
                                 expandChildren(++index);
                             }, errorCallback);
+                        } else {
+                            expandChildren(++index);
                         }
                     }
                 };
@@ -156,4 +162,6 @@ var DocBuilderLive = (function () {
     };
     return DocBuilderLive;
 })();
+
+new DocBuilderLive(21464);
 //# sourceMappingURL=docbuilder.js.map
