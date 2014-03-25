@@ -64,7 +64,7 @@ class DocBuilderLive {
             success: (data:SysInfo)=>{
                callback(new Date(data.lastRevisionDate));
             },
-            error: ()=>{
+            error: () => {
                 if (retryCount < RETRY_COUNT) {
                     this.getLastModifiedTime(callback, errorCallback, ++retryCount);
                 } else {
@@ -79,20 +79,27 @@ class DocBuilderLive {
             type: 'GET',
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
-            success: (data)=>{
+            success: (data) => {
 
-                _.each(data.children_OTM.items, (element:SpecNode, index, list) => {
-                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                        this.populateChild(
-                            element.id,
-                            (node) => void {
-
-                            },
-                            errorCallback
-                        );
+                var expandChildren = (index:number):void => {
+                    if (index >= data.children_OTM.items.length) {
+                        callback(data);
+                    } else {
+                        var element:SpecNode = data.children_OTM.items[index];
+                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                            this.populateChild(
+                                element.id,
+                                (node):void =>  {
+                                    data.children_OTM.items[index] = node;
+                                    expandChildren(++index);
+                                },
+                                errorCallback
+                            );
+                        }
                     }
-                });
+                }
 
+                expandChildren(0);
             },
             error: ()=>{
                 if (retryCount < RETRY_COUNT) {
@@ -110,13 +117,25 @@ class DocBuilderLive {
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: (data) => {
-
-                  _.each(data.children_OTM.items, (element:SpecNode, index, list) => {
-                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-
+                var expandChildren = (index:number):void => {
+                    if (index >= data.children_OTM.items.length) {
+                        callback(data);
+                    } else {
+                        var element:SpecNode = data.children_OTM.items[index];
+                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                            this.populateChild(
+                                element.id,
+                                (node):void =>  {
+                                    data.children_OTM.items[index] = node;
+                                    expandChildren(++index);
+                                },
+                                errorCallback
+                            );
+                        }
                     }
-                  });
+                }
 
+                expandChildren(0);
             },
             error: ()=>{
                 if (retryCount < RETRY_COUNT) {

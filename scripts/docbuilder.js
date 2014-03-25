@@ -62,13 +62,21 @@ var DocBuilderLive = (function () {
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: function (data) {
-                _.each(data.children_OTM.items, function (element, index, list) {
-                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                        _this.populateChild(element.id, function (node) {
-                            return void {};
-                        }, errorCallback);
+                var expandChildren = function (index) {
+                    if (index >= data.children_OTM.items.length) {
+                        callback(data);
+                    } else {
+                        var element = data.children_OTM.items[index];
+                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                            _this.populateChild(element.id, function (node) {
+                                data.children_OTM.items[index] = node;
+                                expandChildren(++index);
+                            }, errorCallback);
+                        }
                     }
-                });
+                };
+
+                expandChildren(0);
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
@@ -88,10 +96,21 @@ var DocBuilderLive = (function () {
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: function (data) {
-                _.each(data.children_OTM.items, function (element, index, list) {
-                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                var expandChildren = function (index) {
+                    if (index >= data.children_OTM.items.length) {
+                        callback(data);
+                    } else {
+                        var element = data.children_OTM.items[index];
+                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                            _this.populateChild(element.id, function (node) {
+                                data.children_OTM.items[index] = node;
+                                expandChildren(++index);
+                            }, errorCallback);
+                        }
                     }
-                });
+                };
+
+                expandChildren(0);
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
