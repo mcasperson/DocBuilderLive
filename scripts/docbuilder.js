@@ -54,12 +54,19 @@ var DocBuilderLive = (function () {
         });
     };
 
+    /**
+    * Get a content spec node with all children expanded
+    * @param id The id of the spec node to expand
+    * @param callback Called with the fully expanded spec node
+    * @param errorCallback Called if there was a network error
+    * @param retryCount An internal count that tracks how many time to retry a particular call
+    */
     DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
         var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: function (data) {
                 var expandChildren = function (index) {
@@ -88,12 +95,18 @@ var DocBuilderLive = (function () {
         });
     };
 
+    /**
+    * Get a spec with all child details expanded
+    * @param callback Called with the expanded spec object
+    * @param errorCallback Called if there was a network error
+    * @param retryCount An internal count that tracks how many time to retry a particular call
+    */
     DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
         var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: function (data) {
                 var expandChildren = function (index) {

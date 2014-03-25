@@ -71,8 +71,8 @@
       <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.83839375" vertical-offset="1199" max-vertical-offset="2490">
-              <caret line="137" column="34" selection-start-line="137" selection-start-column="34" selection-end-line="137" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.40842313" vertical-offset="1518" max-vertical-offset="2685">
+              <caret line="129" column="61" selection-start-line="129" selection-start-column="61" selection-end-line="129" selection-end-column="61" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -522,7 +522,7 @@
       <workItem from="1395712945408" duration="31000" />
       <workItem from="1395712985860" duration="365000" />
       <workItem from="1395713363300" duration="4206000" />
-      <workItem from="1395717611829" duration="4217000" />
+      <workItem from="1395717611829" duration="4442000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -544,11 +544,15 @@
       <created>1395723726555</created>
       <updated>1395723726555</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Working on DocBuilder Live prototype">
+      <created>1395724264884</created>
+      <updated>1395724264884</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11507000" />
+    <option name="totallyTimeSpent" value="11732000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="-3" width="1924" height="1207" extended-state="6" />
@@ -756,8 +760,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.83839375" vertical-offset="1199" max-vertical-offset="2490">
-          <caret line="137" column="34" selection-start-line="137" selection-start-column="34" selection-end-line="137" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.40842313" vertical-offset="1518" max-vertical-offset="2685">
+          <caret line="129" column="61" selection-start-line="129" selection-start-column="61" selection-end-line="129" selection-end-column="61" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

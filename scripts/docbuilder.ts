@@ -61,7 +61,7 @@ class DocBuilderLive {
             type: 'GET',
             url: SERVER + REVISION_DETAILS_REST,
             dataType: "json",
-            success: (data:SysInfo)=>{
+            success: (data:SysInfo) => {
                callback(new Date(data.lastRevisionDate));
             },
             error: () => {
@@ -74,10 +74,17 @@ class DocBuilderLive {
         });
     }
 
+    /**
+     * Get a content spec node with all children expanded
+     * @param id The id of the spec node to expand
+     * @param callback Called with the fully expanded spec node
+     * @param errorCallback Called if there was a network error
+     * @param retryCount An internal count that tracks how many time to retry a particular call
+     */
     populateChild(id:number, callback: (node) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: (data) => {
 
@@ -111,10 +118,16 @@ class DocBuilderLive {
         });
     }
 
+    /**
+     * Get a spec with all child details expanded
+     * @param callback Called with the expanded spec object
+     * @param errorCallback Called if there was a network error
+     * @param retryCount An internal count that tracks how many time to retry a particular call
+     */
     getSpec(callback: (spec) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: (data) => {
                 var expandChildren = (index:number):void => {
@@ -125,7 +138,7 @@ class DocBuilderLive {
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             this.populateChild(
                                 element.id,
-                                (node):void =>  {
+                                (node):void => {
                                     data.children_OTM.items[index] = node;
                                     expandChildren(++index);
                                 },
