@@ -1,7 +1,9 @@
 /// <reference path="../definitions/jquery.d.ts" />
+/// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
 
 var CHAPTER_NODE_TYPE:string = "CHAPTER";
+var CONTAINER_NODE_TYPES:string[] = [CHAPTER_NODE_TYPE];
 var RETRY_COUNT:number = 5;
 var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
 var REVISION_DETAILS_REST:string = "/pressgang-ccms/rest/1/sysinfo/get/json";
@@ -15,10 +17,18 @@ var SPEC_REST_EXPAND:Object={
         }
     ]
 }
+var SPECNODE_REST:string = "/contentspecnode/get/json/";
 
 interface SysInfo {
     lastRevision:number;
     lastRevisionDate:number;
+}
+
+interface SpecNode {
+    id:number;
+    entityId:number;
+    entityRevision:number;
+    nodeType:string;
 }
 
 class RenderedTopicDetails {
@@ -64,14 +74,48 @@ class DocBuilderLive {
         });
     }
 
-    getSpec(callback: (spec:Object) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    populateChild(id:number, callback: (node) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
-            success: (data:SysInfo)=>{
+            success: (data)=>{
 
+                _.each(data.children_OTM.items, (element:SpecNode, index, list) => {
+                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                        this.populateChild(
+                            element.id,
+                            (node) => void {
 
+                            },
+                            errorCallback
+                        );
+                    }
+                });
+
+            },
+            error: ()=>{
+                if (retryCount < RETRY_COUNT) {
+                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    }
+
+    getSpec(callback: (spec) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+        jQuery.ajax({
+            type: 'GET',
+            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            dataType: "json",
+            success: (data) => {
+
+                  _.each(data.children_OTM.items, (element:SpecNode, index, list) => {
+                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+
+                    }
+                  });
 
             },
             error: ()=>{

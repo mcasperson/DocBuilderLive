@@ -1,6 +1,8 @@
 /// <reference path="../definitions/jquery.d.ts" />
+/// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
 var CHAPTER_NODE_TYPE = "CHAPTER";
+var CONTAINER_NODE_TYPES = [CHAPTER_NODE_TYPE];
 var RETRY_COUNT = 5;
 var SERVER = "http://pressgang.lab.eng.pnq.redhat.com:8080";
 var REVISION_DETAILS_REST = "/pressgang-ccms/rest/1/sysinfo/get/json";
@@ -14,6 +16,7 @@ var SPEC_REST_EXPAND = {
         }
     ]
 };
+var SPECNODE_REST = "/contentspecnode/get/json/";
 
 var RenderedTopicDetails = (function () {
     function RenderedTopicDetails() {
@@ -51,6 +54,32 @@ var DocBuilderLive = (function () {
         });
     };
 
+    DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
+        var _this = this;
+        if (typeof retryCount === "undefined") { retryCount = 0; }
+        jQuery.ajax({
+            type: 'GET',
+            url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+            dataType: "json",
+            success: function (data) {
+                _.each(data.children_OTM.items, function (element, index, list) {
+                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                        _this.populateChild(element.id, function (node) {
+                            return void {};
+                        }, errorCallback);
+                    }
+                });
+            },
+            error: function () {
+                if (retryCount < RETRY_COUNT) {
+                    _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    };
+
     DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
         var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
@@ -59,6 +88,10 @@ var DocBuilderLive = (function () {
             url: SERVER + SPEC_REST + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
             success: function (data) {
+                _.each(data.children_OTM.items, function (element, index, list) {
+                    if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    }
+                });
             },
             error: function () {
                 if (retryCount < RETRY_COUNT) {
