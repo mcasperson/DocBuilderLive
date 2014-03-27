@@ -26,8 +26,12 @@ interface SysInfo {
     lastRevisionDate:number;
 }
 
-interface Spec {
+interface SpecNodeCollectionParent {
     children_OTM:SpecNodeCollection;
+}
+
+interface Spec {
+
 }
 
 interface SpecNodeCollection {
@@ -44,23 +48,20 @@ interface SpecNode {
     entityRevision:number;
     nodeType:string;
     title:string;
-    children_OTM:SpecNodeItem[];
+    children_OTM:SpecNodeCollection;
 }
 
-class RenderedTopicDetails {
-    public topicId:number;
-    public topicRevision:number;
-    public includesTitle: boolean;
+class IdRevPair {
+    public id:number;
+    public rev:number;
 
     constructor();
-    constructor(specNode?:SpecNode, includesTitle?:boolean) {
-        this.topicId = specNode !== undefined ? specNode.entityId : -1;
-        this.topicRevision = specNode !== undefined ? specNode.entityRevision : -1;
-        this.includesTitle = includesTitle || false;
+    constructor(id?:number, rev?:number) {
+        this.id = id;
+        this.rev = rev;
     }
-
     toString():string {
-        return "ID:" + this.topicId + " REV: " + this.topicRevision + " TITLE: " + this.includesTitle;
+        return this.id + ":" + this.rev;
     }
 }
 
@@ -68,7 +69,7 @@ class DocBuilderLive {
 
     private lastRevisionDate:Date;
     private specId:number;
-    private topics:collections.Dictionary<RenderedTopicDetails, HTMLIFrameElement>;
+    private topics:collections.Dictionary<IdRevPair, HTMLIFrameElement>;
     private titles:collections.Dictionary<string, HTMLIFrameElement>;
     private errorCallback = (title:string, message:string):void => {
         window.alert(title + "\n" + message);
@@ -80,7 +81,7 @@ class DocBuilderLive {
             (lastRevisionDate:Date) => {
                 this.lastRevisionDate = lastRevisionDate;
                 this.getSpec(
-                    (spec:Spec):void => {
+                    (spec:SpecNodeCollectionParent):void => {
                         this.getTopics(spec);
                     },
                     this.errorCallback
@@ -165,7 +166,7 @@ class DocBuilderLive {
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
-            success: (data:Spec) => {
+            success: (data:SpecNodeCollectionParent) => {
                 var expandChildren = (index:number):void => {
                     if (index >= data.children_OTM.items.length) {
                         callback(data);
@@ -202,12 +203,20 @@ class DocBuilderLive {
      * Given a spec, create iframes for all topics that have not been previously rendered
      * @param spec The spec with all children expanded
      */
-    getTopics(spec:Spec):void {
-
-    }
-
-    getTopic(id:number, callback: (topic:Object) => void):void {
-
+    getTopics(spec:SpecNodeCollectionParent):void {
+        /*
+            Get the list of topics that make up the spec in sequential order
+         */
+        var specTopics:SpecNode[] = [];
+        function expandChild (node:SpecNodeCollectionParent):void  {
+            _.each(node.children_OTM.items, function(element, index, list) {
+                specTopics.push(element.item);
+                if (element.item.children_OTM !== null) {
+                    expandChild(element.item);
+                }
+            });
+        }
+        expandChild(spec);
     }
 
     syncTopicsCollectionWithSpec():void {

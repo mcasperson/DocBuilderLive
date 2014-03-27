@@ -21,16 +21,15 @@ var SPEC_REST_EXPAND = {
 var SPECNODE_REST = REST_BASE + "/contentspecnode/get/json/";
 var TOPIC_REST = REST_BASE + "/topic/get/json/";
 
-var RenderedTopicDetails = (function () {
-    function RenderedTopicDetails(specNode, includesTitle) {
-        this.topicId = specNode !== undefined ? specNode.entityId : -1;
-        this.topicRevision = specNode !== undefined ? specNode.entityRevision : -1;
-        this.includesTitle = includesTitle || false;
+var IdRevPair = (function () {
+    function IdRevPair(id, rev) {
+        this.id = id;
+        this.rev = rev;
     }
-    RenderedTopicDetails.prototype.toString = function () {
-        return "ID:" + this.topicId + " REV: " + this.topicRevision + " TITLE: " + this.includesTitle;
+    IdRevPair.prototype.toString = function () {
+        return this.id + ":" + this.rev;
     };
-    return RenderedTopicDetails;
+    return IdRevPair;
 })();
 
 var DocBuilderLive = (function () {
@@ -48,8 +47,8 @@ var DocBuilderLive = (function () {
         }, this.errorCallback);
     }
     DocBuilderLive.prototype.getLastModifiedTime = function (callback, errorCallback, retryCount) {
-        var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
         jQuery.ajax({
             type: 'GET',
             url: SERVER + REVISION_DETAILS_REST,
@@ -75,8 +74,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
-        var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -117,8 +116,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
-        var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -157,9 +156,19 @@ var DocBuilderLive = (function () {
     * @param spec The spec with all children expanded
     */
     DocBuilderLive.prototype.getTopics = function (spec) {
-    };
-
-    DocBuilderLive.prototype.getTopic = function (id, callback) {
+        /*
+        Get the list of topics that make up the spec in sequential order
+        */
+        var specTopics = [];
+        function expandChild(node) {
+            _.each(node.children_OTM.items, function (element, index, list) {
+                specTopics.push(element.item);
+                if (element.item.children_OTM !== null) {
+                    expandChild(element.item);
+                }
+            });
+        }
+        expandChild(spec);
     };
 
     DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function () {
