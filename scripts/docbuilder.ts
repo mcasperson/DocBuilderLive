@@ -7,6 +7,7 @@ var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 var IFRAME_ID_PREFIX = "iframeId";
 var DIV_ID_PREFIX = "divId";
+var DIV_BOOK_INDEX_ID_PREFIX = "divBookIndex";
 var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
 var TOPIC_REV_MARKER:string = "#TOPICREV#";
@@ -50,6 +51,13 @@ function error(message:string):void {
     window.alert(message);
 }
 
+class TreeNode {
+    text:string;
+    icon:string;
+    data:string;
+    children:TreeNode[] = [];
+}
+
 interface SysInfo {
     lastRevision:number;
     lastRevisionDate:number;
@@ -57,10 +65,6 @@ interface SysInfo {
 
 interface SpecNodeCollectionParent {
     children_OTM:SpecNodeCollection;
-}
-
-interface Spec {
-
 }
 
 interface SpecNodeCollection {
@@ -158,7 +162,9 @@ class DocBuilderLive {
                 this.lastRevisionDate = lastRevisionDate;
                 this.getSpec(
                     (spec:SpecNodeCollectionParent):void => {
-                        this.getTopics(spec);
+                        this.buildToc(spec);
+                        var specNodes = this.getAllChildrenInFlatOrder(spec);
+                        this.getTopics(specNodes);
                     },
                     this.errorCallback
                 )
@@ -237,7 +243,7 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    getSpec(callback: (spec:Spec) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    getSpec(callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -275,22 +281,13 @@ class DocBuilderLive {
         });
     }
 
-    /**
-     * Given a spec, create iframes for all topics that have not been previously rendered
-     * @param spec The spec with all children expanded
-     */
-    getTopics(spec:SpecNodeCollectionParent):void {
-
-        jQuery("#loading").remove();
-
-        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
+    getAllChildrenInFlatOrder(spec:SpecNodeCollectionParent):SpecNode[] {
         /*
-            Get the list of topics that make up the spec in sequential order
+         Get the list of topics that make up the spec in sequential order
          */
         function expandChild (node:SpecNodeCollectionParent):SpecNode[]  {
             /*
-                Find the one that has no nextNode
+             Find the one that has no nextNode
              */
             var lastChild:SpecNode;
             var lastInitialTextChild:SpecNode;
@@ -350,6 +347,71 @@ class DocBuilderLive {
 
         specTopics.reverse();
 
+        return specTopics;
+    }
+
+    getChildrenInOrder(parent:SpecNodeCollectionParent):SpecNode[] {
+
+        /*
+         Find the one that has no nextNode
+         */
+        var lastChild:SpecNode;
+        var lastInitialTextChild:SpecNode;
+        _.each(parent.children_OTM.items, function(childNode, index, list) {
+            if (childNode.item.nextNode === null) {
+                if (childNode.item.nodeType === INITIAL_CONTENT_TOPIC) {
+                    lastInitialTextChild = childNode.item;
+                } else {
+                    lastChild = childNode.item;
+                }
+            }
+        });
+
+        if (lastChild === undefined && lastInitialTextChild == undefined) {
+            error("Could not find the last child in the linked list");
+            return;
+        }
+
+        var reverseChildren:SpecNode[] = [];
+        var entryNodes:SpecNode[] = [lastInitialTextChild, lastChild];
+        _.each(entryNodes, function(entryNode:SpecNode, index, array) {
+            if (entryNode !== undefined) {
+
+                reverseChildren.push(entryNode);
+
+                while (true) {
+
+                    var nextLastChild:SpecNodeItem = _.find(parent.children_OTM.items, function (element) {
+                        return element.item.nextNode !== undefined &&
+                            element.item.nextNode !== null &&
+                            element.item.nextNode.id === entryNode.id;
+                    });
+
+                    if (nextLastChild === undefined) {
+                        break;
+                    }
+
+                    entryNode = nextLastChild.item;
+
+                    reverseChildren.push(entryNode);
+                }
+            }
+        });
+
+        reverseChildren.reverse();
+        return reverseChildren;
+    }
+
+    /**
+     * Given a spec, create iframes for all topics that have not been previously rendered
+     * @param spec The spec with all children expanded
+     */
+    getTopics(specTopics:SpecNode[]):void {
+
+        jQuery("#loading").remove();
+
+        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+
         var delay:number = 0;
         var iframeId = 0;
 
@@ -381,6 +443,10 @@ class DocBuilderLive {
                  Links to topics can be done through either the topic id or the target id. We
                  append two divs with these ids as link targets.
                  */
+                var indexTarget = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + iframeId + "'></div>");
+                div[0]["linkTargets"].push(indexTarget);
+                jQuery("#book").append(indexTarget);
+
                 if (element.entityId !== null) {
                     var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
                     div[0]["linkTargets"].push(idLinkTarget);
@@ -447,6 +513,54 @@ class DocBuilderLive {
         });
     }
 
+    buildToc(spec:SpecNodeCollectionParent):void {
+
+        var childIndex = 0;
+
+        var addChildren = (specNode:SpecNode, parent:TreeNode):void => {
+            var isContainer = CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+            var isTopic = TOPIC_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+            if (isContainer || isTopic) {
+
+                ++childIndex;
+
+                var treeNode:TreeNode = new TreeNode();
+                treeNode.text = specNode.title;
+                treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
+                treeNode.data = childIndex.toString();
+                parent.children.push(treeNode);
+                if (specNode.children_OTM !== null) {
+                    var children = this.getChildrenInOrder(specNode);
+                    _.each(children, function (element:SpecNode):void {
+                        addChildren(element, treeNode);
+                    });
+                }
+            }
+        }
+
+        var toc:TreeNode  = new TreeNode();
+        var children = this.getChildrenInOrder(spec);
+        _.each(children, function(element:SpecNode) {
+            addChildren(element, toc);
+        })
+
+        jQuery("#toc").jstree({
+            'core' : {
+                'multiple' : false,
+                'data' : toc.children
+            }
+        })
+        .on('changed.jstree', function (e, data) {
+            if (data.selected.length !== 0) {
+                var treeNode = data.instance.get_node(data.selected[0]);
+                var div = document.getElementById(DIV_BOOK_INDEX_ID_PREFIX + treeNode.data);
+                if (div !== null) {
+                    div.scrollIntoView(true);
+                }
+            }
+        });
+    }
+
     syncTopicsCollectionWithSpec():void {
 
     }
@@ -456,4 +570,4 @@ class DocBuilderLive {
     }
 }
 
-new DocBuilderLive(13968);
+new DocBuilderLive(21464);
