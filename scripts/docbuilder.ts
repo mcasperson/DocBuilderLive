@@ -378,6 +378,8 @@ class DocBuilderLive {
                 var url:string;
 
                 if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    div.setAttribute("data-specNodeId", element.id.toString());
+
                     if (element.revision === undefined) {
                         url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
                         iFrame.src = url;
@@ -388,6 +390,8 @@ class DocBuilderLive {
                         div.setAttribute("data-specNodeRev", element.revision.toString());
                     }
                 } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    div.setAttribute("data-title", element.title);
+                    div.setAttribute("data-container", element.nodeType.toLowerCase());
                     var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" +
                         "<" + element.nodeType.toLowerCase() + ">\n" +
                         "<title>" + element.title + "</title>\n" +
