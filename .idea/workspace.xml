@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -68,10 +66,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="docbuilder.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41192052" vertical-offset="1339" max-vertical-offset="5130">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1339" max-vertical-offset="5130">
               <caret line="110" column="47" selection-start-line="110" selection-start-column="47" selection-end-line="110" selection-end-column="47" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -120,11 +118,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.125" vertical-offset="0" max-vertical-offset="330">
-              <caret line="5" column="45" selection-start-line="5" selection-start-column="45" selection-end-line="5" selection-end-column="45" />
+            <state vertical-scroll-proportion="0.36935705" vertical-offset="0" max-vertical-offset="731">
+              <caret line="18" column="7" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -145,8 +143,8 @@
       <list>
         <option value="$PROJECT_DIR$/javascript/docbuilder.ts" />
         <option value="$PROJECT_DIR$/scripts/collections.ts" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts/docbuilder.ts" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -538,7 +536,7 @@
       <workItem from="1395962352850" duration="88000" />
       <workItem from="1395962484176" duration="151000" />
       <workItem from="1395962668752" duration="1701000" />
-      <workItem from="1395971374483" duration="11145000" />
+      <workItem from="1395971374483" duration="11257000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -584,11 +582,15 @@
       <created>1395983726435</created>
       <updated>1395983726435</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Working on DocBuilder Live prototype">
+      <created>1395986076526</created>
+      <updated>1395986076526</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31589000" />
+    <option name="totallyTimeSpent" value="31701000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -998,14 +1000,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.125" vertical-offset="0" max-vertical-offset="330">
-          <caret line="5" column="45" selection-start-line="5" selection-start-column="45" selection-end-line="5" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/lib.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="739" max-vertical-offset="212955">
@@ -1024,11 +1018,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41192052" vertical-offset="1339" max-vertical-offset="5130">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1339" max-vertical-offset="5130">
           <caret line="110" column="47" selection-start-line="110" selection-start-column="47" selection-end-line="110" selection-end-column="47" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36935705" vertical-offset="0" max-vertical-offset="731">
+          <caret line="18" column="7" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>
