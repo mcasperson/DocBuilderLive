@@ -73,6 +73,7 @@ var DocBuilderLive = (function () {
                     });
                     if (sourceIframe !== undefined) {
                         jQuery(sourceIframe["div"]).html(message.html);
+                        document.body.removeChild(sourceIframe);
                     }
                 }
             } catch (ex) {
@@ -278,7 +279,7 @@ var DocBuilderLive = (function () {
             var div = document.createElement("div");
             iFrame["div"] = div;
             div.setAttribute("data-specNodeId", element.id.toString());
-            document.body.appendChild(div);
+            document.getElementById("book").appendChild(div);
 
             if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                 if (element.revision === undefined) {
