@@ -3,6 +3,8 @@
 /// <reference path="collections.ts" />
 
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 5000;
+var CONCURRENT_IFRAME_DOWNLOADS = 3;
+var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 var IFRAME_ID_PREFIX = "iframeId";
 var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
@@ -113,8 +115,8 @@ class DocBuilderLive {
                         return element.contentWindow === source;
                     });
                     if (sourceIframe !== undefined) {
-                        jQuery(sourceIframe["div"]).html(message.html);
-                        document.body.removeChild(sourceIframe);
+                        jQuery(sourceIframe["div"]).html(message.html).removeClass(LOADING_TOPIC_DIV_CLASS);
+                        sourceIframe.parentElement.removeChild(sourceIframe);
 
                         /*
                             The iframes have their src set either when the iframe before them
@@ -123,11 +125,15 @@ class DocBuilderLive {
                         var iframeId = parseInt(sourceIframe.id.replace(IFRAME_ID_PREFIX, ""));
                         if (!isNaN(iframeId)) {
                             var nextIframeId = IFRAME_ID_PREFIX + (iframeId + 1);
-                            var nextIframe = jQuery("#" + nextIframeId);
-                            if (nextIframe.length !== 0 && nextIframe[0]["setSrc"] === undefined) {
+                            var nextIframe;
+                            while ((nextIframe = jQuery("#" + nextIframeId)).length !== 0) {
                                 var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIframe[0];
-                                nextIFrameElement["setSrc"] = true;
-                                nextIFrameElement.src = nextIFrameElement["url"];
+                                if (nextIFrameElement["setSrc"] === undefined) {
+                                    nextIFrameElement["setSrc"] = true;
+                                    nextIFrameElement.src = nextIFrameElement["url"];
+                                    break;
+                                }
+                                ++iframeId;
                             }
                         }
                     }
@@ -266,6 +272,8 @@ class DocBuilderLive {
      */
     getTopics(spec:SpecNodeCollectionParent):void {
 
+        jQuery("#loading").remove();
+
         var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
         /*
@@ -334,62 +342,78 @@ class DocBuilderLive {
         specTopics.reverse();
 
         var delay:number = 0;
-        var iframeId:number = 1;
+        var iframeId = 0;
 
         _.each(specTopics, function (element, index, list) {
 
-            /*
-                Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
-                HTML
-             */
-            var iFrame:HTMLIFrameElement = document.createElement("iframe");
-            iFrame.style.display = "none";
-            iFrame.id = IFRAME_ID_PREFIX + iframeId;
-            document.body.appendChild(iFrame);
+            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1 || CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
 
-            /*
-                Create the div that will be filled with the HTML sent by the iframe.
-             */
-            var div:HTMLDivElement = document.createElement("div");
-            iFrame["div"] = div;
-            div.setAttribute("data-specNodeId", element.id.toString());
-            jQuery(div).html(LOADING_HTML);
-            document.getElementById("book").appendChild(div);
+                ++iframeId;
 
-            var url;
+                /*
+                 Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
+                 HTML
+                 */
+                var iFrame:HTMLIFrameElement = document.createElement("iframe");
+                iFrame.style.display = "none";
+                iFrame.id = IFRAME_ID_PREFIX + iframeId;
+                document.body.appendChild(iFrame);
 
-            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                if (element.revision === undefined) {
-                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
-                    iFrame.src = url;
-                } else {
-                    url = SERVER + CSNODE_XSLTXML_REST
-                        .replace(CSNODE_ID_MARKER, element.id.toString())
-                        .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
-                    div.setAttribute("data-specNodeRev", element.revision.toString());
+                /*
+                 Create the div that will be filled with the HTML sent by the iframe.
+                 */
+                var div:HTMLDivElement = document.createElement("div");
+                iFrame["div"] = div;
+                div.setAttribute("data-specNodeId", element.id.toString());
+                div.className = LOADING_TOPIC_DIV_CLASS;
+                jQuery(div).html(LOADING_HTML);
+                document.getElementById("book").appendChild(div);
+
+                var url:string;
+
+                if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    if (element.revision === undefined) {
+                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
+                        iFrame.src = url;
+                    } else {
+                        url = SERVER + CSNODE_XSLTXML_REST
+                            .replace(CSNODE_ID_MARKER, element.id.toString())
+                            .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
+                        div.setAttribute("data-specNodeRev", element.revision.toString());
+                    }
+                } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" +
+                        "<" + element.nodeType.toLowerCase() + ">\n" +
+                        "<title>" + element.title + "</title>\n" +
+                        "</" + element.nodeType.toLowerCase() + ">";
+                    url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
                 }
-            } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" +
-                    "<" + element.nodeType.toLowerCase() + ">\n" +
-                    "<title>" + element.title + "</title>\n" +
-                    "</" + element.nodeType.toLowerCase() + ">";
-                url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
-            }
 
-            iFrame["url"] = url;
+                iFrame["url"] = url;
 
-            /*
-                The iframes have their src set either when the iframe before them
-                finishes loading, or when a timeout occurs.
-             */
-            window.setTimeout(function() {
-                if (iFrame["setSrc"] === undefined) {
+                /*
+                    We want to start a few iframes download the xml concurrently.
+                 */
+                if (iframeId <= CONCURRENT_IFRAME_DOWNLOADS) {
                     iFrame.src = iFrame["url"];
                     iFrame["setSrc"] = true;
-                }
-            }, delay);
+                } else {
+                    /*
+                     The iframes have their src set either when the iframe before them
+                     finishes loading, or when a timeout occurs.
+                     */
+                    window.setTimeout(function () {
+                        if (iFrame["setSrc"] === undefined) {
+                            iFrame.src = iFrame["url"];
+                            iFrame["setSrc"] = true;
+                        }
+                    }, delay);
 
-            delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
+                    delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
+                }
+
+
+            }
         });
     }
 
