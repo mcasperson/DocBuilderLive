@@ -1,8 +1,8 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
-var DELAY_BETWEEN_IFRAME_SRC_CALLS = 5000;
-var CONCURRENT_IFRAME_DOWNLOADS = 1;
+var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
+var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 var IFRAME_ID_PREFIX = "iframeId";
 var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
