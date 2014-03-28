@@ -1,12 +1,15 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
+var DELAY_BETWEEN_IFRAME_SRC_CALLS = 200;
 var TOPIC_ID_MARKER = "#TOPICID#";
 var TOPIC_REV_MARKER = "#TOPICREV#";
 var CSNODE_ID_MARKER = "#CSNODEID#";
 var CSNODE_REV_MARKER = "#CSNODEREV#";
 var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
-var TOPIC_NODE_TYPES = ["TOPIC", "INITIAL_CONTENT_TOPIC"];
+var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
+var TOPIC = "TOPIC";
+var TOPIC_NODE_TYPES = [TOPIC, INITIAL_CONTENT_TOPIC];
 var RETRY_COUNT = 5;
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
@@ -127,7 +130,7 @@ var DocBuilderLive = (function () {
                         var element = data.children_OTM.items[index].item;
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             _this.populateChild(element.id, function (node) {
-                                data.children_OTM.items[index].item = node;
+                                data.children_OTM.items[index].item.children_OTM = node.children_OTM;
                                 expandChildren(++index);
                             }, errorCallback);
                         } else {
@@ -205,45 +208,51 @@ var DocBuilderLive = (function () {
             Find the one that has no nextNode
             */
             var lastChild;
-            _.each(node.children_OTM.items, function (element, index, list) {
-                if (element.item.nextNode === null) {
-                    lastChild = element.item;
+            var lastInitialTextChild;
+            _.each(node.children_OTM.items, function (childNode, index, list) {
+                if (childNode.item.nextNode === null) {
+                    if (childNode.item.nodeType === INITIAL_CONTENT_TOPIC) {
+                        lastInitialTextChild = childNode.item;
+                    } else {
+                        lastChild = childNode.item;
+                    }
                 }
             });
 
-            if (lastChild === undefined) {
+            if (lastChild === undefined && lastInitialTextChild == undefined) {
                 error("Could not find the last child in the linked list");
                 return;
             }
 
             var reverseChildren = [];
+            var entryNodes = [lastInitialTextChild, lastChild];
+            _.each(entryNodes, function (entryNode, index, array) {
+                if (entryNode !== undefined) {
+                    if (CONTAINER_NODE_TYPES.indexOf(entryNode.nodeType) !== -1) {
+                        jQuery.merge(reverseChildren, expandChild(entryNode));
+                    }
 
-            if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
-                jQuery.merge(reverseChildren, expandChild(lastChild));
-            }
+                    reverseChildren.push(entryNode);
 
-            /*
-            Loop through the list, adding children in reverse order
-            */
-            reverseChildren.push(lastChild);
+                    while (true) {
+                        var nextLastChild = _.find(node.children_OTM.items, function (element) {
+                            return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === entryNode.id;
+                        });
 
-            for (var childIndex = 1; childIndex < node.children_OTM.items.length; ++childIndex) {
-                var nextLastChild = _.find(node.children_OTM.items, function (element) {
-                    return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === lastChild.id;
-                });
+                        if (nextLastChild === undefined) {
+                            break;
+                        }
 
-                if (nextLastChild === undefined) {
-                    error("nextLastChild should not be undefined");
+                        entryNode = nextLastChild.item;
+
+                        if (CONTAINER_NODE_TYPES.indexOf(entryNode.nodeType) !== -1) {
+                            jQuery.merge(reverseChildren, expandChild(entryNode));
+                        }
+
+                        reverseChildren.push(entryNode);
+                    }
                 }
-
-                lastChild = nextLastChild.item;
-
-                if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
-                    jQuery.merge(reverseChildren, expandChild(lastChild));
-                }
-
-                reverseChildren.push(nextLastChild.item);
-            }
+            });
 
             return reverseChildren;
         }
@@ -251,6 +260,8 @@ var DocBuilderLive = (function () {
         var specTopics = expandChild(spec);
 
         specTopics.reverse();
+
+        var delay = 0;
 
         _.each(specTopics, function (element, index, list) {
             /*
@@ -275,14 +286,20 @@ var DocBuilderLive = (function () {
                     iFrame.src = url;
                 } else {
                     var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
-                    iFrame.src = url;
                     div.setAttribute("data-specNodeRev", element.revision.toString());
+                    window.setTimeout(function () {
+                        iFrame.src = url;
+                    }, delay);
                 }
             } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                 var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
                 var url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
-                iFrame.src = url;
+                window.setTimeout(function () {
+                    iFrame.src = url;
+                }, delay);
             }
+
+            delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
         });
     };
 
@@ -294,5 +311,5 @@ var DocBuilderLive = (function () {
     return DocBuilderLive;
 })();
 
-new DocBuilderLive(21464);
+new DocBuilderLive(13968);
 //# sourceMappingURL=docbuilder.js.map
