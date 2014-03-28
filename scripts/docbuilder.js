@@ -10,7 +10,8 @@ var TOPIC_NODE_TYPES = ["TOPIC", "INITIAL_CONTENT_TOPIC"];
 var RETRY_COUNT = 5;
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
+//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
+var SERVER = "http://localhost:8080";
 var REST_BASE = "/pressgang-ccms/rest/1";
 var REVISION_DETAILS_REST = REST_BASE + "/sysinfo/get/json";
 var SPEC_REST = REST_BASE + "/contentspec/get/json/";
@@ -57,6 +58,22 @@ var DocBuilderLive = (function () {
         this.errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
         };
+        window.addEventListener('message', function (e) {
+            try  {
+                var message = JSON.parse(e.data);
+                if (message.html !== undefined) {
+                    var source = e.source;
+                    var iframes = jQuery("iframe").toArray();
+                    var sourceIframe = _.find(iframes, function (element) {
+                        return element.contentWindow === source;
+                    });
+                    jQuery(sourceIframe["div"]).html(message.html);
+                }
+            } catch (ex) {
+                // message was not json
+            }
+        });
+
         this.specId = specId;
         this.getLastModifiedTime(function (lastRevisionDate) {
             _this.lastRevisionDate = lastRevisionDate;
@@ -175,6 +192,8 @@ var DocBuilderLive = (function () {
     * @param spec The spec with all children expanded
     */
     DocBuilderLive.prototype.getTopics = function (spec) {
+        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+
         /*
         Get the list of topics that make up the spec in sequential order
         */
@@ -232,12 +251,18 @@ var DocBuilderLive = (function () {
         _.each(specTopics, function (element, index, list) {
             if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                 var iFrame = document.createElement("iframe");
-                iFrame.frameBorder = "0";
+                iFrame.style.display = "none";
                 document.body.appendChild(iFrame);
+
+                var div = document.createElement("div");
+                iFrame["div"] = div;
+                document.body.appendChild(div);
                 if (element.revision !== undefined) {
-                    iFrame.src = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString());
+                    var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
+                    iFrame.src = url;
                 } else {
-                    iFrame.src = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString());
+                    var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
+                    iFrame.src = url;
                 }
             }
         });
