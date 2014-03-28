@@ -2,7 +2,9 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
 
-var DELAY_BETWEEN_IFRAME_SRC_CALLS = 200;
+var DELAY_BETWEEN_IFRAME_SRC_CALLS = 5000;
+var IFRAME_ID_PREFIX = "iframeId";
+var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
 var TOPIC_REV_MARKER:string = "#TOPICREV#";
 var CSNODE_ID_MARKER:string = "#CSNODEID#";
@@ -113,6 +115,21 @@ class DocBuilderLive {
                     if (sourceIframe !== undefined) {
                         jQuery(sourceIframe["div"]).html(message.html);
                         document.body.removeChild(sourceIframe);
+
+                        /*
+                            The iframes have their src set either when the iframe before them
+                            finishes loading, or when a timeout occurs.
+                         */
+                        var iframeId = parseInt(sourceIframe.id.replace(IFRAME_ID_PREFIX, ""));
+                        if (!isNaN(iframeId)) {
+                            var nextIframeId = IFRAME_ID_PREFIX + (iframeId + 1);
+                            var nextIframe = jQuery("#" + nextIframeId);
+                            if (nextIframe.length !== 0 && nextIframe[0]["setSrc"] === undefined) {
+                                var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIframe[0];
+                                nextIFrameElement["setSrc"] = true;
+                                nextIFrameElement.src = nextIFrameElement["url"];
+                            }
+                        }
                     }
                 }
             } catch (ex) {
@@ -317,6 +334,7 @@ class DocBuilderLive {
         specTopics.reverse();
 
         var delay:number = 0;
+        var iframeId:number = 1;
 
         _.each(specTopics, function (element, index, list) {
 
@@ -326,6 +344,7 @@ class DocBuilderLive {
              */
             var iFrame:HTMLIFrameElement = document.createElement("iframe");
             iFrame.style.display = "none";
+            iFrame.id = IFRAME_ID_PREFIX + iframeId;
             document.body.appendChild(iFrame);
 
             /*
@@ -334,31 +353,41 @@ class DocBuilderLive {
             var div:HTMLDivElement = document.createElement("div");
             iFrame["div"] = div;
             div.setAttribute("data-specNodeId", element.id.toString());
+            jQuery(div).html(LOADING_HTML);
             document.getElementById("book").appendChild(div);
+
+            var url;
 
             if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                 if (element.revision === undefined) {
-                    var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
+                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
                     iFrame.src = url;
                 } else {
-                    var url = SERVER + CSNODE_XSLTXML_REST
+                    url = SERVER + CSNODE_XSLTXML_REST
                         .replace(CSNODE_ID_MARKER, element.id.toString())
                         .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
                     div.setAttribute("data-specNodeRev", element.revision.toString());
-                    window.setTimeout(function() {
-                        iFrame.src = url;
-                    }, delay);
                 }
             } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                 var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" +
                     "<" + element.nodeType.toLowerCase() + ">\n" +
                     "<title>" + element.title + "</title>\n" +
                     "</" + element.nodeType.toLowerCase() + ">";
-                var url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
-                window.setTimeout(function() {
-                    iFrame.src = url;
-                }, delay);
+                url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
             }
+
+            iFrame["url"] = url;
+
+            /*
+                The iframes have their src set either when the iframe before them
+                finishes loading, or when a timeout occurs.
+             */
+            window.setTimeout(function() {
+                if (iFrame["setSrc"] === undefined) {
+                    iFrame.src = iFrame["url"];
+                    iFrame["setSrc"] = true;
+                }
+            }, delay);
 
             delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
         });
