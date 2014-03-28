@@ -36,6 +36,7 @@ var TOPIC_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xsl
 var TOPIC_REV_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
 var CSNODE_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
 var CSNODE_REV_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
+var ECHO_XML_REST = REST_BASE + "/echoxml";
 
 function error(message) {
     window.alert(message);
@@ -67,7 +68,9 @@ var DocBuilderLive = (function () {
                     var sourceIframe = _.find(iframes, function (element) {
                         return element.contentWindow === source;
                     });
-                    jQuery(sourceIframe["div"]).html(message.html);
+                    if (sourceIframe !== undefined) {
+                        jQuery(sourceIframe["div"]).html(message.html);
+                    }
                 }
             } catch (ex) {
                 // message was not json
@@ -197,7 +200,6 @@ var DocBuilderLive = (function () {
         /*
         Get the list of topics that make up the spec in sequential order
         */
-        var specTopics = [];
         function expandChild(node) {
             /*
             Find the one that has no nextNode
@@ -214,56 +216,72 @@ var DocBuilderLive = (function () {
                 return;
             }
 
+            var reverseChildren = [];
+
             if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
-                expandChild(lastChild);
+                jQuery.merge(reverseChildren, expandChild(lastChild));
             }
 
             /*
             Loop through the list, adding children in reverse order
             */
-            var reverseChildren = [lastChild];
+            reverseChildren.push(lastChild);
 
-            while (reverseChildren.length !== node.children_OTM.items.length) {
+            while (true) {
                 var nextLastChild = _.find(node.children_OTM.items, function (element) {
                     return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === lastChild.id;
                 });
 
                 if (nextLastChild === undefined) {
-                    error("Could not find the next last child in the linked list");
-                    return;
+                    break;
                 }
 
-                reverseChildren.push(nextLastChild.item);
                 lastChild = nextLastChild.item;
 
                 if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
-                    expandChild(lastChild);
+                    jQuery.merge(reverseChildren, expandChild(lastChild));
                 }
+
+                reverseChildren.push(nextLastChild.item);
             }
 
-            jQuery.merge(specTopics, reverseChildren);
+            return reverseChildren;
         }
 
-        expandChild(spec);
+        var specTopics = expandChild(spec);
 
         specTopics.reverse();
 
         _.each(specTopics, function (element, index, list) {
-            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                var iFrame = document.createElement("iframe");
-                iFrame.style.display = "none";
-                document.body.appendChild(iFrame);
+            /*
+            Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
+            HTML
+            */
+            var iFrame = document.createElement("iframe");
+            iFrame.style.display = "none";
+            document.body.appendChild(iFrame);
 
-                var div = document.createElement("div");
-                iFrame["div"] = div;
-                document.body.appendChild(div);
-                if (element.revision !== undefined) {
+            /*
+            Create the div that will be filled with the HTML sent by the iframe.
+            */
+            var div = document.createElement("div");
+            iFrame["div"] = div;
+            div.setAttribute("data-specNodeId", element.id.toString());
+            document.body.appendChild(div);
+
+            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                if (element.revision === undefined) {
                     var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
                     iFrame.src = url;
                 } else {
                     var url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
                     iFrame.src = url;
+                    div.setAttribute("data-specNodeRev", element.revision.toString());
                 }
+            } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
+                var url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
+                iFrame.src = url;
             }
         });
     };
