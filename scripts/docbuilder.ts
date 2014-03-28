@@ -2,7 +2,12 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
 
+var TOPIC_ID_MARKER:string = "#TOPICID#";
+var TOPIC_REV_MARKER:string = "#TOPICREV#";
+var CSNODE_ID_MARKER:string = "#CSNODEID#";
+var CSNODE_REV_MARKER:string = "#CSNODEREV#";
 var CONTAINER_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
+var TOPIC_NODE_TYPES:string[] = ["TOPIC", "INITIAL_CONTENT_TOPIC"];
 var RETRY_COUNT:number = 5;
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
 var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
@@ -14,12 +19,26 @@ var SPEC_REST_EXPAND:Object={
         {
             trunk: {
                 name: "children_OTM"
-            }
+            },
+            branches: [
+                {
+                    trunk: {
+                        name: "nextNode"
+                    }
+                }
+            ]
         }
     ]
 }
 var SPECNODE_REST:string = REST_BASE + "/contentspecnode/get/json/";
-var TOPIC_REST:string = REST_BASE + "/topic/get/json/";
+var TOPIC_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
+var TOPIC_REV_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
+var CSNODE_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
+var CSNODE_REV_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
+
+function error(message:string):void {
+    window.alert(message);
+}
 
 interface SysInfo {
     lastRevision:number;
@@ -44,10 +63,12 @@ interface SpecNodeItem {
 
 interface SpecNode {
     id:number;
+    revision:number;
     entityId:number;
     entityRevision:number;
     nodeType:string;
     title:string;
+    nextNode:SpecNode;
     children_OTM:SpecNodeCollection;
 }
 
@@ -176,7 +197,7 @@ class DocBuilderLive {
                             this.populateChild(
                                 element.id,
                                 (node:SpecNode):void => {
-                                    data.children_OTM.items[index].item = node;
+                                    data.children_OTM.items[index].item.children_OTM = node.children_OTM;
                                     expandChildren(++index);
                                 },
                                 errorCallback
@@ -209,14 +230,72 @@ class DocBuilderLive {
          */
         var specTopics:SpecNode[] = [];
         function expandChild (node:SpecNodeCollectionParent):void  {
+
+            /*
+                Find the one that has no nextNode
+             */
+            var lastChild:SpecNode;
             _.each(node.children_OTM.items, function(element, index, list) {
-                specTopics.push(element.item);
-                if (element.item.children_OTM !== null) {
-                    expandChild(element.item);
+                if (element.item.nextNode === null) {
+                    lastChild = element.item;
                 }
             });
+
+            if (lastChild === undefined) {
+                error("Could not find the last child in the linked list");
+                return;
+            }
+
+            if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
+                expandChild(lastChild);
+            }
+
+            /*
+             Loop through the list, adding children in reverse order
+             */
+            var reverseChildren:SpecNode[] = [lastChild];
+
+            while (reverseChildren.length !== node.children_OTM.items.length) {
+                var nextLastChild:SpecNodeItem = _.find(node.children_OTM.items, function (element) {
+                    return element.item.nextNode !== undefined &&
+                        element.item.nextNode !== null &&
+                        element.item.nextNode.id === lastChild.id;
+                });
+
+                if (nextLastChild === undefined) {
+                    error("Could not find the next last child in the linked list");
+                    return;
+                }
+
+                reverseChildren.push(nextLastChild.item);
+                lastChild = nextLastChild.item;
+
+                if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
+                    expandChild(lastChild);
+                }
+            }
+
+            jQuery.merge(specTopics, reverseChildren);
         }
+
         expandChild(spec);
+
+        specTopics.reverse();
+
+        _.each(specTopics, function (element, index, list) {
+            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                var iFrame:HTMLIFrameElement = document.createElement("iframe");
+                iFrame.frameBorder = "0";
+                document.body.appendChild(iFrame);
+                if (element.revision !== undefined) {
+                    iFrame.src = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString());
+                } else {
+                    iFrame.src = SERVER + CSNODE_XSLTXML_REST
+                        .replace(CSNODE_ID_MARKER, element.id.toString())
+                        .replace(CSNODE_REV_MARKER, element.revision.toString());
+                }
+            }
+        });
     }
 
     syncTopicsCollectionWithSpec():void {

@@ -1,7 +1,12 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
+var TOPIC_ID_MARKER = "#TOPICID#";
+var TOPIC_REV_MARKER = "#TOPICREV#";
+var CSNODE_ID_MARKER = "#CSNODEID#";
+var CSNODE_REV_MARKER = "#CSNODEREV#";
 var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
+var TOPIC_NODE_TYPES = ["TOPIC", "INITIAL_CONTENT_TOPIC"];
 var RETRY_COUNT = 5;
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
@@ -14,12 +19,26 @@ var SPEC_REST_EXPAND = {
         {
             trunk: {
                 name: "children_OTM"
-            }
+            },
+            branches: [
+                {
+                    trunk: {
+                        name: "nextNode"
+                    }
+                }
+            ]
         }
     ]
 };
 var SPECNODE_REST = REST_BASE + "/contentspecnode/get/json/";
-var TOPIC_REST = REST_BASE + "/topic/get/json/";
+var TOPIC_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
+var TOPIC_REV_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
+var CSNODE_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
+var CSNODE_REV_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
+
+function error(message) {
+    window.alert(message);
+}
 
 var IdRevPair = (function () {
     function IdRevPair(id, rev) {
@@ -130,7 +149,7 @@ var DocBuilderLive = (function () {
                         var element = data.children_OTM.items[index].item;
                         if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
                             _this.populateChild(element.id, function (node) {
-                                data.children_OTM.items[index].item = node;
+                                data.children_OTM.items[index].item.children_OTM = node.children_OTM;
                                 expandChildren(++index);
                             }, errorCallback);
                         } else {
@@ -161,14 +180,67 @@ var DocBuilderLive = (function () {
         */
         var specTopics = [];
         function expandChild(node) {
+            /*
+            Find the one that has no nextNode
+            */
+            var lastChild;
             _.each(node.children_OTM.items, function (element, index, list) {
-                specTopics.push(element.item);
-                if (element.item.children_OTM !== null) {
-                    expandChild(element.item);
+                if (element.item.nextNode === null) {
+                    lastChild = element.item;
                 }
             });
+
+            if (lastChild === undefined) {
+                error("Could not find the last child in the linked list");
+                return;
+            }
+
+            if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
+                expandChild(lastChild);
+            }
+
+            /*
+            Loop through the list, adding children in reverse order
+            */
+            var reverseChildren = [lastChild];
+
+            while (reverseChildren.length !== node.children_OTM.items.length) {
+                var nextLastChild = _.find(node.children_OTM.items, function (element) {
+                    return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === lastChild.id;
+                });
+
+                if (nextLastChild === undefined) {
+                    error("Could not find the next last child in the linked list");
+                    return;
+                }
+
+                reverseChildren.push(nextLastChild.item);
+                lastChild = nextLastChild.item;
+
+                if (CONTAINER_NODE_TYPES.indexOf(lastChild.nodeType) !== -1) {
+                    expandChild(lastChild);
+                }
+            }
+
+            jQuery.merge(specTopics, reverseChildren);
         }
+
         expandChild(spec);
+
+        specTopics.reverse();
+
+        _.each(specTopics, function (element, index, list) {
+            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                var iFrame = document.createElement("iframe");
+                iFrame.frameBorder = "0";
+                document.body.appendChild(iFrame);
+                if (element.revision !== undefined) {
+                    iFrame.src = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString());
+                } else {
+                    iFrame.src = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString());
+                }
+            }
+        });
     };
 
     DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function () {
