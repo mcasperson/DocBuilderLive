@@ -6,6 +6,7 @@ var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 var IFRAME_ID_PREFIX = "iframeId";
+var DIV_ID_PREFIX = "divId";
 var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
 var TOPIC_REV_MARKER:string = "#TOPICREV#";
@@ -372,6 +373,7 @@ class DocBuilderLive {
                 var div:HTMLDivElement = document.createElement("div");
                 iFrame["div"] = div;
                 div.className = LOADING_TOPIC_DIV_CLASS;
+                div.id = DIV_ID_PREFIX + element.id;
                 jQuery(div).html(LOADING_HTML);
                 document.getElementById("book").appendChild(div);
 
@@ -381,12 +383,12 @@ class DocBuilderLive {
                     div.setAttribute("data-specNodeId", element.id.toString());
 
                     if (element.revision === undefined) {
-                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl;
+                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
                         iFrame.src = url;
                     } else {
                         url = SERVER + CSNODE_XSLTXML_REST
                             .replace(CSNODE_ID_MARKER, element.id.toString())
-                            .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl;
+                            .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
                         div.setAttribute("data-specNodeRev", element.revision.toString());
                     }
                 } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
