@@ -1,6 +1,8 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
+/// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
+var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
@@ -12,6 +14,8 @@ var TOPIC_ID_MARKER = "#TOPICID#";
 var TOPIC_REV_MARKER = "#TOPICREV#";
 var CSNODE_ID_MARKER = "#CSNODEID#";
 var CSNODE_REV_MARKER = "#CSNODEREV#";
+var CONTENT_SPEC_ID_MARKER = "#CONTENTSPECID#";
+var CONTENT_SPEC_EDIT_DATE_MARKER = "#CONTENTSPECEDITDATE#";
 var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
 var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
 var TOPIC = "TOPIC";
@@ -46,6 +50,30 @@ var TOPIC_REV_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "
 var CSNODE_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
 var CSNODE_REV_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
 var ECHO_XML_REST = REST_BASE + "/echoxml";
+var SPECS_REST = REST_BASE + "/contentspecs/get/json/query;logic=And;contentSpecIds=" + CONTENT_SPEC_ID_MARKER + ";startEditDate=" + CONTENT_SPEC_EDIT_DATE_MARKER;
+var SPECS_REST_EXPAND = {
+    branches: [
+        {
+            trunk: {
+                name: "items"
+            },
+            branches: [
+                {
+                    trunk: {
+                        name: "children_OTM"
+                    },
+                    branches: [
+                        {
+                            trunk: {
+                                name: "nextNode"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
 
 function error(message) {
     window.alert(message);
@@ -493,13 +521,63 @@ var DocBuilderLive = (function () {
         });
     };
 
-    DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function () {
+    DocBuilderLive.prototype.startRefreshCycle = function () {
+        window.setTimeout(function () {
+        }, REFRESH_DELAY);
     };
 
-    DocBuilderLive.prototype.syncDomWithSpec = function () {
+    DocBuilderLive.prototype.findUpdatesToSpec = function () {
+        var _this = this;
+        var errorCallback = function (title, message) {
+            _this.startRefreshCycle();
+        };
+
+        this.getLastModifiedTime(function (lastRevisionDate) {
+            var _this = this;
+            this.findUpdatedSpec(function (spec) {
+                _this.lastRevisionDate = lastRevisionDate;
+                if (spec.items.length !== 0) {
+                    var updatedSpec = spec.items[0];
+                    syncDomWithSpec(updatedSpec);
+                } else {
+                    _this.startRefreshCycle();
+                }
+            }, errorCallback);
+        }, errorCallback);
+    };
+
+    DocBuilderLive.prototype.findUpdatedSpec = function (callback, errorCallback, retryCount) {
+        if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
+        var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, moment.utc(this.lastRevisionDate).format()) + "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
+
+        jQuery.ajax({
+            type: 'GET',
+            url: url,
+            dataType: "json",
+            success: function (data) {
+                callback(data);
+            },
+            error: function () {
+                if (retryCount < RETRY_COUNT) {
+                    _this.findUpdatedSpec(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    };
+
+    DocBuilderLive.prototype.findUpdatesToTopics = function () {
+    };
+
+    DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function (updatedSpec) {
+    };
+
+    DocBuilderLive.prototype.syncDomWithSpec = function (updatedSpec) {
     };
     return DocBuilderLive;
 })();
 
-new DocBuilderLive(21464);
+new DocBuilderLive(13968);
 //# sourceMappingURL=docbuilder.js.map

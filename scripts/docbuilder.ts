@@ -1,7 +1,9 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
+/// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
 
+var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
@@ -13,6 +15,8 @@ var TOPIC_ID_MARKER:string = "#TOPICID#";
 var TOPIC_REV_MARKER:string = "#TOPICREV#";
 var CSNODE_ID_MARKER:string = "#CSNODEID#";
 var CSNODE_REV_MARKER:string = "#CSNODEREV#";
+var CONTENT_SPEC_ID_MARKER:string = "#CONTENTSPECID#";
+var CONTENT_SPEC_EDIT_DATE_MARKER:string = "#CONTENTSPECEDITDATE#";
 var CONTAINER_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
 var INITIAL_CONTENT_TOPIC:string = "INITIAL_CONTENT_TOPIC";
 var TOPIC:string = "TOPIC";
@@ -46,6 +50,30 @@ var TOPIC_REV_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MAR
 var CSNODE_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
 var CSNODE_REV_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
 var ECHO_XML_REST:string = REST_BASE + "/echoxml";
+var SPECS_REST:string= REST_BASE + "/contentspecs/get/json/query;logic=And;contentSpecIds=" + CONTENT_SPEC_ID_MARKER + ";startEditDate=" + CONTENT_SPEC_EDIT_DATE_MARKER;
+var SPECS_REST_EXPAND:Object={
+    branches: [
+        {
+            trunk: {
+                name: "items"
+            },
+            branches: [
+                {
+                    trunk: {
+                        name: "children_OTM"
+                    },
+                    branches: [
+                        {
+                            trunk: {
+                                name: "nextNode"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
 function error(message:string):void {
     window.alert(message);
@@ -56,6 +84,10 @@ class TreeNode {
     icon:string;
     data:string;
     children:TreeNode[] = [];
+}
+
+interface SpecNodeCollectionParentItems {
+    items:SpecNodeCollectionParent[];
 }
 
 interface SysInfo {
@@ -561,13 +593,69 @@ class DocBuilderLive {
         });
     }
 
-    syncTopicsCollectionWithSpec():void {
+    startRefreshCycle():void {
+        window.setTimeout(function() {
+
+        }, REFRESH_DELAY);
+    }
+
+    findUpdatesToSpec():void {
+        var errorCallback = (title:string, message:string):void => {
+            this.startRefreshCycle();
+        }
+
+        this.getLastModifiedTime(
+            function (lastRevisionDate:Date):void {
+                this.findUpdatedSpec(
+                    (spec:SpecNodeCollectionParentItems):void => {
+                        this.lastRevisionDate = lastRevisionDate;
+                        if (spec.items.length !== 0) {
+                            var updatedSpec:SpecNodeCollectionParent = spec.items[0];
+                            syncDomWithSpec(updatedSpec);
+                        } else {
+                            this.startRefreshCycle();
+                        }
+                    },
+                    errorCallback
+                )
+
+            },
+            errorCallback
+        );
+    }
+
+    findUpdatedSpec(callback: (spec:SpecNodeCollectionParentItems) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+        var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, moment.utc(this.lastRevisionDate).format()) +
+            "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
+
+        jQuery.ajax({
+            type: 'GET',
+            url: url,
+            dataType: "json",
+            success: (data:SpecNodeCollectionParentItems) => {
+                callback(data);
+            },
+            error: ()=>{
+                if (retryCount < RETRY_COUNT) {
+                    this.findUpdatedSpec(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    }
+
+    findUpdatesToTopics():void {
 
     }
 
-    syncDomWithSpec():void {
+    syncTopicsCollectionWithSpec(updatedSpec:SpecNodeCollectionParent):void {
+
+    }
+
+    syncDomWithSpec(updatedSpec:SpecNodeCollectionParent):void {
 
     }
 }
 
-new DocBuilderLive(21464);
+new DocBuilderLive(13968);
