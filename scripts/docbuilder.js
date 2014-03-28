@@ -313,31 +313,47 @@ var DocBuilderLive = (function () {
                 /*
                 Create the div that will be filled with the HTML sent by the iframe.
                 */
-                var div = document.createElement("div");
+                var div = jQuery("<div></div>");
                 iFrame["div"] = div;
-                div.className = LOADING_TOPIC_DIV_CLASS;
-                div.id = DIV_ID_PREFIX + element.id;
-                jQuery(div).html(LOADING_HTML);
-                document.getElementById("book").appendChild(div);
+                div.addClass(LOADING_TOPIC_DIV_CLASS);
+                div.html(LOADING_HTML);
+                div[0]["linkTargets"] = [];
+
+                /*
+                Links to topics can be done through either the topic id or the target id. We
+                append two divs with these ids as link targets.
+                */
+                if (element.entityId !== null) {
+                    var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
+                    div[0]["linkTargets"].push(idLinkTarget);
+                    jQuery("#book").append(idLinkTarget);
+                }
+
+                if (element.targetId !== null) {
+                    var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
+                    div[0]["linkTargets"].push(nameLinkTarget);
+                    jQuery("#book").append(nameLinkTarget);
+                }
 
                 var url;
 
                 if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                    div.setAttribute("data-specNodeId", element.id.toString());
-
+                    div.attr("data-specNodeId", element.id.toString());
                     if (element.revision === undefined) {
                         url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
                         iFrame.src = url;
                     } else {
                         url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
-                        div.setAttribute("data-specNodeRev", element.revision.toString());
+                        div.attr("data-specNodeRev", element.revision.toString());
                     }
                 } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                    div.setAttribute("data-title", element.title);
-                    div.setAttribute("data-container", element.nodeType.toLowerCase());
+                    div.attr("data-title", element.title);
+                    div.attr("data-container", element.nodeType.toLowerCase());
                     var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
                     url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
                 }
+
+                jQuery("#book").append(div);
 
                 iFrame["url"] = url;
 
