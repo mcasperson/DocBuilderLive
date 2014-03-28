@@ -2,7 +2,7 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="collections.ts" />
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 5000;
-var CONCURRENT_IFRAME_DOWNLOADS = 3;
+var CONCURRENT_IFRAME_DOWNLOADS = 1;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 var IFRAME_ID_PREFIX = "iframeId";
 var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
@@ -76,7 +76,12 @@ var DocBuilderLive = (function () {
                         return element.contentWindow === source;
                     });
                     if (sourceIframe !== undefined) {
-                        jQuery(sourceIframe["div"]).html(message.html).removeClass(LOADING_TOPIC_DIV_CLASS);
+                        try  {
+                            jQuery(sourceIframe["div"]).html(message.html.replace(/<head[\s\S]*?<\/head>/g, "")).removeClass(LOADING_TOPIC_DIV_CLASS);
+                        } catch (ex) {
+                            console.log(ex);
+                        }
+
                         sourceIframe.parentElement.removeChild(sourceIframe);
 
                         /*
@@ -95,6 +100,7 @@ var DocBuilderLive = (function () {
                                     break;
                                 }
                                 ++iframeId;
+                                nextIframeId = IFRAME_ID_PREFIX + (iframeId + 1);
                             }
                         }
                     }
@@ -308,7 +314,6 @@ var DocBuilderLive = (function () {
                 */
                 var div = document.createElement("div");
                 iFrame["div"] = div;
-                div.setAttribute("data-specNodeId", element.id.toString());
                 div.className = LOADING_TOPIC_DIV_CLASS;
                 jQuery(div).html(LOADING_HTML);
                 document.getElementById("book").appendChild(div);
@@ -336,6 +341,7 @@ var DocBuilderLive = (function () {
                 if (iframeId <= CONCURRENT_IFRAME_DOWNLOADS) {
                     iFrame.src = iFrame["url"];
                     iFrame["setSrc"] = true;
+                    delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
                 } else {
                     /*
                     The iframes have their src set either when the iframe before them
