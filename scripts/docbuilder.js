@@ -227,13 +227,13 @@ var DocBuilderLive = (function () {
             */
             reverseChildren.push(lastChild);
 
-            while (true) {
+            for (var childIndex = 1; childIndex < node.children_OTM.items.length; ++childIndex) {
                 var nextLastChild = _.find(node.children_OTM.items, function (element) {
                     return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === lastChild.id;
                 });
 
                 if (nextLastChild === undefined) {
-                    break;
+                    error("nextLastChild should not be undefined");
                 }
 
                 lastChild = nextLastChild.item;
