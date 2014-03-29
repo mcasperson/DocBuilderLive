@@ -104,6 +104,9 @@ function error(message:string):void {
     window.alert(message);
 }
 
+function message(message:string):void {
+    console.log(message);
+}
 function nodeIsTopic(specNode:SpecNode):boolean {
     return TOPIC_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
 }
@@ -190,7 +193,8 @@ class DocBuilderLive {
 
     private lastRevisionDate:Date;
     private specId:number;
-    private errorCallback = (title:string, message:string):void => {
+    private timeoutRefresh:number;
+    private errorCallback = function (title:string, message:string):void {
         window.alert(title + "\n" + message);
     }
 
@@ -227,6 +231,11 @@ class DocBuilderLive {
                                 break;
                             }
                         }
+
+                        if (nextIFrame.length === 0) {
+                            // there are no more iframes to load
+                            this.startRefreshCycle();
+                        }
                     }
                 }
             } catch (ex) {
@@ -251,7 +260,7 @@ class DocBuilderLive {
         );
     }
 
-    getLastModifiedTime = (callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+    getLastModifiedTime(callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
 
         var success = (data:SysInfo):void => {
             callback.bind(this)(new Date(data.lastRevisionDate));
@@ -282,7 +291,7 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    populateChild = (id:number, callback: (node:SpecNode) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+    populateChild(id:number, callback: (node:SpecNode) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
 
         jQuery.ajax({
             type: 'GET',
@@ -323,7 +332,7 @@ class DocBuilderLive {
         });
     }
 
-    expandSpec = (spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void => {
+    expandSpec(spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void {
         var expandChildren = (index:number):void => {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
@@ -353,7 +362,7 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    getSpec = (callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+    getSpec(callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
 
 
         jQuery.ajax({
@@ -374,7 +383,7 @@ class DocBuilderLive {
         });
     }
 
-    getAllChildrenInFlatOrder = (spec:SpecNodeCollectionParent):SpecNode[] => {
+    getAllChildrenInFlatOrder(spec:SpecNodeCollectionParent):SpecNode[] {
         /*
          Get the list of topics that make up the spec in sequential order
          */
@@ -443,7 +452,7 @@ class DocBuilderLive {
         return specTopics;
     }
 
-    getChildrenInOrder = (parent:SpecNodeCollectionParent):SpecNode[] => {
+    getChildrenInOrder(parent:SpecNodeCollectionParent):SpecNode[] {
 
         /*
          Find the one that has no nextNode
@@ -494,7 +503,7 @@ class DocBuilderLive {
         return reverseChildren;
     }
 
-    buildIFrameAndDiv = (element:SpecNode):HTMLIFrameElement => {
+    buildIFrameAndDiv(element:SpecNode):HTMLIFrameElement {
         var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
         /*
@@ -570,7 +579,7 @@ class DocBuilderLive {
         return iFrame;
     }
 
-    setIFrameSrc = (iFrame:HTMLIFrameElement, delay:number, count:number):void => {
+    setIFrameSrc(iFrame:HTMLIFrameElement, delay:number, count:number):void {
         /*
          We want to start a few iframes downloading the xml concurrently.
          */
@@ -597,21 +606,25 @@ class DocBuilderLive {
      * Given a spec, create iframes for all topics that have not been previously rendered
      * @param spec The spec with all children expanded
      */
-    getTopics = (specTopics:SpecNode[]):void => {
+    getTopics(specTopics:SpecNode[]):void{
 
         jQuery("#loading").remove();
 
         var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrContainer);
 
-        _.reduce(topicsAndContainers, function(delay:number, element, index) {
+        var delay = _.reduce(topicsAndContainers, function(delay:number, element, index) {
             var iFrame = this.buildIFrameAndDiv(element);
             this.setIFrameSrc(iFrame, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
+        this.timeoutRefresh = window.setTimeout(() => {
+            this.startRefreshCycle();
+        }, delay);
+
     }
 
-    buildToc = (spec:SpecNodeCollectionParent):void => {
+    buildToc(spec:SpecNodeCollectionParent):void{
 
         var childIndex = 0;
 
@@ -662,13 +675,22 @@ class DocBuilderLive {
         jQuery(document.body).append(tocDiv);
     }
 
-    startRefreshCycle = ():void => {
-        window.setTimeout(function() {
+    startRefreshCycle():void{
+        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds.");
 
+        window.clearTimeout(this.timeoutRefresh);
+        this.timeoutRefresh = null;
+
+        window.setTimeout(() => {
+            this.findUpdatesToSpec((updatedSpec:boolean):void => {
+                if (!updatedSpec) {
+                    this.startRefreshCycle();
+                }
+            });
         }, REFRESH_DELAY);
     }
 
-    findUpdatesToSpec = ():void => {
+    findUpdatesToSpec(callback:(updatedSpec:boolean) => void):void {
         var errorCallback = (title:string, message:string):void => {
             this.startRefreshCycle();
         }
@@ -681,7 +703,8 @@ class DocBuilderLive {
                             Searches will return specs that were edited on or after the date specified. We only
                             want specs edited after the date specified.
                          */
-                        if (spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > this.lastRevisionDate) {
+                        var specIsUpdated = spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > this.lastRevisionDate;
+                        if (specIsUpdated) {
                             var updatedSpec:SpecNodeCollectionParent = spec.items[0].item;
                             this.expandSpec(
                                 updatedSpec,
@@ -691,12 +714,11 @@ class DocBuilderLive {
                                 },
                                 errorCallback
                             )
-
-                        } else {
-                            this.startRefreshCycle();
                         }
 
                         this.lastRevisionDate = lastRevisionDate;
+
+                        callback(specIsUpdated);
                     },
                     errorCallback
                 )
@@ -729,11 +751,11 @@ class DocBuilderLive {
         });
     }
 
-    findUpdatesToTopics = ():void => {
+    findUpdatesToTopics(callback:(updatedTopics:boolean) => void):void {
 
     }
 
-    syncTopicsCollectionWithSpec = (updatedSpec:SpecNodeCollectionParent):void => {
+    syncTopicsCollectionWithSpec(updatedSpec:SpecNodeCollectionParent):void{
 
     }
 
@@ -743,7 +765,7 @@ class DocBuilderLive {
      * to match the layout of the new spec.
      * @param updatedSpec
      */
-    syncDomWithSpec = (updatedSpec:SpecNodeCollectionParent):void => {
+    syncDomWithSpec(updatedSpec:SpecNodeCollectionParent):void{
 
         function getTopicDiv(specNode:SpecNode):JQuery {
             if (specNode.entityRevision === null) {
@@ -799,7 +821,7 @@ class DocBuilderLive {
                     return true;
                 });
 
-                return existingNode === null;
+                return existingNode === undefined;
             } else if (jQueryElement.hasClass(SPEC_TITLE_DIV_CLASS)) {
                 /*
                  This div displays some title info
@@ -820,7 +842,7 @@ class DocBuilderLive {
                     return true;
                 });
 
-                return existingNode === null;
+                return existingNode === undefined;
             }
 
             return false;
@@ -849,11 +871,22 @@ class DocBuilderLive {
             }
         });
 
-        _.reduce(specNodesMissingDiv, function(delay:number, element, index) {
+        /*
+            Set timeouts to load the iframes, in case the cascading loading triggered by
+            a successful XSL transform fails
+         */
+        var delay = _.reduce(specNodesMissingDiv, function(delay:number, element, index) {
             var iFrame = this.buildIFrameAndDiv(element);
             this.setIFrameSrc(iFrame, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
+
+        /*
+            Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
+         */
+        this.timeoutRefresh = window.setTimeout(() => {
+            this.startRefreshCycle();
+        }, delay);
 
         function divsAreEqual(node1:JQuery, node2:JQuery):boolean {
             if (node1.length !== 1) {
