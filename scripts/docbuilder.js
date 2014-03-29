@@ -517,12 +517,13 @@ var DocBuilderLive = (function () {
             var isContainer = nodeIsContainer(specNode);
             var isTopic = nodeIsTopic(specNode);
             if (isContainer || isTopic) {
-                ++childIndex;
-
                 var treeNode = new TreeNode();
                 treeNode.text = specNode.title;
                 treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
                 treeNode.data = childIndex.toString();
+
+                ++childIndex;
+
                 parent.children.push(treeNode);
                 if (specNode.children_OTM !== null) {
                     var children = _this.getChildrenInOrder(specNode);
