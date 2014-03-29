@@ -251,21 +251,27 @@ class DocBuilderLive {
         );
     }
 
-    getLastModifiedTime(callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    getLastModifiedTime = (callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+
+        var success = (data:SysInfo):void => {
+            callback.bind(this)(new Date(data.lastRevisionDate));
+        }
+
+        var error = ():void => {
+            if (retryCount < RETRY_COUNT) {
+                this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+            } else {
+                errorCallback.bind(this)("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+            }
+        }
+
         jQuery.ajax({
             type: 'GET',
             url: SERVER + REVISION_DETAILS_REST,
             dataType: "json",
-            success: (data:SysInfo) => {
-               callback(new Date(data.lastRevisionDate));
-            },
-            error: () => {
-                if (retryCount < RETRY_COUNT) {
-                    this.getLastModifiedTime(callback, errorCallback, ++retryCount);
-                } else {
-                    errorCallback("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
-                }
-            }
+            success: success,
+            error: error,
+            context: this
         });
     }
 
@@ -276,16 +282,18 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    populateChild(id:number, callback: (node:SpecNode) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    populateChild = (id:number, callback: (node:SpecNode) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
+            context: this,
             success: (data) => {
 
                 var expandChildren = (index:number):void => {
                     if (index >= data.children_OTM.items.length) {
-                        callback(data);
+                        callback.bind(this)(data);
                     } else {
                         var element:SpecNode = data.children_OTM.items[index].item;
                         if (nodeIsContainer(element)) {
@@ -309,13 +317,13 @@ class DocBuilderLive {
                 if (retryCount < RETRY_COUNT) {
                     this.populateChild(id, callback, errorCallback, ++retryCount);
                 } else {
-                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                    errorCallback.bind(this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
             }
         });
     }
 
-    expandSpec(spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void {
+    expandSpec = (spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void => {
         var expandChildren = (index:number):void => {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
@@ -345,11 +353,14 @@ class DocBuilderLive {
      * @param errorCallback Called if there was a network error
      * @param retryCount An internal count that tracks how many time to retry a particular call
      */
-    getSpec(callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    getSpec = (callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
+
+
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
             dataType: "json",
+            context: this,
             success: (data:SpecNodeCollectionParent):void => {
                 this.expandSpec(data, callback, errorCallback);
             },
@@ -357,13 +368,13 @@ class DocBuilderLive {
                 if (retryCount < RETRY_COUNT) {
                     this.getSpec(callback, errorCallback, ++retryCount);
                 } else {
-                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                    errorCallback.bind(this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
             }
         });
     }
 
-    getAllChildrenInFlatOrder(spec:SpecNodeCollectionParent):SpecNode[] {
+    getAllChildrenInFlatOrder = (spec:SpecNodeCollectionParent):SpecNode[] => {
         /*
          Get the list of topics that make up the spec in sequential order
          */
@@ -432,7 +443,7 @@ class DocBuilderLive {
         return specTopics;
     }
 
-    getChildrenInOrder(parent:SpecNodeCollectionParent):SpecNode[] {
+    getChildrenInOrder = (parent:SpecNodeCollectionParent):SpecNode[] => {
 
         /*
          Find the one that has no nextNode
@@ -483,7 +494,7 @@ class DocBuilderLive {
         return reverseChildren;
     }
 
-    buildIFrameAndDiv(element:SpecNode):HTMLIFrameElement {
+    buildIFrameAndDiv = (element:SpecNode):HTMLIFrameElement => {
         var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
         /*
@@ -559,7 +570,7 @@ class DocBuilderLive {
         return iFrame;
     }
 
-    setIFrameSrc(iFrame:HTMLIFrameElement, delay:number, count:number):void {
+    setIFrameSrc = (iFrame:HTMLIFrameElement, delay:number, count:number):void => {
         /*
          We want to start a few iframes downloading the xml concurrently.
          */
@@ -586,7 +597,7 @@ class DocBuilderLive {
      * Given a spec, create iframes for all topics that have not been previously rendered
      * @param spec The spec with all children expanded
      */
-    getTopics(specTopics:SpecNode[]):void {
+    getTopics = (specTopics:SpecNode[]):void => {
 
         jQuery("#loading").remove();
 
@@ -600,7 +611,7 @@ class DocBuilderLive {
 
     }
 
-    buildToc(spec:SpecNodeCollectionParent):void {
+    buildToc = (spec:SpecNodeCollectionParent):void => {
 
         var childIndex = 0;
 
@@ -651,13 +662,13 @@ class DocBuilderLive {
         jQuery(document.body).append(tocDiv);
     }
 
-    startRefreshCycle():void {
+    startRefreshCycle = ():void => {
         window.setTimeout(function() {
 
         }, REFRESH_DELAY);
     }
 
-    findUpdatesToSpec():void {
+    findUpdatesToSpec = ():void => {
         var errorCallback = (title:string, message:string):void => {
             this.startRefreshCycle();
         }
@@ -666,12 +677,11 @@ class DocBuilderLive {
             (lastRevisionDate:Date):void => {
                 this.findUpdatedSpec(
                     (spec:SpecItems):void => {
-                        this.lastRevisionDate = lastRevisionDate;
                         /*
                             Searches will return specs that were edited on or after the date specified. We only
                             want specs edited after the date specified.
                          */
-                        if (spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > lastRevisionDate) {
+                        if (spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > this.lastRevisionDate) {
                             var updatedSpec:SpecNodeCollectionParent = spec.items[0].item;
                             this.expandSpec(
                                 updatedSpec,
@@ -685,6 +695,8 @@ class DocBuilderLive {
                         } else {
                             this.startRefreshCycle();
                         }
+
+                        this.lastRevisionDate = lastRevisionDate;
                     },
                     errorCallback
                 )
@@ -694,7 +706,7 @@ class DocBuilderLive {
         );
     }
 
-    findUpdatedSpec(callback: (spec:SpecItems) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    findUpdatedSpec = (callback: (spec:SpecItems) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void => {
         var startEditDate = moment(this.lastRevisionDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
         var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) +
             "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
@@ -703,24 +715,25 @@ class DocBuilderLive {
             type: 'GET',
             url: url,
             dataType: "json",
+            context: this,
             success: (data:SpecItems) => {
-                callback(data);
+                callback.bind(this)(data);
             },
             error: ()=>{
                 if (retryCount < RETRY_COUNT) {
                     this.findUpdatedSpec(callback, errorCallback, ++retryCount);
                 } else {
-                    errorCallback("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                    errorCallback.bind(this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
                 }
             }
         });
     }
 
-    findUpdatesToTopics():void {
+    findUpdatesToTopics = ():void => {
 
     }
 
-    syncTopicsCollectionWithSpec(updatedSpec:SpecNodeCollectionParent):void {
+    syncTopicsCollectionWithSpec = (updatedSpec:SpecNodeCollectionParent):void => {
 
     }
 
@@ -730,7 +743,7 @@ class DocBuilderLive {
      * to match the layout of the new spec.
      * @param updatedSpec
      */
-    syncDomWithSpec(updatedSpec:SpecNodeCollectionParent):void {
+    syncDomWithSpec = (updatedSpec:SpecNodeCollectionParent):void => {
 
         function getTopicDiv(specNode:SpecNode):JQuery {
             if (specNode.entityRevision === null) {
