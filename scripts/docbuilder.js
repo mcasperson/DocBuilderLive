@@ -6,6 +6,24 @@ var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
+
+/**
+* Used to identify any div that holds spec info
+* @type {string}
+*/
+var SPEC_DIV_CLASS = "contentSpecDiv";
+
+/**
+* Used to identify any divs that are displaying topic information
+* @type {string}
+*/
+var SPEC_TOPIC_DIV_CLASS = "contentSpecTopicDiv";
+
+/**
+* Used to identify any divs that are displaying titles
+* @type {string}
+*/
+var SPEC_TITLE_DIV_CLASS = "contentSpecTitleDiv";
 var IFRAME_ID_PREFIX = "iframeId";
 var DIV_ID_PREFIX = "divId";
 var DIV_BOOK_INDEX_ID_PREFIX = "divBookIndex";
@@ -405,6 +423,7 @@ var DocBuilderLive = (function () {
                 var div = jQuery("<div></div>");
                 iFrame["div"] = div;
                 div.addClass(LOADING_TOPIC_DIV_CLASS);
+                div.addClass(SPEC_DIV_CLASS);
                 div.html(LOADING_HTML);
                 div[0]["linkTargets"] = [];
 
@@ -431,6 +450,7 @@ var DocBuilderLive = (function () {
                 var url;
 
                 if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    div.addClass(SPEC_TOPIC_DIV_CLASS);
                     div.attr("data-specNodeId", element.id.toString());
                     if (element.revision === undefined) {
                         url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
@@ -440,6 +460,7 @@ var DocBuilderLive = (function () {
                         div.attr("data-specNodeRev", element.revision.toString());
                     }
                 } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                    div.addClass(SPEC_TITLE_DIV_CLASS);
                     div.attr("data-title", element.title);
                     div.attr("data-container", element.nodeType.toLowerCase());
                     var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
@@ -538,7 +559,7 @@ var DocBuilderLive = (function () {
                 _this.lastRevisionDate = lastRevisionDate;
                 if (spec.items.length !== 0) {
                     var updatedSpec = spec.items[0];
-                    syncDomWithSpec(updatedSpec);
+                    _this.syncDomWithSpec(updatedSpec);
                 } else {
                     _this.startRefreshCycle();
                 }
@@ -574,10 +595,22 @@ var DocBuilderLive = (function () {
     DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function (updatedSpec) {
     };
 
+    /**
+    * Here we take the topics associated with the new version of the content spec, remove any existing displayed
+    * topics that are no longer present, and create new divs for missing topics, or reorder existing topics
+    * to match the layout of the new spec.
+    * @param updatedSpec
+    */
     DocBuilderLive.prototype.syncDomWithSpec = function (updatedSpec) {
+        var specNodes = this.getAllChildrenInFlatOrder(updatedSpec);
+
+        /*
+        Remove any existing topics that are no longer present.
+        */
+        var existingSpecDivs = jQuery("." + SPEC_DIV_CLASS);
     };
     return DocBuilderLive;
 })();
 
-new DocBuilderLive(13968);
+new DocBuilderLive(21464);
 //# sourceMappingURL=docbuilder.js.map
