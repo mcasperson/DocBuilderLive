@@ -585,7 +585,12 @@ var DocBuilderLive = (function () {
         this.getLastModifiedTime(function (lastRevisionDate) {
             _this.findUpdatedSpec(function (spec) {
                 _this.lastRevisionDate = lastRevisionDate;
-                if (spec.items.length !== 0) {
+
+                /*
+                Searches will return specs that were edited on or after the date specified. We only
+                want specs edited after the date specified.
+                */
+                if (spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > lastRevisionDate) {
                     var updatedSpec = spec.items[0].item;
                     _this.expandSpec(updatedSpec, function (expandedSpec) {
                         _this.syncDomWithSpec(expandedSpec);

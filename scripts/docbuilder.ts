@@ -127,6 +127,14 @@ interface SpecNodeCollectionParentItems {
     items:SpecNodeCollectionParentItem[];
 }
 
+interface SpecItems {
+    items:SpecItem[];
+}
+
+interface SpecItem {
+    item:Spec;
+}
+
 interface SysInfo {
     lastRevision:number;
     lastRevisionDate:number;
@@ -134,6 +142,10 @@ interface SysInfo {
 
 interface SpecNodeCollectionParent {
     children_OTM:SpecNodeCollection;
+}
+
+interface Spec extends SpecNodeCollectionParent {
+    lastModified:number;
 }
 
 interface SpecNodeCollection {
@@ -653,9 +665,13 @@ class DocBuilderLive {
         this.getLastModifiedTime(
             (lastRevisionDate:Date):void => {
                 this.findUpdatedSpec(
-                    (spec:SpecNodeCollectionParentItems):void => {
+                    (spec:SpecItems):void => {
                         this.lastRevisionDate = lastRevisionDate;
-                        if (spec.items.length !== 0) {
+                        /*
+                            Searches will return specs that were edited on or after the date specified. We only
+                            want specs edited after the date specified.
+                         */
+                        if (spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > lastRevisionDate) {
                             var updatedSpec:SpecNodeCollectionParent = spec.items[0].item;
                             this.expandSpec(
                                 updatedSpec,
@@ -678,7 +694,7 @@ class DocBuilderLive {
         );
     }
 
-    findUpdatedSpec(callback: (spec:SpecNodeCollectionParentItems) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
+    findUpdatedSpec(callback: (spec:SpecItems) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {
         var startEditDate = moment(this.lastRevisionDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
         var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) +
             "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
@@ -687,7 +703,7 @@ class DocBuilderLive {
             type: 'GET',
             url: url,
             dataType: "json",
-            success: (data:SpecNodeCollectionParentItems) => {
+            success: (data:SpecItems) => {
                 callback(data);
             },
             error: ()=>{
