@@ -5,6 +5,11 @@
 var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
+var SPEC_DIV_LINK_TARGETS_PROPERTY = "linkTargets";
+var SPEC_TOPIC_DIV_ENTITY_ID = "data-specNodeId";
+var SPEC_TOPIC_DIV_ENTITY_REV = "data-specNodeRev";
+var SPEC_TITLE = "data-title";
+var SPEC_TITLE_CONTAINER = "data-container";
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 
 /**
@@ -97,6 +102,14 @@ function error(message) {
     window.alert(message);
 }
 
+function nodeIsTopic(specNode) {
+    return TOPIC_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsContainer(specNode) {
+    return CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
 var TreeNode = (function () {
     function TreeNode() {
         this.children = [];
@@ -143,19 +156,13 @@ var DocBuilderLive = (function () {
                         The iframes have their src set either when the iframe before them
                         finishes loading, or when a timeout occurs.
                         */
-                        var iframeId = parseInt(sourceIframe.id.replace(IFRAME_ID_PREFIX, ""));
-                        if (!isNaN(iframeId)) {
-                            var nextIframeId = IFRAME_ID_PREFIX + (iframeId + 1);
-                            var nextIframe;
-                            while ((nextIframe = jQuery("#" + nextIframeId)).length !== 0) {
-                                var nextIFrameElement = nextIframe[0];
-                                if (nextIFrameElement["setSrc"] === undefined) {
-                                    nextIFrameElement["setSrc"] = true;
-                                    nextIFrameElement.src = nextIFrameElement["url"];
-                                    break;
-                                }
-                                ++iframeId;
-                                nextIframeId = IFRAME_ID_PREFIX + (iframeId + 1);
+                        var nextIFrame = jQuery(sourceIframe);
+                        while ((nextIFrame = nextIFrame.next("iframe")).length !== 0) {
+                            var nextIFrameElement = nextIFrame[0];
+                            if (nextIFrameElement["setSrc"] === undefined) {
+                                nextIFrameElement["setSrc"] = true;
+                                nextIFrameElement.src = nextIFrameElement["url"];
+                                break;
                             }
                         }
                     }
@@ -215,7 +222,7 @@ var DocBuilderLive = (function () {
                         callback(data);
                     } else {
                         var element = data.children_OTM.items[index].item;
-                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                        if (nodeIsContainer(element)) {
                             _this.populateChild(element.id, function (node) {
                                 data.children_OTM.items[index].item.children_OTM = node.children_OTM;
                                 expandChildren(++index);
@@ -257,7 +264,7 @@ var DocBuilderLive = (function () {
                         callback(data);
                     } else {
                         var element = data.children_OTM.items[index].item;
-                        if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
+                        if (nodeIsContainer(element)) {
                             _this.populateChild(element.id, function (node) {
                                 data.children_OTM.items[index].item.children_OTM = node.children_OTM;
                                 expandChildren(++index);
@@ -309,7 +316,7 @@ var DocBuilderLive = (function () {
             var entryNodes = [lastInitialTextChild, lastChild];
             _.each(entryNodes, function (entryNode, index, array) {
                 if (entryNode !== undefined) {
-                    if (CONTAINER_NODE_TYPES.indexOf(entryNode.nodeType) !== -1) {
+                    if (nodeIsContainer(entryNode)) {
                         jQuery.merge(reverseChildren, expandChild(entryNode));
                     }
 
@@ -326,7 +333,7 @@ var DocBuilderLive = (function () {
 
                         entryNode = nextLastChild.item;
 
-                        if (CONTAINER_NODE_TYPES.indexOf(entryNode.nodeType) !== -1) {
+                        if (nodeIsContainer(entryNode)) {
                             jQuery.merge(reverseChildren, expandChild(entryNode));
                         }
 
@@ -392,6 +399,98 @@ var DocBuilderLive = (function () {
         return reverseChildren;
     };
 
+    DocBuilderLive.prototype.buildIFrameAndDiv = function (element) {
+        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+
+        /*
+        Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
+        HTML
+        */
+        var iFrame = document.createElement("iframe");
+        iFrame.style.display = "none";
+        document.body.appendChild(iFrame);
+
+        /*
+        Create the div that will be filled with the HTML sent by the iframe.
+        */
+        var div = jQuery("<div></div>");
+        iFrame["div"] = div;
+        div.addClass(LOADING_TOPIC_DIV_CLASS);
+        div.addClass(SPEC_DIV_CLASS);
+        div.html(LOADING_HTML);
+        div[0][SPEC_DIV_LINK_TARGETS_PROPERTY] = [];
+
+        /*
+        Links to topics can be done through either the topic id or the target id. We
+        append two divs with these ids as link targets.
+        */
+        var existingSpecDivElementCount = jQuery("div." + SPEC_DIV_CLASS).length;
+
+        var indexTarget = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
+        div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(indexTarget);
+        jQuery("#book").append(indexTarget);
+
+        if (element.entityId !== null) {
+            var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
+            div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(idLinkTarget);
+            jQuery("#book").append(idLinkTarget);
+        }
+
+        if (element.targetId !== null) {
+            var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
+            div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
+            jQuery("#book").append(nameLinkTarget);
+        }
+
+        var url;
+
+        if (nodeIsTopic(element)) {
+            div.addClass(SPEC_TOPIC_DIV_CLASS);
+            div.attr(SPEC_TOPIC_DIV_ENTITY_ID, element.id.toString());
+            if (element.revision === undefined) {
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
+                iFrame.src = url;
+            } else {
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
+                div.attr(SPEC_TOPIC_DIV_ENTITY_REV, element.revision.toString());
+            }
+        } else if (nodeIsContainer(element)) {
+            div.addClass(SPEC_TITLE_DIV_CLASS);
+            div.attr(SPEC_TITLE, element.title);
+            div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
+            var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
+            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
+        }
+
+        jQuery("#book").append(div);
+
+        iFrame["url"] = url;
+
+        return iFrame;
+    };
+
+    DocBuilderLive.prototype.setIFrameSrc = function (iFrame, delay, count) {
+        /*
+        We want to start a few iframes downloading the xml concurrently.
+        */
+        if (count <= CONCURRENT_IFRAME_DOWNLOADS) {
+            iFrame.src = iFrame["url"];
+            iFrame["setSrc"] = true;
+        } else {
+            /*
+            The iframes have their src set either when the iframe before them
+            finishes loading (see the message listener in the constructor), or when a timeout occurs.
+            This gives us a fallback in case an iframe didn't load properly.
+            */
+            window.setTimeout(function () {
+                if (iFrame["setSrc"] === undefined) {
+                    iFrame.src = iFrame["url"];
+                    iFrame["setSrc"] = true;
+                }
+            }, delay);
+        }
+    };
+
     /**
     * Given a spec, create iframes for all topics that have not been previously rendered
     * @param spec The spec with all children expanded
@@ -399,101 +498,15 @@ var DocBuilderLive = (function () {
     DocBuilderLive.prototype.getTopics = function (specTopics) {
         jQuery("#loading").remove();
 
-        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
-        var delay = 0;
-        var iframeId = 0;
-
-        _.each(specTopics, function (element, index, list) {
-            if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1 || CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                ++iframeId;
-
-                /*
-                Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
-                HTML
-                */
-                var iFrame = document.createElement("iframe");
-                iFrame.style.display = "none";
-                iFrame.id = IFRAME_ID_PREFIX + iframeId;
-                document.body.appendChild(iFrame);
-
-                /*
-                Create the div that will be filled with the HTML sent by the iframe.
-                */
-                var div = jQuery("<div></div>");
-                iFrame["div"] = div;
-                div.addClass(LOADING_TOPIC_DIV_CLASS);
-                div.addClass(SPEC_DIV_CLASS);
-                div.html(LOADING_HTML);
-                div[0]["linkTargets"] = [];
-
-                /*
-                Links to topics can be done through either the topic id or the target id. We
-                append two divs with these ids as link targets.
-                */
-                var indexTarget = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + iframeId + "'></div>");
-                div[0]["linkTargets"].push(indexTarget);
-                jQuery("#book").append(indexTarget);
-
-                if (element.entityId !== null) {
-                    var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
-                    div[0]["linkTargets"].push(idLinkTarget);
-                    jQuery("#book").append(idLinkTarget);
-                }
-
-                if (element.targetId !== null) {
-                    var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
-                    div[0]["linkTargets"].push(nameLinkTarget);
-                    jQuery("#book").append(nameLinkTarget);
-                }
-
-                var url;
-
-                if (TOPIC_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                    div.addClass(SPEC_TOPIC_DIV_CLASS);
-                    div.attr("data-specNodeId", element.id.toString());
-                    if (element.revision === undefined) {
-                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
-                        iFrame.src = url;
-                    } else {
-                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
-                        div.attr("data-specNodeRev", element.revision.toString());
-                    }
-                } else if (CONTAINER_NODE_TYPES.indexOf(element.nodeType) !== -1) {
-                    div.addClass(SPEC_TITLE_DIV_CLASS);
-                    div.attr("data-title", element.title);
-                    div.attr("data-container", element.nodeType.toLowerCase());
-                    var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
-                    url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
-                }
-
-                jQuery("#book").append(div);
-
-                iFrame["url"] = url;
-
-                /*
-                We want to start a few iframes download the xml concurrently.
-                */
-                if (iframeId <= CONCURRENT_IFRAME_DOWNLOADS) {
-                    iFrame.src = iFrame["url"];
-                    iFrame["setSrc"] = true;
-                    delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
-                } else {
-                    /*
-                    The iframes have their src set either when the iframe before them
-                    finishes loading, or when a timeout occurs.
-                    */
-                    window.setTimeout(function () {
-                        if (iFrame["setSrc"] === undefined) {
-                            iFrame.src = iFrame["url"];
-                            iFrame["setSrc"] = true;
-                        }
-                    }, delay);
-
-                    delay += DELAY_BETWEEN_IFRAME_SRC_CALLS;
-                }
-            }
+        var topicsAndContainers = _.filter(specTopics, function (element) {
+            return nodeIsTopic(element) || nodeIsContainer(element);
         });
+
+        _.reduce(topicsAndContainers, function (delay, element, index) {
+            var iFrame = this.buildIFrameAndDiv(element);
+            this.setIFrameSrc(iFrame, delay, index);
+            return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
+        }, 0, this);
     };
 
     DocBuilderLive.prototype.buildToc = function (spec) {
@@ -501,8 +514,8 @@ var DocBuilderLive = (function () {
         var childIndex = 0;
 
         var addChildren = function (specNode, parent) {
-            var isContainer = CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
-            var isTopic = TOPIC_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+            var isContainer = nodeIsContainer(specNode);
+            var isTopic = nodeIsTopic(specNode);
             if (isContainer || isTopic) {
                 ++childIndex;
 
@@ -602,12 +615,105 @@ var DocBuilderLive = (function () {
     * @param updatedSpec
     */
     DocBuilderLive.prototype.syncDomWithSpec = function (updatedSpec) {
+        function specTopicDivExists(specNode) {
+            if (specNode.entityRevision === null) {
+                return jQuery("div[" + SPEC_TOPIC_DIV_ENTITY_ID + "='" + specNode.entityId + "']").length !== 0;
+            } else {
+                return jQuery("div[" + SPEC_TOPIC_DIV_ENTITY_ID + "='" + specNode.entityId + "'][" + SPEC_TOPIC_DIV_ENTITY_REV + "='" + specNode.entityRevision + "']").length !== 0;
+            }
+        }
+
+        function specTitleDivExists(specNode) {
+            if (specNode.entityRevision === null) {
+                return jQuery("div[" + SPEC_TITLE + "='" + specNode.title + "']").length !== 0;
+            } else {
+                return jQuery("div[" + SPEC_TITLE_CONTAINER + "='" + specNode.nodeType + "'][" + SPEC_TOPIC_DIV_ENTITY_REV + "='" + specNode.entityRevision + "']").length !== 0;
+            }
+        }
+
         var specNodes = this.getAllChildrenInFlatOrder(updatedSpec);
 
         /*
         Remove any existing topics that are no longer present.
         */
         var existingSpecDivs = jQuery("." + SPEC_DIV_CLASS);
+        var removeDivList = [];
+        _.each(existingSpecDivs, function (element) {
+            var jQueryElement = jQuery(element);
+
+            if (jQueryElement.hasClass(SPEC_TOPIC_DIV_CLASS)) {
+                /*
+                This div displays some topic info
+                */
+                var entityId = parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_ID));
+                var entityRev = jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_REV) !== null ? parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_REV)) : null;
+
+                var existingNode = _.find(specNodes, function (specNode) {
+                    if (!nodeIsTopic(specNode)) {
+                        return false;
+                    }
+
+                    if (specNode.entityId !== entityId) {
+                        return false;
+                    }
+
+                    if (specNode.entityRevision !== entityRev) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                if (!existingNode) {
+                    removeDivList.push(jQueryElement);
+                }
+            } else if (jQueryElement.hasClass(SPEC_TITLE_DIV_CLASS)) {
+                /*
+                This div displays some title info
+                */
+                var title = jQueryElement.attr(SPEC_TITLE);
+                var container = jQueryElement.attr(SPEC_TITLE_CONTAINER);
+
+                var existingNode = _.find(specNodes, function (specNode) {
+                    if (specNode.title !== title) {
+                        return false;
+                    }
+
+                    if (specNode.nodeType !== container.toUpperCase()) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                if (!existingNode) {
+                    removeDivList.push(jQueryElement);
+                }
+            }
+        });
+
+        _.each(removeDivList, function (element) {
+            /*
+            Remove any link target div associated with the spec div
+            */
+            var linkTargets = element[0][SPEC_DIV_LINK_TARGETS_PROPERTY];
+            _.each(linkTargets, function (linkTarget) {
+                linkTarget.remove();
+            });
+
+            element.remove();
+        });
+
+        /*
+        Create new iframes and divs for missing topics and titles
+        */
+        var specNodeMissingDiv = _.filter(specNodes, function (specNode) {
+            if (nodeIsTopic(specNode)) {
+                return !specTopicDivExists(specNode);
+            } else if (nodeIsContainer(specNode)) {
+                return !specTitleDivExists(specNode);
+            }
+        });
     };
     return DocBuilderLive;
 })();
