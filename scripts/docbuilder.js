@@ -915,7 +915,7 @@ var DocBuilderLive = (function () {
         var specNodesMissingDiv = _.filter(specNodes, function (specNode) {
             if (nodeIsTopic(specNode)) {
                 return !specTopicDivExists(specNode);
-            } else if (nodeIsContainer(specNode)) {
+            } else if (nodeIsTitleContainer(specNode)) {
                 return !specTitleDivExists(specNode);
             }
         });
@@ -952,7 +952,7 @@ var DocBuilderLive = (function () {
         function getActualChild(specNode) {
             if (nodeIsTopic(specNode)) {
                 return getTopicDiv(specNode);
-            } else if (nodeIsContainer(specNode)) {
+            } else if (nodeIsTitleContainer(specNode)) {
                 return getTitleDiv(specNode);
             }
 
@@ -983,7 +983,7 @@ var DocBuilderLive = (function () {
                 });
 
                 if (previousSibling === null) {
-                    jQuery(document.body).prepend(actualChild);
+                    jQuery("#book").prepend(actualChild);
                     _.each(actualChild[SPEC_DIV_LINK_TARGETS_PROPERTY], function (linkTarget) {
                         jQuery(document.body).prepend(linkTarget);
                     });

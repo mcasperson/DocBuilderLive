@@ -1038,7 +1038,7 @@ class DocBuilderLive {
         var specNodesMissingDiv = _.filter(specNodes, function(specNode) {
             if (nodeIsTopic(specNode)) {
                 return !specTopicDivExists(specNode);
-            } else if (nodeIsContainer(specNode)) {
+            } else if (nodeIsTitleContainer(specNode)) {
                 return !specTitleDivExists(specNode);
             }
         });
@@ -1076,7 +1076,7 @@ class DocBuilderLive {
             if (nodeIsTopic(specNode)) {
                 return getTopicDiv(specNode);
 
-            } else if (nodeIsContainer(specNode)) {
+            } else if (nodeIsTitleContainer(specNode)) {
                 return getTitleDiv(specNode);
             }
 
@@ -1107,7 +1107,7 @@ class DocBuilderLive {
                 });
 
                 if (previousSibling === null) {
-                    jQuery(document.body).prepend(actualChild);
+                    jQuery("#book").prepend(actualChild);
                     _.each(actualChild[SPEC_DIV_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                         jQuery(document.body).prepend(linkTarget);
                     });
