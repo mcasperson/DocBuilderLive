@@ -59,11 +59,6 @@ var SPEC_TITLE = "data-title";
 var SPEC_TITLE_CONTAINER = "data-container";
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
 /**
- * Used to identify any div that holds spec info (topic contents or container title)
- * @type {string}
- */
-var SPEC_DIV_CLASS = "contentSpecDiv";
-/**
  * Used to identify any divs that are displaying topic information
  * @type {string}
  */
@@ -80,6 +75,11 @@ var IFRAME_ID_PREFIX = "iframeId";
  * @type {string}
  */
 var DIV_ID_PREFIX = "divId";
+/**
+ * Used as a class to identify all divs that contain spec content, and used as an ID prefix to identify
+ * the position of the book in the linear layout of ccontent from the spec.
+ * @type {string}
+ */
 var DIV_BOOK_INDEX_ID_PREFIX = "divBookIndex";
 var LOADING_HTML = "<div style='width: 100%;'><img style='display:block; margin:auto;' src='images/loading.gif'/></div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
@@ -631,24 +631,20 @@ class DocBuilderLive {
 
     buildIFrameAndDiv(element:SpecNode):HTMLIFrameElement {
         /*
-         Create the div that will be filled with the HTML sent by the iframe.
-         */
-        var div = jQuery("<div></div>");
-        div.addClass(LOADING_TOPIC_DIV_CLASS);
-        div.addClass(SPEC_DIV_CLASS);
-        div.html(LOADING_HTML);
-        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
-        div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
-
-        /*
          Links to topics can be done through either the topic id or the target id. We
          append two divs with these ids as link targets.
          */
-        var existingSpecDivElementCount = jQuery("div." + SPEC_DIV_CLASS).length;
+        var existingSpecDivElementCount = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX).length;
 
-        var indexTarget = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
-        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(indexTarget);
-        jQuery("#book").append(indexTarget);
+        /*
+         Create the div that will be filled with the HTML sent by the iframe.
+         */
+        var div = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
+        div.addClass(LOADING_TOPIC_DIV_CLASS);
+        div.addClass(DIV_BOOK_INDEX_ID_PREFIX);
+        div.html(LOADING_HTML);
+        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
+        div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
 
         if (element.entityId !== null) {
             var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
@@ -1046,7 +1042,7 @@ class DocBuilderLive {
         /*
             Remove any existing topics that are no longer present.
          */
-        var existingSpecDivs = jQuery("." + SPEC_DIV_CLASS);
+        var existingSpecDivs = jQuery("." + DIV_BOOK_INDEX_ID_PREFIX);
         var removeDivList = _.filter(existingSpecDivs, function(element) {
             var jQueryElement = jQuery(element);
             if (jQueryElement.hasClass(SPEC_TOPIC_DIV_CLASS)) {
@@ -1174,8 +1170,8 @@ class DocBuilderLive {
          */
         var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrTitleContainer);
         _.each(topicsAndContainers, function(specNode, index, list) {
-            var nthSpecDiv = jQuery("div." + SPEC_DIV_CLASS + ":eq(" + index + ")");
-            var previousSibling = index === 0 ? null : jQuery("div." + SPEC_DIV_CLASS + ":eq(" + (index - 1) + ")");
+            var nthSpecDiv = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + index + ")");
+            var previousSibling = index === 0 ? null : jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + (index - 1) + ")");
             var actualChild = getActualChild(specNode);
 
             if (actualChild == null || actualChild.length !== 1) {
@@ -1187,6 +1183,9 @@ class DocBuilderLive {
             }
 
             if (!divsAreEqual(nthSpecDiv, actualChild)) {
+                /*
+                    Remove all divs
+                 */
                 actualChild.remove();
                 _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                     linkTarget.remove();
@@ -1196,6 +1195,9 @@ class DocBuilderLive {
                 });
 
                 if (previousSibling === null) {
+                    /*
+                        prepend to start of book
+                     */
                     _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                         jQuery(document.body).prepend(linkTarget);
                     });
@@ -1204,6 +1206,9 @@ class DocBuilderLive {
                         jQuery(document.body).prepend(linkTarget);
                     });
                 } else {
+                    /*
+                        insert after previous child
+                     */
                     _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                         previousSibling.after(linkTarget);
                     });
@@ -1218,8 +1223,8 @@ class DocBuilderLive {
         /*
             Update the ids to reflect the position of the divs in the book.
          */
-        _.each(jQuery("div." + SPEC_DIV_CLASS), function(element, index, list) {
-            element.id = DIV_ID_PREFIX + index;
+        _.each(jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX), function(element, index) {
+            element.id = DIV_BOOK_INDEX_ID_PREFIX + index;
         });
     }
 }
