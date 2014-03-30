@@ -234,6 +234,8 @@ var DocBuilderLive = (function () {
         var _this = this;
         this.timeoutRefresh = null;
         this.timeoutUpdate = null;
+        this.refreshUpdateInterval = null;
+        this.refreshIn = REFRESH_DELAY;
         this.errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
         };
@@ -730,11 +732,26 @@ var DocBuilderLive = (function () {
             message("Cancelled last refresh.");
         }
 
+        if (this.refreshUpdateInterval !== null) {
+            window.clearInterval(this.refreshUpdateInterval);
+            this.refreshUpdateInterval = null;
+            jQuery("#refreshin").text("");
+        }
+
         message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds from " + source);
         this.timeoutUpdate = window.setTimeout(function () {
             _this.findUpdates();
             _this.timeoutUpdate = null;
         }, REFRESH_DELAY);
+
+        this.refreshIn = REFRESH_DELAY;
+
+        if (this.refreshUpdateInterval === null) {
+            this.refreshUpdateInterval = window.setInterval(function () {
+                _this.refreshIn = _this.refreshIn - 1000;
+                jQuery("#refreshin").text("Refresh in " + (_this.refreshIn / 1000) + " seconds");
+            }, 1000);
+        }
     };
 
     DocBuilderLive.prototype.findUpdates = function () {

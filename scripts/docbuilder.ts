@@ -291,6 +291,8 @@ class DocBuilderLive {
     private specId:number;
     private timeoutRefresh:number = null;
     private timeoutUpdate:number = null;
+    private refreshUpdateInterval:number = null;
+    private refreshIn:number = REFRESH_DELAY;
     private errorCallback = function (title:string, message:string):void {
         window.alert(title + "\n" + message);
     }
@@ -823,11 +825,26 @@ class DocBuilderLive {
             message("Cancelled last refresh.");
         }
 
+        if (this.refreshUpdateInterval !== null) {
+            window.clearInterval(this.refreshUpdateInterval);
+            this.refreshUpdateInterval = null;
+            jQuery("#refreshin").text("");
+        }
+
         message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds from " + source);
         this.timeoutUpdate = window.setTimeout(() => {
             this.findUpdates();
             this.timeoutUpdate = null;
         }, REFRESH_DELAY);
+
+        this.refreshIn = REFRESH_DELAY;
+
+        if (this.refreshUpdateInterval === null) {
+            this.refreshUpdateInterval = window.setInterval(() => {
+                this.refreshIn = this.refreshIn - 1000;
+                jQuery("#refreshin").text("Refresh in " + (this.refreshIn / 1000) + " seconds");
+            }, 1000);
+        }
     }
 
     findUpdates():void {
