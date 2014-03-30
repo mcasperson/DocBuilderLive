@@ -49,6 +49,7 @@ var TOPIC_IDS_MARKER:string = "#TOPICIDS#";
 var CONTENT_SPEC_EDIT_DATE_MARKER:string = "#CONTENTSPECEDITDATE#";
 var TOPIC_EDIT_DATE_MARKER:string = "#TOPICEDITDATE#";
 var CONTAINER_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
+var TITLE_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
 var INITIAL_CONTENT_TOPIC:string = "INITIAL_CONTENT_TOPIC";
 var TOPIC:string = "TOPIC";
 var TOPIC_NODE_TYPES:string[] = [TOPIC, INITIAL_CONTENT_TOPIC];
@@ -130,6 +131,10 @@ function nodeIsTopic(specNode:SpecNode):boolean {
 
 function nodeIsContainer(specNode:SpecNode):boolean {
     return CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsTitleContainer(specNode:SpecNode):boolean {
+    return TITLE_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
 }
 
 function nodeIsTopicOrContainer(specNode:SpecNode):boolean {
@@ -560,8 +565,6 @@ class DocBuilderLive {
     }
 
     buildIFrameAndDiv(element:SpecNode):HTMLIFrameElement {
-
-
         /*
          Create the div that will be filled with the HTML sent by the iframe.
          */
@@ -613,7 +616,7 @@ class DocBuilderLive {
                     .replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
             }
-        } else if (nodeIsContainer(element)) {
+        } else if (nodeIsTitleContainer(element)) {
             div.addClass(SPEC_TITLE_DIV_CLASS);
             div.attr(SPEC_TITLE, element.title);
             div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());

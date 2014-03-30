@@ -52,6 +52,7 @@ var TOPIC_IDS_MARKER = "#TOPICIDS#";
 var CONTENT_SPEC_EDIT_DATE_MARKER = "#CONTENTSPECEDITDATE#";
 var TOPIC_EDIT_DATE_MARKER = "#TOPICEDITDATE#";
 var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
+var TITLE_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
 var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
 var TOPIC = "TOPIC";
 var TOPIC_NODE_TYPES = [TOPIC, INITIAL_CONTENT_TOPIC];
@@ -135,6 +136,10 @@ function nodeIsTopic(specNode) {
 
 function nodeIsContainer(specNode) {
     return CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsTitleContainer(specNode) {
+    return TITLE_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
 }
 
 function nodeIsTopicOrContainer(specNode) {
@@ -515,7 +520,7 @@ var DocBuilderLive = (function () {
                 url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
             }
-        } else if (nodeIsContainer(element)) {
+        } else if (nodeIsTitleContainer(element)) {
             div.addClass(SPEC_TITLE_DIV_CLASS);
             div.attr(SPEC_TITLE, element.title);
             div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
