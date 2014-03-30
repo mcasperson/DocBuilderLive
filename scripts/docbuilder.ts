@@ -3,14 +3,54 @@
 /// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
 
+/**
+ * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
+ * @type {string}
+ */
 var LOCAL_URL = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+/**
+ * This is the icon used for containers in the TOC
+ * @type {string}
+ */
 var FOLDER_ICON = "images/folderclose.png";
+/**
+ * This is is icon used for topics in the toc
+ * @type {string}
+ */
 var TOPIC_ICON = "images/file.png";
+/**
+ * This is the date format used for queries against the rest server
+ * @type {string}
+ */
 var DATE_TIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ";
+/**
+ * This is how long to wait before polling the server for an updated spec or updated topics
+ * @type {number}
+ */
 var REFRESH_DELAY = 10000;
+/**
+ * iframes have their src value set either when the iframe before them is updated, or when
+ * a timeout is reached. This is how long each iframe should wait before the timeout is reached.
+ * @type {number}
+ */
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
+/**
+ * This is how many iframes should be downloading the XML at any one time
+ * @type {number}
+ */
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
-var SPEC_DIV_LINK_TARGETS_PROPERTY = "linkTargets";
+/**
+ * This is the name of the property assigned to the DIVs that display any spec data. This property
+ * holds references to the divs used for internal anchors.
+ * @type {string}
+ */
+var SPEC_DIV_TOP_LINK_TARGETS_PROPERTY = "topLinkTargets";
+/**
+ * This is the name of the property assigned to the DIVs that display any spec data. This property
+ * holds references to the divs used for additional links like "Edit this topic".
+ * @type {string}
+ */
+var SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY = "bottomLinkTargets";
 var SPEC_TOPIC_DIV_NODE_ID = "data-specNodeId";
 var SPEC_TOPIC_DIV_NODE_REV = "data-specNodeRev";
 var SPEC_TOPIC_DIV_TOPIC_ID = "data-topicId";
@@ -120,6 +160,11 @@ var TOPICS_REST_EXPAND:Object={
         }
     ]
 }
+/**
+ * The URL to open when a topic is to be edited
+ * @type {string}
+ */
+var EDIT_TOPIC_LINK = "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + TOPIC_ID_MARKER;
 
 function error(message:string):void {
     window.alert(message);
@@ -265,6 +310,13 @@ class DocBuilderLive {
                         if (sourceIframe !== undefined) {
                             try {
                                 jQuery(sourceIframe["div"]).html(message.html.replace(/<head[\s\S]*?<\/head>/g, "")).removeClass(LOADING_TOPIC_DIV_CLASS);
+
+                                /*
+                                    The bottom links, like "Edit this topic", are hidden until the topic is rendered.
+                                 */
+                                _.each(sourceIframe["div"][0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (div:JQuery) {
+                                    div.css("display", "");
+                                });
                             } catch (ex) {
                                 console.log(ex);
                             }
@@ -276,16 +328,18 @@ class DocBuilderLive {
                              finishes loading, or when a timeout occurs.
                              */
                             var nextIFrame = jQuery(sourceIframe);
+                            var foundNext = false;
                             while ((nextIFrame = nextIFrame.next("iframe")).length !== 0) {
                                 var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIFrame[0];
                                 if (nextIFrameElement["setSrc"] === undefined) {
                                     nextIFrameElement["setSrc"] = true;
                                     nextIFrameElement.src = nextIFrameElement["url"];
+                                    foundNext = true;
                                     break;
                                 }
                             }
 
-                            if (nextIFrame.length === 0) {
+                            if (!foundNext) {
                                 // there are no more iframes to load
                                 this.startRefreshCycle("load completed");
                             }
@@ -583,28 +637,28 @@ class DocBuilderLive {
         div.addClass(LOADING_TOPIC_DIV_CLASS);
         div.addClass(SPEC_DIV_CLASS);
         div.html(LOADING_HTML);
-        div[0][SPEC_DIV_LINK_TARGETS_PROPERTY] = [];
+        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
+        div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
 
         /*
          Links to topics can be done through either the topic id or the target id. We
          append two divs with these ids as link targets.
          */
-
         var existingSpecDivElementCount = jQuery("div." + SPEC_DIV_CLASS).length;
 
         var indexTarget = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
-        div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(indexTarget);
+        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(indexTarget);
         jQuery("#book").append(indexTarget);
 
         if (element.entityId !== null) {
             var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
-            div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(idLinkTarget);
+            div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(idLinkTarget);
             jQuery("#book").append(idLinkTarget);
         }
 
         if (element.targetId !== null) {
             var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
-            div[0][SPEC_DIV_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
+            div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
             jQuery("#book").append(nameLinkTarget);
         }
 
@@ -639,6 +693,16 @@ class DocBuilderLive {
         }
 
         jQuery("#book").append(div);
+
+        /*
+            Edit topic links are added below the main topic content
+         */
+
+        if (nodeIsTopic(element)) {
+            var editTopic = jQuery("<div style='display:none'><a href='" + SERVER + EDIT_TOPIC_LINK.replace(TOPIC_ID_MARKER, element.entityId.toString()) + "'>Edit this topic</a></div>");
+            div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].push(editTopic);
+            jQuery("#book").append(editTopic);
+        }
 
         return this.buildIFrame(url, div);
     }
@@ -1042,8 +1106,12 @@ class DocBuilderLive {
             /*
                 Remove any link target div associated with the spec div
              */
-            var linkTargets:JQuery[] = element[SPEC_DIV_LINK_TARGETS_PROPERTY];
+            var linkTargets:JQuery[] = element[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY];
             _.each(linkTargets, function(linkTarget) {
+                linkTarget.remove();
+            });
+            var bottomLinks:JQuery[] = element[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY];
+            _.each(bottomLinks, function(linkTarget) {
                 linkTarget.remove();
             });
 
@@ -1120,18 +1188,27 @@ class DocBuilderLive {
 
             if (!divsAreEqual(nthSpecDiv, actualChild)) {
                 actualChild.remove();
-                _.each(actualChild[SPEC_DIV_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                    linkTarget.remove();
+                });
+                _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                     linkTarget.remove();
                 });
 
                 if (previousSibling === null) {
+                    _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                        jQuery(document.body).prepend(linkTarget);
+                    });
                     jQuery("#book").prepend(actualChild);
-                    _.each(actualChild[SPEC_DIV_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                    _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                         jQuery(document.body).prepend(linkTarget);
                     });
                 } else {
+                    _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                        previousSibling.after(linkTarget);
+                    });
                     previousSibling.after(actualChild);
-                    _.each(actualChild[SPEC_DIV_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
+                    _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
                         previousSibling.after(linkTarget);
                     });
                 }

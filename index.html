@@ -9,7 +9,9 @@
         #toc { position: fixed; overflow: auto; left: 10px; top: 10px; bottom: 10px; width: 330px; border-bottom-style: none}
         #toc a { border-bottom-style: none}
         .loadingTopicDiv { min-height: 40px }
-        #loading { width: 100%; text-align: center; margin-top: 40px;}
+        #loading { width: 100%; text-align: center;}
+        .loadingContent {width: 100%; margin-top: 40px;}
+        .loadingImage {display:block; margin:auto;}
     </style>
     <link rel="stylesheet" href="themes/default/style.min.css" />
     <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/default.css" />
@@ -23,7 +25,14 @@
     <title></title>
 </head>
 <body>
-<div id="loading"><img style='display:block; margin:auto;' src='images/loading.gif'/></div>
+<div id="loading">
+    <div class="loadingContent">
+        Loading Content Specification
+    </div>
+    <div class="loadingContent">
+        <img class="loadingImage" src='images/loading.gif'/>
+    </div>
+</div>
 <div id="book"></div>
 </body>
 </html>
