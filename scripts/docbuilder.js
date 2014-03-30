@@ -3,6 +3,8 @@
 /// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
 var LOCAL_URL = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+var FOLDER_ICON = "images/folderclose.png";
+var TOPIC_ICON = "images/file.png";
 var DATE_TIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ";
 var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
@@ -42,7 +44,7 @@ var IFRAME_ID_PREFIX = "iframeId";
 */
 var DIV_ID_PREFIX = "divId";
 var DIV_BOOK_INDEX_ID_PREFIX = "divBookIndex";
-var LOADING_HTML = "<div style='width: 100%; text-align: center;'>LOADING</div>";
+var LOADING_HTML = "<div style='width: 100%;'><img style='display:block; margin:auto;' src='images/loading.gif'/></div>";
 var TOPIC_ID_MARKER = "#TOPICID#";
 var TOPIC_REV_MARKER = "#TOPICREV#";
 var CSNODE_ID_MARKER = "#CSNODEID#";
@@ -51,7 +53,8 @@ var CONTENT_SPEC_ID_MARKER = "#CONTENTSPECID#";
 var TOPIC_IDS_MARKER = "#TOPICIDS#";
 var CONTENT_SPEC_EDIT_DATE_MARKER = "#CONTENTSPECEDITDATE#";
 var TOPIC_EDIT_DATE_MARKER = "#TOPICEDITDATE#";
-var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
+var INITIAL_CONTENT_CONTAINER = "INITIAL_CONTENT";
+var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
 var TITLE_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
 var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
 var TOPIC = "TOPIC";
@@ -140,6 +143,10 @@ function nodeIsContainer(specNode) {
 
 function nodeIsTitleContainer(specNode) {
     return TITLE_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsInitialContainer(specNode) {
+    return INITIAL_CONTENT_CONTAINER === specNode.nodeType;
 }
 
 function nodeIsTopicOrContainer(specNode) {
@@ -584,12 +591,23 @@ var DocBuilderLive = (function () {
         var childIndex = 0;
 
         var addChildren = function (specNode, parent) {
-            var isContainer = nodeIsContainer(specNode);
+            var isContainer = nodeIsTitleContainer(specNode);
             var isTopic = nodeIsTopic(specNode);
-            if (isContainer || isTopic) {
+            var isInitialContainer = nodeIsInitialContainer(specNode);
+
+            if (isInitialContainer) {
+                if (specNode.children_OTM !== null) {
+                    var children = _this.getChildrenInOrder(specNode);
+                    _.each(children, function (element) {
+                        // don't show in toc, but bump child count so the index is still valid
+                        // when entries belwo are clicked
+                        ++childIndex;
+                    });
+                }
+            } else if (isContainer || isTopic) {
                 var treeNode = new TreeNode();
                 treeNode.text = specNode.title;
-                treeNode.icon = isContainer ? "images/folderopen.png" : "images/file.png";
+                treeNode.icon = isContainer ? FOLDER_ICON : TOPIC_ICON;
                 treeNode.data = childIndex.toString();
                 treeNode.state = { opened: true };
 
