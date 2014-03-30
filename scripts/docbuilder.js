@@ -2,12 +2,16 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
+var LOCAL_URL = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+var DATE_TIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ";
 var REFRESH_DELAY = 10000;
 var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
 var CONCURRENT_IFRAME_DOWNLOADS = 2;
 var SPEC_DIV_LINK_TARGETS_PROPERTY = "linkTargets";
-var SPEC_TOPIC_DIV_ENTITY_ID = "data-specNodeId";
-var SPEC_TOPIC_DIV_ENTITY_REV = "data-specNodeRev";
+var SPEC_TOPIC_DIV_NODE_ID = "data-specNodeId";
+var SPEC_TOPIC_DIV_NODE_REV = "data-specNodeRev";
+var SPEC_TOPIC_DIV_TOPIC_ID = "data-topicId";
+var SPEC_TOPIC_DIV_TOPIC_REV = "data-topicRev";
 var SPEC_TITLE = "data-title";
 var SPEC_TITLE_CONTAINER = "data-container";
 var LOADING_TOPIC_DIV_CLASS = "loadingTopicDiv";
@@ -44,7 +48,9 @@ var TOPIC_REV_MARKER = "#TOPICREV#";
 var CSNODE_ID_MARKER = "#CSNODEID#";
 var CSNODE_REV_MARKER = "#CSNODEREV#";
 var CONTENT_SPEC_ID_MARKER = "#CONTENTSPECID#";
+var TOPIC_IDS_MARKER = "#TOPICIDS#";
 var CONTENT_SPEC_EDIT_DATE_MARKER = "#CONTENTSPECEDITDATE#";
+var TOPIC_EDIT_DATE_MARKER = "#TOPICEDITDATE#";
 var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", "INITIAL_CONTENT"];
 var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
 var TOPIC = "TOPIC";
@@ -78,6 +84,7 @@ var TOPIC_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xsl
 var TOPIC_REV_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
 var CSNODE_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
 var CSNODE_REV_XSLTXML_REST = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
+var TOPIC_XSLTXML_REST = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
 var ECHO_XML_REST = REST_BASE + "/echoxml";
 var SPECS_REST = REST_BASE + "/contentspecs/get/json/query;logic=And;contentSpecIds=" + CONTENT_SPEC_ID_MARKER + ";startEditDate=" + CONTENT_SPEC_EDIT_DATE_MARKER;
 var SPECS_REST_EXPAND = {
@@ -100,6 +107,16 @@ var SPECS_REST_EXPAND = {
                     ]
                 }
             ]
+        }
+    ]
+};
+var TOPICS_REST = REST_BASE + "/topics/get/json/query;logic=And;topicIds=" + TOPIC_IDS_MARKER + ";startEditDate=" + TOPIC_EDIT_DATE_MARKER;
+var TOPICS_REST_EXPAND = {
+    branches: [
+        {
+            trunk: {
+                name: "topics"
+            }
         }
     ]
 };
@@ -144,30 +161,10 @@ var IdRevPair = (function () {
 var DocBuilderLive = (function () {
     function DocBuilderLive(specId) {
         var _this = this;
+        this.timeoutRefresh = null;
+        this.timeoutUpdate = null;
         this.errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
-        };
-        this.findUpdatedSpec = function (callback, errorCallback, retryCount) {
-            if (typeof retryCount === "undefined") { retryCount = 0; }
-            var startEditDate = moment(_this.lastRevisionDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-            var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, _this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) + "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
-
-            jQuery.ajax({
-                type: 'GET',
-                url: url,
-                dataType: "json",
-                context: _this,
-                success: function (data) {
-                    callback.bind(_this)(data);
-                },
-                error: function () {
-                    if (retryCount < RETRY_COUNT) {
-                        _this.findUpdatedSpec(callback, errorCallback, ++retryCount);
-                    } else {
-                        errorCallback.bind(_this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
-                    }
-                }
-            });
         };
         window.addEventListener('message', function (e) {
             try  {
@@ -450,9 +447,7 @@ var DocBuilderLive = (function () {
         return reverseChildren;
     };
 
-    DocBuilderLive.prototype.buildIFrameAndDiv = function (element) {
-        var localUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
+    DocBuilderLive.prototype.buildIFrame = function (url, div) {
         /*
         Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
         HTML
@@ -464,8 +459,17 @@ var DocBuilderLive = (function () {
         /*
         Create the div that will be filled with the HTML sent by the iframe.
         */
-        var div = jQuery("<div></div>");
         iFrame["div"] = div;
+        iFrame["url"] = url;
+
+        return iFrame;
+    };
+
+    DocBuilderLive.prototype.buildIFrameAndDiv = function (element) {
+        /*
+        Create the div that will be filled with the HTML sent by the iframe.
+        */
+        var div = jQuery("<div></div>");
         div.addClass(LOADING_TOPIC_DIV_CLASS);
         div.addClass(SPEC_DIV_CLASS);
         div.html(LOADING_HTML);
@@ -497,27 +501,30 @@ var DocBuilderLive = (function () {
 
         if (nodeIsTopic(element)) {
             div.addClass(SPEC_TOPIC_DIV_CLASS);
-            div.attr(SPEC_TOPIC_DIV_ENTITY_ID, element.id.toString());
+            div.attr(SPEC_TOPIC_DIV_NODE_ID, element.id.toString());
+            div.attr(SPEC_TOPIC_DIV_TOPIC_ID, element.entityId.toString());
+
+            if (element.entityRevision !== null) {
+                div.attr(SPEC_TOPIC_DIV_TOPIC_REV, element.entityId.toString());
+            }
+
             if (element.revision === undefined) {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
-                iFrame.src = url;
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
             } else {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + localUrl + "&baseUrl=%23divId%23TOPICID%23";
-                div.attr(SPEC_TOPIC_DIV_ENTITY_REV, element.revision.toString());
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
             }
         } else if (nodeIsContainer(element)) {
             div.addClass(SPEC_TITLE_DIV_CLASS);
             div.attr(SPEC_TITLE, element.title);
             div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
             var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
-            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + localUrl;
+            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + LOCAL_URL;
         }
 
         jQuery("#book").append(div);
 
-        iFrame["url"] = url;
-
-        return iFrame;
+        return this.buildIFrame(url, div);
     };
 
     DocBuilderLive.prototype.setIFrameSrc = function (iFrame, delay, count) {
@@ -617,50 +624,182 @@ var DocBuilderLive = (function () {
         var _this = this;
         message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds.");
 
-        window.clearTimeout(this.timeoutRefresh);
-        this.timeoutRefresh = null;
+        if (this.timeoutRefresh !== null) {
+            window.clearTimeout(this.timeoutRefresh);
+            this.timeoutRefresh = null;
+        }
 
-        window.setTimeout(function () {
-            _this.findUpdatesToSpec(function (updatedSpec) {
-                if (!updatedSpec) {
-                    _this.startRefreshCycle();
-                }
-            });
+        if (this.timeoutUpdate !== null) {
+            window.clearTimeout(this.timeoutUpdate);
+            this.timeoutUpdate = null;
+        }
+
+        this.timeoutUpdate = window.setTimeout(function () {
+            _this.findUpdates();
         }, REFRESH_DELAY);
     };
 
-    DocBuilderLive.prototype.findUpdatesToSpec = function (callback) {
+    DocBuilderLive.prototype.findUpdates = function () {
         var _this = this;
         var errorCallback = function (title, message) {
             _this.startRefreshCycle();
         };
 
         this.getLastModifiedTime(function (lastRevisionDate) {
-            _this.findUpdatedSpec(function (spec) {
-                /*
-                Searches will return specs that were edited on or after the date specified. We only
-                want specs edited after the date specified.
-                */
-                var specIsUpdated = spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > _this.lastRevisionDate;
-                if (specIsUpdated) {
-                    var updatedSpec = spec.items[0].item;
-                    _this.expandSpec(updatedSpec, function (expandedSpec) {
-                        _this.syncDomWithSpec(expandedSpec);
-                        _this.buildToc(expandedSpec);
-                    }, errorCallback);
-                }
+            _this.findUpdatesToSpec(function (updatedSpec) {
+                _this.findUpdatesToTopics(function (updatedTopic) {
+                    if (!updatedSpec && !updatedTopic) {
+                        _this.startRefreshCycle();
+                    }
 
-                _this.lastRevisionDate = lastRevisionDate;
-
-                callback(specIsUpdated);
+                    _this.lastRevisionDate = lastRevisionDate;
+                }, errorCallback);
             }, errorCallback);
         }, errorCallback);
     };
 
-    DocBuilderLive.prototype.findUpdatesToTopics = function (callback) {
+    DocBuilderLive.prototype.findUpdatesToSpec = function (callback, errorCallback) {
+        var _this = this;
+        this.findUpdatedSpec(function (spec) {
+            /*
+            Searches will return specs that were edited on or after the date specified. We only
+            want specs edited after the date specified.
+            */
+            var specIsUpdated = spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > _this.lastRevisionDate;
+            if (specIsUpdated) {
+                var updatedSpec = spec.items[0].item;
+                _this.expandSpec(updatedSpec, function (expandedSpec) {
+                    _this.syncDomWithSpec(expandedSpec);
+                    _this.buildToc(expandedSpec);
+                }, errorCallback);
+            }
+            callback(specIsUpdated);
+        }, errorCallback);
     };
 
-    DocBuilderLive.prototype.syncTopicsCollectionWithSpec = function (updatedSpec) {
+    DocBuilderLive.prototype.findUpdatedSpec = function (callback, errorCallback, retryCount) {
+        if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
+        var startEditDate = moment(this.lastRevisionDate).format(DATE_TIME_FORMAT);
+        var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) + "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
+
+        jQuery.ajax({
+            type: 'GET',
+            url: url,
+            dataType: "json",
+            context: this,
+            success: function (data) {
+                callback.bind(_this)(data);
+            },
+            error: function () {
+                if (retryCount < RETRY_COUNT) {
+                    _this.findUpdatedSpec(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    };
+
+    DocBuilderLive.prototype.findUpdatesToTopics = function (callback, errorCallback) {
+        var _this = this;
+        this.findUpdatedTopics(function (topics) {
+            var updatedTopics = _.filter(topics.items, function (topicItem) {
+                var topic = topicItem.item;
+                return new Date(topic.lastModified) > this.lastRevisionDate;
+            }, _this);
+
+            var updatedTopicsExist = updatedTopics.length !== 0;
+            if (updatedTopicsExist) {
+                _this.syncDomWithTopics(updatedTopics);
+            }
+
+            callback(updatedTopicsExist);
+        }, errorCallback);
+    };
+
+    DocBuilderLive.prototype.findUpdatedTopics = function (callback, errorCallback, retryCount) {
+        if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
+        var startEditDate = moment(this.lastRevisionDate).format(DATE_TIME_FORMAT);
+
+        var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS);
+        var floatingTopicDivs = _.filter(topicDivs, function (topicDiv) {
+            return topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_REV) === null;
+        });
+        var floatingTopicIds = _.reduce(floatingTopicDivs, function (floatingTopicIds, topicDiv) {
+            var topicId = topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_ID);
+
+            if (topicId === null) {
+                throw "All topic divs should have the " + SPEC_TOPIC_DIV_TOPIC_ID + " attribute set";
+            }
+
+            if (floatingTopicIds.length !== 0) {
+                floatingTopicIds += ",";
+            }
+            floatingTopicIds += topicId;
+            return floatingTopicIds;
+        }, "");
+
+        var url = SERVER + TOPICS_REST.replace(TOPIC_IDS_MARKER, floatingTopicIds).replace(TOPIC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) + "?expand=" + encodeURIComponent(JSON.stringify(TOPICS_REST_EXPAND));
+
+        jQuery.ajax({
+            type: 'GET',
+            url: url,
+            dataType: "json",
+            context: this,
+            success: function (data) {
+                callback.bind(_this)(data);
+            },
+            error: function () {
+                if (retryCount < RETRY_COUNT) {
+                    _this.findUpdatedTopics(callback, errorCallback, ++retryCount);
+                } else {
+                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the topic details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                }
+            }
+        });
+    };
+
+    DocBuilderLive.prototype.syncDomWithTopics = function (updatedTopics) {
+        /*
+        Loop through each topic that has been updated since we last refreshed
+        */
+        _.each(updatedTopics, function (topicItem) {
+            var _this = this;
+            /*
+            Get every topic div that references this node
+            */
+            var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS + "[" + SPEC_TOPIC_DIV_TOPIC_ID + "='" + topicItem.item.id + "']");
+
+            /*
+            Remove the divs that have static revisions
+            */
+            var filteredTopicDivs = _.filter(topicDivs, function (topicDiv) {
+                return topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_REV) === null;
+            });
+
+            if (filteredTopicDivs.length === 0) {
+                throw "Could not find the source topic div for an updated topic";
+            }
+
+            /*
+            Take every div that needs to be updated and create a iframe to recieve the XML
+            */
+            _.reduce(filteredTopicDivs, function (delay, topicDiv, index) {
+                var url = "";
+                var csNodeId = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_ID);
+                var csNodeRev = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_REV);
+                if (csNodeRev === null) {
+                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                } else {
+                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId.toString()).replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                }
+                var iFrame = _this.buildIFrame(url, topicDiv);
+                _this.setIFrameSrc(iFrame, delay, index);
+                return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
+            }, 0);
+        });
     };
 
     /**
@@ -673,9 +812,9 @@ var DocBuilderLive = (function () {
         var _this = this;
         function getTopicDiv(specNode) {
             if (specNode.entityRevision === null) {
-                return jQuery("div[" + SPEC_TOPIC_DIV_ENTITY_ID + "='" + specNode.id + "']");
+                return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "']");
             } else {
-                return jQuery("div[" + SPEC_TOPIC_DIV_ENTITY_ID + "='" + specNode.id + "'][" + SPEC_TOPIC_DIV_ENTITY_REV + "='" + specNode.revision + "']");
+                return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "'][" + SPEC_TOPIC_DIV_NODE_REV + "='" + specNode.revision + "']");
             }
         }
 
@@ -703,8 +842,8 @@ var DocBuilderLive = (function () {
                 /*
                 This div displays some topic info
                 */
-                var nodeId = parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_ID));
-                var nodeRev = jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_REV) !== null ? parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_ENTITY_REV)) : null;
+                var nodeId = parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_ID));
+                var nodeRev = jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV) !== null ? parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV)) : null;
 
                 var existingNode = _.find(specNodes, function (specNode) {
                     if (!nodeIsTopic(specNode)) {
