@@ -691,7 +691,7 @@ class DocBuilderLive {
             if (isContainer || isTopic) {
                 var treeNode:TreeNode = new TreeNode();
                 treeNode.text = specNode.title;
-                treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
+                treeNode.icon = isContainer ? "images/folderopen.png" : "images/file.png";
                 treeNode.data = childIndex.toString();
                 treeNode.state = {opened: true};
 
@@ -1086,7 +1086,7 @@ class DocBuilderLive {
         /*
             Reorganise DOM to match new spec
          */
-        var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrContainer);
+        var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrTitleContainer);
         _.each(topicsAndContainers, function(specNode, index, list) {
             var nthSpecDiv = jQuery("div." + SPEC_DIV_CLASS + ":eq(" + index + ")");
             var previousSibling = index === 0 ? null : jQuery("div." + SPEC_DIV_CLASS + ":eq(" + (index - 1) + ")");

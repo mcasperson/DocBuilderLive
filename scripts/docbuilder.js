@@ -146,6 +146,10 @@ function nodeIsTopicOrContainer(specNode) {
     return nodeIsContainer(specNode) || nodeIsTopic(specNode);
 }
 
+function nodeIsTopicOrTitleContainer(specNode) {
+    return nodeIsTitleContainer(specNode) || nodeIsTopic(specNode);
+}
+
 var TreeNode = (function () {
     function TreeNode() {
         this.children = [];
@@ -562,7 +566,7 @@ var DocBuilderLive = (function () {
     DocBuilderLive.prototype.getTopics = function (specTopics) {
         jQuery("#loading").remove();
 
-        var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrContainer);
+        var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
 
         var delay = _.reduce(topicsAndContainers, function (delay, element, index) {
             var iFrame = this.buildIFrameAndDiv(element);
@@ -585,7 +589,7 @@ var DocBuilderLive = (function () {
             if (isContainer || isTopic) {
                 var treeNode = new TreeNode();
                 treeNode.text = specNode.title;
-                treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
+                treeNode.icon = isContainer ? "images/folderopen.png" : "images/file.png";
                 treeNode.data = childIndex.toString();
                 treeNode.state = { opened: true };
 
@@ -958,7 +962,7 @@ var DocBuilderLive = (function () {
         /*
         Reorganise DOM to match new spec
         */
-        var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrContainer);
+        var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrTitleContainer);
         _.each(topicsAndContainers, function (specNode, index, list) {
             var nthSpecDiv = jQuery("div." + SPEC_DIV_CLASS + ":eq(" + index + ")");
             var previousSibling = index === 0 ? null : jQuery("div." + SPEC_DIV_CLASS + ":eq(" + (index - 1) + ")");
