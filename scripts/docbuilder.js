@@ -617,7 +617,7 @@ var DocBuilderLive = (function () {
         /*
         We want to start a few iframes downloading the xml concurrently.
         */
-        if (count <= CONCURRENT_IFRAME_DOWNLOADS) {
+        if (count < CONCURRENT_IFRAME_DOWNLOADS) {
             iFrame.src = iFrame["url"];
             iFrame["setSrc"] = true;
         } else {
