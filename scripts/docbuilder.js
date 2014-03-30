@@ -749,7 +749,7 @@ var DocBuilderLive = (function () {
         if (this.refreshUpdateInterval === null) {
             this.refreshUpdateInterval = window.setInterval(function () {
                 _this.refreshIn = _this.refreshIn - 1000;
-                if (refreshIn >= 0) {
+                if (_this.refreshIn >= 0) {
                     jQuery("#refreshin").text("Refresh in " + (_this.refreshIn / 1000) + " seconds");
                 }
             }, 1000);

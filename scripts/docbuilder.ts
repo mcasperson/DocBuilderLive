@@ -842,7 +842,7 @@ class DocBuilderLive {
         if (this.refreshUpdateInterval === null) {
             this.refreshUpdateInterval = window.setInterval(() => {
                 this.refreshIn = this.refreshIn - 1000;
-                if (refreshIn >= 0 ) {
+                if (this.refreshIn >= 0 ) {
                     jQuery("#refreshin").text("Refresh in " + (this.refreshIn / 1000) + " seconds");
                 }
             }, 1000);
