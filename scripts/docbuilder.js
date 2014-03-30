@@ -58,8 +58,9 @@ var TOPIC_NODE_TYPES = [TOPIC, INITIAL_CONTENT_TOPIC];
 var RETRY_COUNT = 5;
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
-var SERVER = "http://localhost:8080";
+var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
+
+//var SERVER:string = "http://localhost:8080"
 var REST_BASE = "/pressgang-ccms/rest/1";
 var REVISION_DETAILS_REST = REST_BASE + "/sysinfo/get/json";
 var SPEC_REST = REST_BASE + "/contentspec/get/json/";
@@ -200,14 +201,14 @@ var DocBuilderLive = (function () {
 
                         if (nextIFrame.length === 0) {
                             // there are no more iframes to load
-                            this.startRefreshCycle();
+                            this.startRefreshCycle("load completed");
                         }
                     }
                 }
             } catch (ex) {
                 // message was not json
             }
-        });
+        }.bind(this));
 
         this.specId = specId;
         this.getLastModifiedTime(function (lastRevisionDate) {
@@ -554,7 +555,6 @@ var DocBuilderLive = (function () {
     * @param spec The spec with all children expanded
     */
     DocBuilderLive.prototype.getTopics = function (specTopics) {
-        var _this = this;
         jQuery("#loading").remove();
 
         var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrContainer);
@@ -566,8 +566,8 @@ var DocBuilderLive = (function () {
         }, 0, this);
 
         this.timeoutRefresh = window.setTimeout(function () {
-            _this.startRefreshCycle();
-        }, delay);
+            this.startRefreshCycle("initial topic load");
+        }.bind(this), delay);
     };
 
     DocBuilderLive.prototype.buildToc = function (spec) {
@@ -582,6 +582,7 @@ var DocBuilderLive = (function () {
                 treeNode.text = specNode.title;
                 treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
                 treeNode.data = childIndex.toString();
+                treeNode.state = { opened: true };
 
                 ++childIndex;
 
@@ -620,10 +621,8 @@ var DocBuilderLive = (function () {
         jQuery(document.body).append(tocDiv);
     };
 
-    DocBuilderLive.prototype.startRefreshCycle = function () {
+    DocBuilderLive.prototype.startRefreshCycle = function (source) {
         var _this = this;
-        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds.");
-
         if (this.timeoutRefresh !== null) {
             window.clearTimeout(this.timeoutRefresh);
             this.timeoutRefresh = null;
@@ -632,24 +631,27 @@ var DocBuilderLive = (function () {
         if (this.timeoutUpdate !== null) {
             window.clearTimeout(this.timeoutUpdate);
             this.timeoutUpdate = null;
+            message("Cancelled last refresh.");
         }
 
+        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds from " + source);
         this.timeoutUpdate = window.setTimeout(function () {
             _this.findUpdates();
+            _this.timeoutUpdate = null;
         }, REFRESH_DELAY);
     };
 
     DocBuilderLive.prototype.findUpdates = function () {
         var _this = this;
         var errorCallback = function (title, message) {
-            _this.startRefreshCycle();
+            _this.startRefreshCycle("update error");
         };
 
         this.getLastModifiedTime(function (lastRevisionDate) {
             _this.findUpdatesToSpec(function (updatedSpec) {
                 _this.findUpdatesToTopics(function (updatedTopic) {
                     if (!updatedSpec && !updatedTopic) {
-                        _this.startRefreshCycle();
+                        _this.startRefreshCycle("update done with no changes");
                     }
 
                     _this.lastRevisionDate = lastRevisionDate;
@@ -766,7 +768,6 @@ var DocBuilderLive = (function () {
         Loop through each topic that has been updated since we last refreshed
         */
         _.each(updatedTopics, function (topicItem) {
-            var _this = this;
             /*
             Get every topic div that references this node
             */
@@ -795,11 +796,11 @@ var DocBuilderLive = (function () {
                 } else {
                     url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId.toString()).replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 }
-                var iFrame = _this.buildIFrame(url, topicDiv);
-                _this.setIFrameSrc(iFrame, delay, index);
+                var iFrame = this.buildIFrame(url, topicDiv);
+                this.setIFrameSrc(iFrame, delay, index);
                 return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
-            }, 0);
-        });
+            }, 0, this);
+        }, this);
     };
 
     /**
@@ -924,7 +925,7 @@ var DocBuilderLive = (function () {
         Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
         */
         this.timeoutRefresh = window.setTimeout(function () {
-            _this.startRefreshCycle();
+            _this.startRefreshCycle("updated spec");
         }, delay);
 
         function divsAreEqual(node1, node2) {

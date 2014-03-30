@@ -54,8 +54,8 @@ var TOPIC:string = "TOPIC";
 var TOPIC_NODE_TYPES:string[] = [TOPIC, INITIAL_CONTENT_TOPIC];
 var RETRY_COUNT:number = 5;
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
-var SERVER:string = "http://localhost:8080"
+var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
+//var SERVER:string = "http://localhost:8080"
 var REST_BASE:string = "/pressgang-ccms/rest/1"
 var REVISION_DETAILS_REST:string = REST_BASE + "/sysinfo/get/json";
 var SPEC_REST:string= REST_BASE + "/contentspec/get/json/";
@@ -140,7 +140,12 @@ class TreeNode {
     text:string;
     icon:string;
     data:string;
+    state:TreeNodeState;
     children:TreeNode[] = [];
+}
+
+interface TreeNodeState {
+    opened: boolean;
 }
 
 interface SpecNodeCollectionParentItems {
@@ -231,48 +236,50 @@ class DocBuilderLive {
 
     constructor(specId:number) {
 
-        window.addEventListener('message', function(e) {
-            try {
-                var message = JSON.parse(e.data);
-                if (message.html !== undefined) {
-                    var source = e.source;
-                    var iframes = <HTMLIFrameElement[]>jQuery("iframe").toArray();
-                    var sourceIframe = _.find(iframes, function(element):boolean {
-                        return element.contentWindow === source;
-                    });
-                    if (sourceIframe !== undefined) {
-                        try {
-                            jQuery(sourceIframe["div"]).html(message.html.replace(/<head[\s\S]*?<\/head>/g, "")).removeClass(LOADING_TOPIC_DIV_CLASS);
-                        } catch (ex) {
-                            console.log(ex);
-                        }
+        window.addEventListener('message',
+            function (e):void {
+                try {
+                    var message = JSON.parse(e.data);
+                    if (message.html !== undefined) {
+                        var source = e.source;
+                        var iframes = <HTMLIFrameElement[]>jQuery("iframe").toArray();
+                        var sourceIframe = _.find(iframes, function (element):boolean {
+                            return element.contentWindow === source;
+                        });
+                        if (sourceIframe !== undefined) {
+                            try {
+                                jQuery(sourceIframe["div"]).html(message.html.replace(/<head[\s\S]*?<\/head>/g, "")).removeClass(LOADING_TOPIC_DIV_CLASS);
+                            } catch (ex) {
+                                console.log(ex);
+                            }
 
-                        sourceIframe.parentElement.removeChild(sourceIframe);
+                            sourceIframe.parentElement.removeChild(sourceIframe);
 
-                        /*
-                            The iframes have their src set either when the iframe before them
-                            finishes loading, or when a timeout occurs.
-                         */
-                        var nextIFrame = jQuery(sourceIframe);
-                        while ((nextIFrame = nextIFrame.next("iframe")).length !== 0) {
-                            var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIFrame[0];
-                            if (nextIFrameElement["setSrc"] === undefined) {
-                                nextIFrameElement["setSrc"] = true;
-                                nextIFrameElement.src = nextIFrameElement["url"];
-                                break;
+                            /*
+                             The iframes have their src set either when the iframe before them
+                             finishes loading, or when a timeout occurs.
+                             */
+                            var nextIFrame = jQuery(sourceIframe);
+                            while ((nextIFrame = nextIFrame.next("iframe")).length !== 0) {
+                                var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIFrame[0];
+                                if (nextIFrameElement["setSrc"] === undefined) {
+                                    nextIFrameElement["setSrc"] = true;
+                                    nextIFrameElement.src = nextIFrameElement["url"];
+                                    break;
+                                }
+                            }
+
+                            if (nextIFrame.length === 0) {
+                                // there are no more iframes to load
+                                this.startRefreshCycle("load completed");
                             }
                         }
-
-                        if (nextIFrame.length === 0) {
-                            // there are no more iframes to load
-                            this.startRefreshCycle();
-                        }
                     }
+                } catch (ex) {
+                    // message was not json
                 }
-            } catch (ex) {
-                // message was not json
-            }
-        });
+            }.bind(this)
+        );
 
         this.specId = specId;
         this.getLastModifiedTime(
@@ -661,9 +668,9 @@ class DocBuilderLive {
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
-        this.timeoutRefresh = window.setTimeout(() => {
-            this.startRefreshCycle();
-        }, delay);
+        this.timeoutRefresh = window.setTimeout(function () {
+            this.startRefreshCycle("initial topic load");
+        }.bind(this), delay);
 
     }
 
@@ -679,6 +686,7 @@ class DocBuilderLive {
                 treeNode.text = specNode.title;
                 treeNode.icon = isContainer ? "/images/folderopen.png" : "/images/file.png";
                 treeNode.data = childIndex.toString();
+                treeNode.state = {opened: true};
 
                 ++childIndex;
 
@@ -718,9 +726,7 @@ class DocBuilderLive {
         jQuery(document.body).append(tocDiv);
     }
 
-    startRefreshCycle():void{
-        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds.");
-
+    startRefreshCycle(source:string):void {
         if (this.timeoutRefresh !== null) {
             window.clearTimeout(this.timeoutRefresh);
             this.timeoutRefresh = null;
@@ -729,16 +735,19 @@ class DocBuilderLive {
         if (this.timeoutUpdate !== null) {
             window.clearTimeout(this.timeoutUpdate);
             this.timeoutUpdate = null;
+            message("Cancelled last refresh.");
         }
 
+        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds from " + source);
         this.timeoutUpdate = window.setTimeout(() => {
             this.findUpdates();
+            this.timeoutUpdate = null;
         }, REFRESH_DELAY);
     }
 
     findUpdates():void {
         var errorCallback = (title:string, message:string):void => {
-            this.startRefreshCycle();
+            this.startRefreshCycle("update error");
         };
 
         this.getLastModifiedTime(
@@ -748,7 +757,7 @@ class DocBuilderLive {
                         this.findUpdatesToTopics(
                             (updatedTopic:boolean):void => {
                                 if (!updatedSpec && !updatedTopic) {
-                                    this.startRefreshCycle();
+                                    this.startRefreshCycle("update done with no changes");
                                 }
 
                                 this.lastRevisionDate = lastRevisionDate;
@@ -897,7 +906,7 @@ class DocBuilderLive {
             /*
                 Take every div that needs to be updated and create a iframe to recieve the XML
              */
-            _.reduce(filteredTopicDivs, (delay:number, topicDiv, index):number => {
+            _.reduce(filteredTopicDivs, function (delay:number, topicDiv, index):number {
                 var url = "";
                 var csNodeId = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_ID);
                 var csNodeRev = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_REV);
@@ -911,8 +920,8 @@ class DocBuilderLive {
                 var iFrame = this.buildIFrame(url, topicDiv);
                 this.setIFrameSrc(iFrame, delay, index);
                 return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
-            }, 0);
-        });
+            }, 0, this);
+        }, this);
     }
 
     /**
@@ -1041,7 +1050,7 @@ class DocBuilderLive {
             Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
          */
         this.timeoutRefresh = window.setTimeout(() => {
-            this.startRefreshCycle();
+            this.startRefreshCycle("updated spec");
         }, delay);
 
         function divsAreEqual(node1:JQuery, node2:JQuery):boolean {
