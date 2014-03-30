@@ -260,8 +260,6 @@ var DocBuilderLive = (function () {
                             console.log(ex);
                         }
 
-                        sourceIframe.parentElement.removeChild(sourceIframe);
-
                         /*
                         The iframes have their src set either when the iframe before them
                         finishes loading, or when a timeout occurs.
@@ -282,6 +280,8 @@ var DocBuilderLive = (function () {
                             // there are no more iframes to load
                             this.startRefreshCycle("load completed");
                         }
+
+                        sourceIframe.parentElement.removeChild(sourceIframe);
                     }
                 }
             } catch (ex) {
