@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -71,11 +69,11 @@
       <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.059065934" vertical-offset="8533" max-vertical-offset="16995">
-              <caret line="566" column="59" selection-start-line="566" selection-start-column="59" selection-end-line="566" selection-end-column="59" />
+            <state vertical-scroll-proportion="0.35302198" vertical-offset="9778" max-vertical-offset="17055">
+              <caret line="669" column="82" selection-start-line="669" selection-start-column="82" selection-end-line="669" selection-end-column="82" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+                <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -541,7 +539,7 @@
       <workItem from="1395962668752" duration="1701000" />
       <workItem from="1395971374483" duration="39541000" />
       <workItem from="1396079083911" duration="16578000" />
-      <workItem from="1396139243721" duration="4809000" />
+      <workItem from="1396139243721" duration="5282000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -683,11 +681,15 @@
       <created>1396144181200</created>
       <updated>1396144181200</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Working on DocBuilder Live prototype">
+      <created>1396144956782</created>
+      <updated>1396144956782</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="81372000" />
+    <option name="totallyTimeSpent" value="81845000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -791,7 +793,7 @@
           <caret line="791" column="21" selection-start-line="791" selection-start-column="21" selection-end-line="791" selection-end-column="21" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -834,7 +836,7 @@
           <caret line="83" column="50" selection-start-line="83" selection-start-column="50" selection-end-line="83" selection-end-column="50" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -885,7 +887,7 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -936,7 +938,7 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -987,7 +989,7 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1038,7 +1040,7 @@
           <caret line="35" column="23" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1073,7 +1075,7 @@
           <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1100,7 +1102,7 @@
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1127,7 +1129,7 @@
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1198,11 +1200,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.059065934" vertical-offset="8533" max-vertical-offset="16995">
-          <caret line="566" column="59" selection-start-line="566" selection-start-column="59" selection-end-line="566" selection-end-column="59" />
+        <state vertical-scroll-proportion="0.35302198" vertical-offset="9778" max-vertical-offset="17055">
+          <caret line="669" column="82" selection-start-line="669" selection-start-column="82" selection-end-line="669" selection-end-column="82" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1396144937276" expanded="false" signature="1600:1632" placeholder="..." />
+            <marker date="1396145424256" expanded="false" signature="1600:1632" placeholder="..." />
           </folding>
         </state>
       </provider>

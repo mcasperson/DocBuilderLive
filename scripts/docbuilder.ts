@@ -141,6 +141,10 @@ function nodeIsTopicOrContainer(specNode:SpecNode):boolean {
     return nodeIsContainer(specNode) || nodeIsTopic(specNode);
 }
 
+function nodeIsTopicOrTitleContainer(specNode:SpecNode):boolean {
+    return nodeIsTitleContainer(specNode) || nodeIsTopic(specNode);
+}
+
 class TreeNode {
     text:string;
     icon:string;
@@ -663,7 +667,7 @@ class DocBuilderLive {
 
         jQuery("#loading").remove();
 
-        var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrContainer);
+        var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
 
         var delay = _.reduce(topicsAndContainers, function(delay:number, element, index) {
             var iFrame = this.buildIFrameAndDiv(element);
