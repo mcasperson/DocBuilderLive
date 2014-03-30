@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -107,8 +104,8 @@
       <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24623802" vertical-offset="0" max-vertical-offset="731">
-              <caret line="12" column="55" selection-start-line="12" selection-start-column="55" selection-end-line="12" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.30779755" vertical-offset="0" max-vertical-offset="731">
+              <caret line="15" column="48" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -545,7 +542,7 @@
       <workItem from="1395971374483" duration="39541000" />
       <workItem from="1396079083911" duration="16578000" />
       <workItem from="1396139243721" duration="6629000" />
-      <workItem from="1396158617257" duration="2841000" />
+      <workItem from="1396158617257" duration="3190000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -707,11 +704,15 @@
       <created>1396159698195</created>
       <updated>1396159698195</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Working on DocBuilder Live prototype">
+      <created>1396161462871</created>
+      <updated>1396161462871</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="86033000" />
+    <option name="totallyTimeSpent" value="86382000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1240,8 +1241,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24623802" vertical-offset="0" max-vertical-offset="731">
-          <caret line="12" column="55" selection-start-line="12" selection-start-column="55" selection-end-line="12" selection-end-column="55" />
+        <state vertical-scroll-proportion="0.30779755" vertical-offset="0" max-vertical-offset="731">
+          <caret line="15" column="48" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
           <folding />
         </state>
       </provider>
