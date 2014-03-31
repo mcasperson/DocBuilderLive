@@ -122,8 +122,8 @@ var SPEC_REST_EXPAND:Object={
 var SPECNODE_REST:string = REST_BASE + "/contentspecnode/get/json/";
 var TOPIC_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
 var TOPIC_REV_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
-var CSNODE_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/xslt+xml";
-var CSNODE_REV_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/xml/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
+var CSNODE_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/" + CSNODE_ID_MARKER + "/xslt+xml";
+var CSNODE_REV_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
 var TOPIC_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
 var ECHO_XML_REST:string = REST_BASE + "/echoxml";
 var SPECS_REST:string= REST_BASE + "/contentspecs/get/json/query;logic=And;contentSpecIds=" + CONTENT_SPEC_ID_MARKER + ";startEditDate=" + CONTENT_SPEC_EDIT_DATE_MARKER;
