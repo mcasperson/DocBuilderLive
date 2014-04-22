@@ -3,6 +3,9 @@
 <head lang="en">
     <title>DocBuilder Live</title>
     <meta charset="UTF-8">
+
+    <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
+
     <style>
         iframe { display: block; width: 100% }
         #book {  margin-top: 50px; margin-left: 350px; margin-right:10px; margin-bottom: 10px}
@@ -25,6 +28,8 @@
     <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" media="print" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/print.css" type="text/css" />
     <script type="application/javascript" src="scripts/jquery-2.1.0.min.js"></script>
     <script type="application/javascript" src="scripts/underscore-min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="patternfly/js/patternfly.min.js"></script>
     <script type="application/javascript" src="scripts/collections.js"></script>
     <script type="application/javascript" src="scripts/moment-with-langs.min.js"></script>
     <script type="application/javascript" src="scripts/docbuilder.js"></script>
@@ -32,9 +37,14 @@
     <title></title>
 </head>
 <body>
-<div id="header">
-    <div id="headerText">DOCBUILDER LIVE <span id="refreshin"></span></div>
-</div>
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+        <div class="navbar-header">
+            <div class="navbar-brand">DOCBUILDER LIVE</div>
+            <span class="nav navbar-nav navbar-utility" id="refreshin"></span>
+        </div>
+
+    </nav>
+
 <div id="loading">
     <div class="loadingContent">
         Loading Content Specification
