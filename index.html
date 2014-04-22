@@ -1,57 +1,59 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <title>DocBuilder Live</title>
-    <meta charset="UTF-8">
+    <head lang="en">
+        <title>DocBuilder Live</title>
+        <meta charset="UTF-8">
 
-    <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
+        <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
 
-    <style>
-        iframe { display: block; width: 100% }
-        #book {  margin-top: 50px; margin-left: 350px; margin-right:10px; margin-bottom: 10px}
-        #toc { margin-top: 10px; position: fixed; overflow: auto; left: 10px; top: 30px; bottom: 10px; width: 330px; border-bottom-style: none}
-        #toc a { border-bottom-style: none}
-        .loadingTopicDiv { min-height: 40px }
-        #loading { width: 100%; text-align: center;}
-        .loadingContent {width: 100%; margin-top: 40px;}
-        .loadingImage {display:block; margin:auto;}
-        .jstree-ocl {
-            /* Disable the folder close widgets */
-            width:0px !important
-        }
-        .header {position: fixed; width:100%; top: 0}
-        #refreshin {color: #53565B;}
-    </style>
-    <link rel="stylesheet" href="themes/default/style.min.css" />
-    <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/default.css" />
-    <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" media="print" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/print.css" type="text/css" />
-    <script type="application/javascript" src="scripts/jquery-2.1.0.min.js"></script>
-    <script type="application/javascript" src="scripts/underscore-min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="patternfly/js/patternfly.min.js"></script>
-    <script type="application/javascript" src="scripts/collections.js"></script>
-    <script type="application/javascript" src="scripts/moment-with-langs.min.js"></script>
-    <script type="application/javascript" src="scripts/docbuilder.js"></script>
-    <script type="application/javascript" src="scripts/jstree.min.js"></script>
-    <title></title>
-</head>
-<body>
-    <nav class="navbar navbar-default navbar-pf header" role="navigation">
-        <div class="navbar-header">
-            <div class="navbar-brand">DOCBUILDER LIVE</div>
-            <span class="nav navbar-nav navbar-utility" id="refreshin"></span>
+        <style>
+            iframe { display: block; width: 100% }
+            #book {  margin-top: 50px; margin-left: 350px; margin-right:10px; margin-bottom: 10px}
+            #toc { margin-top: 10px; position: fixed; overflow: auto; left: 10px; top: 30px; bottom: 10px; width: 330px; border-bottom-style: none}
+            #toc a { border-bottom-style: none}
+            .loadingTopicDiv { min-height: 40px }
+            #loading { width: 100%; text-align: center;}
+            .loadingContent {width: 100%; margin-top: 40px;}
+            .loadingImage {display:block; margin:auto;}
+            .jstree-ocl {
+                /* Disable the folder close widgets */
+                width:0px !important
+            }
+            .header {position: fixed; width:100%; top: 0}
+            #refreshin {color: #53565B;}
+        </style>
+        <link rel="stylesheet" href="themes/default/style.min.css" />
+        <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/default.css" />
+        <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" media="print" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/print.css" type="text/css" />
+        <script type="application/javascript" src="scripts/jquery-2.1.0.min.js"></script>
+        <script type="application/javascript" src="scripts/underscore-min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="patternfly/js/patternfly.min.js"></script>
+        <script type="application/javascript" src="scripts/collections.js"></script>
+        <script type="application/javascript" src="scripts/moment-with-langs.min.js"></script>
+        <script type="application/javascript" src="scripts/docbuilder.js"></script>
+        <script type="application/javascript" src="scripts/jstree.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-pf header" role="navigation">
+            <div class="navbar-header">
+                <div class="navbar-brand">DOCBUILDER LIVE</div>
+            </div>
+
+            <div class="collapse navbar-collapse navbar-collapse-1">
+                <span class="nav navbar-nav navbar-utility" id="refreshin"></span>
+            </div>
+        </nav>
+
+        <div id="loading">
+            <div class="loadingContent">
+                Loading Content Specification
+            </div>
+            <div class="loadingContent">
+                <img class="loadingImage" src='images/loading.gif'/>
+            </div>
         </div>
-
-    </nav>
-
-<div id="loading">
-    <div class="loadingContent">
-        Loading Content Specification
-    </div>
-    <div class="loadingContent">
-        <img class="loadingImage" src='images/loading.gif'/>
-    </div>
-</div>
-<div id="book"></div>
-</body>
+        <div id="book"></div>
+    </body>
 </html>

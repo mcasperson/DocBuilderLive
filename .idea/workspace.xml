@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -69,10 +66,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="docbuilder.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.39148352" vertical-offset="0" max-vertical-offset="18840">
+            <state vertical-scroll-proportion="-10.555555" vertical-offset="0" max-vertical-offset="18840">
               <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="33" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -104,11 +101,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.8333335" vertical-offset="199" max-vertical-offset="930">
-              <caret line="21" column="52" selection-start-line="21" selection-start-column="52" selection-end-line="21" selection-end-column="52" />
+            <state vertical-scroll-proportion="0.14363885" vertical-offset="0" max-vertical-offset="960">
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -169,8 +166,8 @@
       <list>
         <option value="$PROJECT_DIR$/javascript/docbuilder.ts" />
         <option value="$PROJECT_DIR$/scripts/collections.ts" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts/docbuilder.ts" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -582,7 +579,7 @@
       <workItem from="1396079083911" duration="16578000" />
       <workItem from="1396139243721" duration="6629000" />
       <workItem from="1396158617257" duration="13765000" />
-      <workItem from="1398202544339" duration="2635000" />
+      <workItem from="1398202544339" duration="3257000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -784,11 +781,15 @@
       <created>1398208418830</created>
       <updated>1398208418830</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Working on DocBuilder Live prototype">
+      <created>1398209175362</created>
+      <updated>1398209175362</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="99592000" />
+    <option name="totallyTimeSpent" value="100214000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1302,17 +1303,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.8333335" vertical-offset="199" max-vertical-offset="930">
-          <caret line="21" column="52" selection-start-line="21" selection-start-column="52" selection-end-line="21" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39148352" vertical-offset="0" max-vertical-offset="18840">
+        <state vertical-scroll-proportion="-10.555555" vertical-offset="0" max-vertical-offset="18840">
           <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="33" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
@@ -1320,6 +1313,14 @@
             <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
             <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.14363885" vertical-offset="0" max-vertical-offset="960">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
