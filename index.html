@@ -19,9 +19,8 @@
             /* Disable the folder close widgets */
             width:0px !important
         }
-        #header {width: 100%; background-color: #383F45; color: white; height: 30px; position: fixed; top: 0}
-        #headerText {position: absolute; height: 50%; margin: auto; top: 0; left: 20px; bottom: 0; right: 0; font-weight: bold}
-        #refreshin {float: right; margin-right: 20px; color: #53565B;}
+        .header {position: fixed; width:100%; top: 0}
+        #refreshin {color: #53565B;}
     </style>
     <link rel="stylesheet" href="themes/default/style.min.css" />
     <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/default.css" />
@@ -37,7 +36,7 @@
     <title></title>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-pf" role="navigation">
+    <nav class="navbar navbar-default navbar-pf header" role="navigation">
         <div class="navbar-header">
             <div class="navbar-brand">DOCBUILDER LIVE</div>
             <span class="nav navbar-nav navbar-utility" id="refreshin"></span>

@@ -12,7 +12,7 @@ var LOCAL_URL = window.location.protocol + "//" + window.location.hostname + ":"
 * This is the icon used for containers in the TOC
 * @type {string}
 */
-var FOLDER_ICON = "images/folderclose.png";
+var FOLDER_ICON = "pficon pficon-folder-open";
 
 /**
 * This is is icon used for topics in the toc

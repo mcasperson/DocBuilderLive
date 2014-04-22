@@ -2,60 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Bold-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Bold-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Bold-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-BoldItalic-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-BoldItalic-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-BoldItalic-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBold-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBold-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBold-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBoldItalic-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBoldItalic-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBoldItalic-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Italic-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Italic-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Italic-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Light-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Light-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Light-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-LightItalic-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-LightItalic-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-LightItalic-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Regular-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Regular-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Regular-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Semibold-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Semibold-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Semibold-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-SemiboldItalic-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-SemiboldItalic-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-SemiboldItalic-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/PatternFlyIcons-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/PatternFlyIcons-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/PatternFlyIcons-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/bg-login.jpg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/brand-lg.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/brand.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/logo.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Bold-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-BoldItalic-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBold-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-ExtraBoldItalic-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Italic-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Light-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-LightItalic-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Regular-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-Semibold-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/OpenSans-SemiboldItalic-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/fonts/PatternFlyIcons-webfont.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/brand.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/img/logo.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/css/patternfly.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/js/patternfly.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/css/patternfly.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/patternfly/js/patternfly.min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
@@ -123,16 +69,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="docbuilder.ts" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="945" max-vertical-offset="18840">
-              <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.39148352" vertical-offset="0" max-vertical-offset="18840">
+              <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="33" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-                <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-                <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+                <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+                <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+                <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -158,11 +104,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5896033" vertical-offset="199" max-vertical-offset="945">
-              <caret line="42" column="56" selection-start-line="42" selection-start-column="56" selection-end-line="42" selection-end-column="56" />
+            <state vertical-scroll-proportion="-4.8333335" vertical-offset="199" max-vertical-offset="930">
+              <caret line="21" column="52" selection-start-line="21" selection-start-column="52" selection-end-line="21" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -223,8 +169,8 @@
       <list>
         <option value="$PROJECT_DIR$/javascript/docbuilder.ts" />
         <option value="$PROJECT_DIR$/scripts/collections.ts" />
-        <option value="$PROJECT_DIR$/scripts/docbuilder.ts" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/scripts/docbuilder.ts" />
       </list>
     </option>
   </component>
@@ -317,6 +263,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="DocBuilderLive" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DocBuilderLive" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DocBuilderLive" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -622,7 +582,7 @@
       <workItem from="1396079083911" duration="16578000" />
       <workItem from="1396139243721" duration="6629000" />
       <workItem from="1396158617257" duration="13765000" />
-      <workItem from="1398202544339" duration="1878000" />
+      <workItem from="1398202544339" duration="2635000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -820,11 +780,15 @@
       <created>1396230863712</created>
       <updated>1396230863712</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Working on DocBuilder Live prototype">
+      <created>1398208418830</created>
+      <updated>1398208418830</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="98835000" />
+    <option name="totallyTimeSpent" value="99592000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -863,6 +827,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -874,7 +839,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32946146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -912,9 +876,9 @@
           <caret line="791" column="21" selection-start-line="791" selection-start-column="21" selection-end-line="791" selection-end-column="21" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -957,9 +921,9 @@
           <caret line="83" column="50" selection-start-line="83" selection-start-column="50" selection-end-line="83" selection-end-column="50" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1009,9 +973,9 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1061,9 +1025,9 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1113,9 +1077,9 @@
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1165,9 +1129,9 @@
           <caret line="35" column="23" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1202,9 +1166,9 @@
           <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1231,9 +1195,9 @@
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1260,9 +1224,9 @@
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1322,19 +1286,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="945" max-vertical-offset="18840">
-          <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <marker date="1398202905916" expanded="true" signature="3019:3031" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="3045:3072" placeholder="..." />
-            <marker date="1398202905916" expanded="true" signature="25808:25820" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/patternfly/css/patternfly.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="142650">
@@ -1353,9 +1304,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5896033" vertical-offset="199" max-vertical-offset="945">
-          <caret line="42" column="56" selection-start-line="42" selection-start-column="56" selection-end-line="42" selection-end-column="56" />
+        <state vertical-scroll-proportion="-4.8333335" vertical-offset="199" max-vertical-offset="930">
+          <caret line="21" column="52" selection-start-line="21" selection-start-column="52" selection-end-line="21" selection-end-column="52" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.39148352" vertical-offset="0" max-vertical-offset="18840">
+          <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="33" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <marker date="1398209161323" expanded="true" signature="3022:3034" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="3048:3075" placeholder="..." />
+            <marker date="1398209161323" expanded="true" signature="25811:25823" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
