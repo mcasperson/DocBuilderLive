@@ -291,8 +291,14 @@ var DocBuilderLive = (function () {
         }.bind(this));
 
         this.specId = specId;
+
+        updateInitialMessage("Getting PressGang revision information", true);
+
         this.getLastModifiedTime(function (lastRevisionDate) {
             _this.lastRevisionDate = lastRevisionDate;
+
+            updateInitialMessage("Expanding content specification", true);
+
             _this.getSpec(function (spec) {
                 _this.buildToc(spec);
                 var specNodes = _this.getAllChildrenInFlatOrder(spec);
@@ -528,7 +534,7 @@ var DocBuilderLive = (function () {
         return reverseChildren;
     };
 
-    DocBuilderLive.prototype.buildIFrame = function (url, div) {
+    DocBuilderLive.prototype.buildIFrame = function (div) {
         /*
         Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
         HTML
@@ -541,12 +547,28 @@ var DocBuilderLive = (function () {
         Create the div that will be filled with the HTML sent by the iframe.
         */
         iFrame["div"] = div;
-        iFrame["url"] = url;
 
         return iFrame;
     };
 
-    DocBuilderLive.prototype.buildIFrameAndDiv = function (element) {
+    DocBuilderLive.prototype.buildUrl = function (element) {
+        var url;
+
+        if (nodeIsTopic(element)) {
+            if (element.revision === undefined) {
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+            } else {
+                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+            }
+        } else if (nodeIsTitleContainer(element)) {
+            var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
+            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + LOCAL_URL;
+        }
+
+        return url;
+    };
+
+    DocBuilderLive.prototype.buildDiv = function (element) {
         /*
         Links to topics can be done through either the topic id or the target id. We
         append two divs with these ids as link targets.
@@ -575,8 +597,6 @@ var DocBuilderLive = (function () {
             jQuery("#book").append(nameLinkTarget);
         }
 
-        var url;
-
         if (nodeIsTopic(element)) {
             div.addClass(SPEC_TOPIC_DIV_CLASS);
             div.attr(SPEC_TOPIC_DIV_NODE_ID, element.id.toString());
@@ -586,18 +606,13 @@ var DocBuilderLive = (function () {
                 div.attr(SPEC_TOPIC_DIV_TOPIC_REV, element.entityId.toString());
             }
 
-            if (element.revision === undefined) {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
-            } else {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+            if (element.revision !== undefined) {
                 div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
             }
         } else if (nodeIsTitleContainer(element)) {
             div.addClass(SPEC_TITLE_DIV_CLASS);
             div.attr(SPEC_TITLE, element.title);
             div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
-            var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
-            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + LOCAL_URL;
         }
 
         jQuery("#book").append(div);
@@ -611,15 +626,22 @@ var DocBuilderLive = (function () {
             jQuery("#book").append(editTopic);
         }
 
-        return this.buildIFrame(url, div);
+        return div;
     };
 
-    DocBuilderLive.prototype.setIFrameSrc = function (iFrame, delay, count) {
+    /**
+    * Builds and iFrame and sets the src attribute to the topics XML+XSLT endpoint.
+    * @param iFrame
+    * @param delay
+    * @param count
+    */
+    DocBuilderLive.prototype.setIFrameSrc = function (div, url, delay, count) {
         /*
         We want to start a few iframes downloading the xml concurrently.
         */
         if (count < CONCURRENT_IFRAME_DOWNLOADS) {
-            iFrame.src = iFrame["url"];
+            var iFrame = this.buildIFrame(div);
+            iFrame.src = url;
             iFrame["setSrc"] = true;
         } else {
             /*
@@ -628,11 +650,12 @@ var DocBuilderLive = (function () {
             This gives us a fallback in case an iframe didn't load properly.
             */
             window.setTimeout(function () {
+                var iFrame = this.buildIFrame(div);
                 if (iFrame["setSrc"] === undefined) {
-                    iFrame.src = iFrame["url"];
+                    iFrame.src = url;
                     iFrame["setSrc"] = true;
                 }
-            }, delay);
+            }.bind(this), delay);
         }
     };
 
@@ -646,8 +669,9 @@ var DocBuilderLive = (function () {
         var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
 
         var delay = _.reduce(topicsAndContainers, function (delay, element, index) {
-            var iFrame = this.buildIFrameAndDiv(element);
-            this.setIFrameSrc(iFrame, delay, index);
+            var url = this.buildUrl(element);
+            var div = this.buildDiv(element);
+            this.setIFrameSrc(div, url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
@@ -910,8 +934,7 @@ var DocBuilderLive = (function () {
                 } else {
                     url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId.toString()).replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 }
-                var iFrame = this.buildIFrame(url, topicDiv);
-                this.setIFrameSrc(iFrame, delay, index);
+                this.setIFrameSrc(topicDiv, url, delay, index);
                 return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
             }, 0, this);
         }, this);
@@ -1034,8 +1057,9 @@ var DocBuilderLive = (function () {
         a successful XSL transform fails
         */
         var delay = _.reduce(specNodesMissingDiv, function (delay, element, index) {
-            var iFrame = this.buildIFrameAndDiv(element);
-            this.setIFrameSrc(iFrame, delay, index);
+            var url = this.buildUrl(element);
+            var div = this.buildDiv(element);
+            this.setIFrameSrc(div, url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
@@ -1133,5 +1157,41 @@ var DocBuilderLive = (function () {
     return DocBuilderLive;
 })();
 
-var docBuilderLive = new DocBuilderLive(21464);
+function updateInitialMessage(message, showLoadingImage) {
+    if (showLoadingImage) {
+        jQuery("#loading").html('<div class="loadingContent">' + message + '</div><div class="loadingContent"><img class="loadingImage" src="images/loading.gif"/></div>');
+    } else {
+        jQuery("#loading").html('<div class="loadingContent">' + message + '</div>');
+    }
+}
+
+var qs = (function (a) {
+    if (a == "")
+        return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i) {
+        var p = a[i].split('=');
+        if (p.length != 2)
+            continue;
+        b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+})(window.location.search.substr(1).split('&'));
+
+jQuery(document).ready(function () {
+    try  {
+        if (qs["specId"] !== undefined) {
+            var specId = parseInt(qs["specId"]);
+            if (!isNaN(specId)) {
+                var docBuilderLive = new DocBuilderLive(specId);
+            } else {
+                throw "The book could not be displayed because the specId query parameter is not an integer.";
+            }
+        } else {
+            throw "The book could not be displayed because the specId query parameter is missing.";
+        }
+    } catch (ex) {
+        updateInitialMessage(ex, false);
+    }
+});
 //# sourceMappingURL=docbuilder.js.map
