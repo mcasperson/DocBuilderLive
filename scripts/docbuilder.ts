@@ -355,6 +355,8 @@ class DocBuilderLive {
 
         this.specId = specId;
 
+        this.updateEditSpecLink(specId);
+
         updateInitialMessage("Getting PressGang revision information", true);
 
         this.getLastModifiedTime(
@@ -374,6 +376,10 @@ class DocBuilderLive {
             },
             this.errorCallback
         );
+    }
+
+    updateEditSpecLink(specId):void {
+        jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId)
     }
 
     getLastModifiedTime(callback: (lastRevisionDate:Date) => void, errorCallback: (title:string, message:string) => void, retryCount:number=0):void {

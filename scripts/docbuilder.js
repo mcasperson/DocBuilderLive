@@ -292,6 +292,8 @@ var DocBuilderLive = (function () {
 
         this.specId = specId;
 
+        this.updateEditSpecLink(specId);
+
         updateInitialMessage("Getting PressGang revision information", true);
 
         this.getLastModifiedTime(function (lastRevisionDate) {
@@ -306,6 +308,10 @@ var DocBuilderLive = (function () {
             }, _this.errorCallback);
         }, this.errorCallback);
     }
+    DocBuilderLive.prototype.updateEditSpecLink = function (specId) {
+        jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId);
+    };
+
     DocBuilderLive.prototype.getLastModifiedTime = function (callback, errorCallback, retryCount) {
         if (typeof retryCount === "undefined") { retryCount = 0; }
         var _this = this;
