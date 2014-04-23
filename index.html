@@ -15,6 +15,7 @@
                 right: 10px;
                 bottom: 10px;
                 overflow: auto;
+                padding-right: 10px;
             }
             #toc { margin-top: 10px; position: fixed; overflow: auto; left: 10px; top: 40px; bottom: 10px; width: 330px; border-bottom-style: none}
             #toc a { border-bottom-style: none}
@@ -28,6 +29,21 @@
             }
             #header {position: fixed; width:100%; top: 0}
             #refreshin {color: #53565B;}
+
+            .navbar-nav, .navbar-nav > li, .navbar-nav > li > a, .navbar-nav > li > span {
+                height: 100%
+            }
+
+            .navbar-nav > li > a {
+                border-bottom-style: none;
+            }
+            .navbar-nav > li > span {
+                display: block;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 7px;
+                padding-bottom: 7px;
+            }
         </style>
         <link rel="stylesheet" href="themes/default/style.min.css" />
         <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="http://topicindex-dev.ecs.eng.bne.redhat.com:8080/pressgang-ccms-static/brand/Common/css/default.css" />
@@ -43,13 +59,21 @@
         <title></title>
     </head>
     <body>
-        <nav id="header" class="navbar navbar-default navbar-pf header" role="navigation">
+        <nav id="header" class="navbar navbar-default navbar-pf" role="navigation">
+
             <div class="navbar-header">
                 <div class="navbar-brand">DOCBUILDER LIVE</div>
             </div>
 
             <div class="collapse navbar-collapse navbar-collapse-1">
-                <span class="nav navbar-nav navbar-utility" id="refreshin"></span>
+                <ul class="nav navbar-nav navbar-utility">
+                    <li>
+                        <span id="refreshin"></span>
+                    </li>
+                    <li>
+                        <a href="https://bugzilla.redhat.com/enter_bug.cgi?alias=&assigned_to=pressgang-ccms-dev%40redhat.com&bug_status=NEW&component=DocBook-builder&product=PressGang%20CCMS&version=1.2">Report Bug</a>
+                    </li>
+                </ul>
             </div>
         </nav>
 
