@@ -5,7 +5,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/scripts/docbuilder.js.map" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/scripts/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/scripts/docbuilder.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -72,12 +71,12 @@
       <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.57945204" vertical-offset="6597" max-vertical-offset="19140">
-              <caret line="471" column="27" selection-start-line="471" selection-start-column="27" selection-end-line="471" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.3328767" vertical-offset="17022" max-vertical-offset="19245">
+              <caret line="1154" column="27" selection-start-line="1154" selection-start-column="17" selection-end-line="1154" selection-end-column="27" />
               <folding>
-                <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-                <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-                <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+                <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+                <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+                <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -597,7 +596,7 @@
       <workItem from="1396139243721" duration="6629000" />
       <workItem from="1396158617257" duration="13765000" />
       <workItem from="1398202544339" duration="12015000" />
-      <workItem from="1398304837130" duration="6211000" />
+      <workItem from="1398304837130" duration="6909000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -823,11 +822,15 @@
       <created>1398217275249</created>
       <updated>1398217275250</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="Converting code to use HornetQ REST JMS endpoints">
+      <created>1398312698168</created>
+      <updated>1398312698168</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="115183000" />
+    <option name="totallyTimeSpent" value="115881000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -866,6 +869,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -877,7 +881,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -899,7 +902,8 @@
       <TodoPanelSettings />
     </option>
     <MESSAGE value="Working on DocBuilder Live prototype" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on DocBuilder Live prototype" />
+    <MESSAGE value="Converting code to use HornetQ REST JMS endpoints" />
+    <option name="LAST_COMMIT_MESSAGE" value="Converting code to use HornetQ REST JMS endpoints" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -946,9 +950,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="2786" max-vertical-offset="3540">
           <caret line="83" column="50" selection-start-line="83" selection-start-column="50" selection-end-line="83" selection-end-column="50" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -997,9 +1001,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="453" max-vertical-offset="3405">
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1048,9 +1052,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="453" max-vertical-offset="3405">
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1099,9 +1103,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="453" max-vertical-offset="3405">
           <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1150,9 +1154,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1155">
           <caret line="35" column="23" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1186,9 +1190,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="180">
           <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1214,9 +1218,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="180">
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1242,9 +1246,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="180">
           <caret line="6" column="60" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1330,12 +1334,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.57945204" vertical-offset="6597" max-vertical-offset="19140">
-          <caret line="471" column="27" selection-start-line="471" selection-start-column="27" selection-end-line="471" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.3328767" vertical-offset="17022" max-vertical-offset="19245">
+          <caret line="1154" column="27" selection-start-line="1154" selection-start-column="17" selection-end-line="1154" selection-end-column="27" />
           <folding>
-            <marker date="1398312657429" expanded="false" signature="3022:3034" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="3048:3075" placeholder="..." />
-            <marker date="1398312657429" expanded="false" signature="30073:30085" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3022:3034" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="3048:3075" placeholder="..." />
+            <marker date="1398313311821" expanded="false" signature="30403:30415" placeholder="..." />
           </folding>
         </state>
       </provider>

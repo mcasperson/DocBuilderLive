@@ -170,23 +170,6 @@ var WAIT_FOR_MESSAGE = "60";
 var UPDATED_TOPICS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedTopic";
 var UPDATED_SPECS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedSpec";
 
-/**
-    This will be true if the content spec being displayed is one of those that we were notifed of
-    as being updated.
- */
-var specUpdated = false;
-/**
- *  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
- * @type {Array}
- */
-var specTopicIds = [];
-/**
- * This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
- * have been updated.
- * @type {Array}
- */
-var topicsUpdated = [];
-
 function error(message:string):void {
     window.alert(message);
 }
@@ -310,6 +293,22 @@ class DocBuilderLive {
     private specId:number;
     private timeoutRefresh:number = null;
     private rebuilding = false;
+    /**
+     This will be true if the content spec being displayed is one of those that we were notifed of
+     as being updated.
+     */
+    private specUpdated = false;
+    /**
+     *  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
+     * @type {Array}
+     */
+    private specTopicIds = [];
+    /**
+     * This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
+     * have been updated.
+     * @type {Array}
+     */
+    private topicsUpdated = [];
 
     private errorCallback = function (title:string, message:string):void {
         window.alert(title + "\n" + message);
@@ -436,8 +435,8 @@ class DocBuilderLive {
             var topics = data.split(",");
             this.topicsUpdated = _.union(
                 _.filter(topics, function(num:string) {
-                    return specTopicIds.indexOf(parseInt(num)) !== -1;
-                }),
+                    return this.specTopicIds.indexOf(parseInt(num)) !== -1;
+                }.bind(this)),
                 this.topicsUpdated
             );
 
@@ -621,6 +620,7 @@ class DocBuilderLive {
     }
 
     getAllChildrenInFlatOrder(spec:SpecNodeCollectionParent):SpecNode[] {
+
         /*
          Get the list of topics that make up the spec in sequential order
          */
@@ -685,6 +685,13 @@ class DocBuilderLive {
         var specTopics:SpecNode[] = expandChild(spec);
 
         specTopics.reverse();
+
+        this.specTopicIds = [];
+        _.each(specTopics, function(childNode, index, list) {
+            if (childNode.entityRevision === null) {
+                this.specTopicIds.push(childNode.entityId)
+            }
+        }.bind(this));
 
         return specTopics;
     }

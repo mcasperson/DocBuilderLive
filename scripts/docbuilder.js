@@ -183,25 +183,6 @@ var WAIT_FOR_MESSAGE = "60";
 var UPDATED_TOPICS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedTopic";
 var UPDATED_SPECS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedSpec";
 
-/**
-This will be true if the content spec being displayed is one of those that we were notifed of
-as being updated.
-*/
-var specUpdated = false;
-
-/**
-*  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
-* @type {Array}
-*/
-var specTopicIds = [];
-
-/**
-* This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
-* have been updated.
-* @type {Array}
-*/
-var topicsUpdated = [];
-
 function error(message) {
     window.alert(message);
 }
@@ -256,6 +237,22 @@ var DocBuilderLive = (function () {
         var _this = this;
         this.timeoutRefresh = null;
         this.rebuilding = false;
+        /**
+        This will be true if the content spec being displayed is one of those that we were notifed of
+        as being updated.
+        */
+        this.specUpdated = false;
+        /**
+        *  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
+        * @type {Array}
+        */
+        this.specTopicIds = [];
+        /**
+        * This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
+        * have been updated.
+        * @type {Array}
+        */
+        this.topicsUpdated = [];
         this.errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
         };
@@ -369,8 +366,8 @@ var DocBuilderLive = (function () {
             */
             var topics = data.split(",");
             this.topicsUpdated = _.union(_.filter(topics, function (num) {
-                return specTopicIds.indexOf(parseInt(num)) !== -1;
-            }), this.topicsUpdated);
+                return this.specTopicIds.indexOf(parseInt(num)) !== -1;
+            }.bind(this)), this.topicsUpdated);
 
             if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
                 if (this.timeoutRefresh !== null) {
@@ -606,6 +603,13 @@ var DocBuilderLive = (function () {
         var specTopics = expandChild(spec);
 
         specTopics.reverse();
+
+        this.specTopicIds = [];
+        _.each(specTopics, function (childNode, index, list) {
+            if (childNode.entityRevision === null) {
+                this.specTopicIds.push(childNode.entityId);
+            }
+        }.bind(this));
 
         return specTopics;
     };
