@@ -179,6 +179,29 @@ var TOPICS_REST_EXPAND = {
 */
 var EDIT_TOPIC_LINK = "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + TOPIC_ID_MARKER;
 
+var WAIT_FOR_MESSAGE = "60";
+var UPDATED_TOPICS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedTopic";
+var UPDATED_SPECS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedSpec";
+
+/**
+This will be true if the content spec being displayed is one of those that we were notifed of
+as being updated.
+*/
+var specUpdated = false;
+
+/**
+*  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
+* @type {Array}
+*/
+var specTopicIds = [];
+
+/**
+* This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
+* have been updated.
+* @type {Array}
+*/
+var topicsUpdated = [];
+
 function error(message) {
     window.alert(message);
 }
@@ -232,9 +255,7 @@ var DocBuilderLive = (function () {
     function DocBuilderLive(specId) {
         var _this = this;
         this.timeoutRefresh = null;
-        this.timeoutUpdate = null;
-        this.refreshUpdateInterval = null;
-        this.refreshIn = REFRESH_DELAY;
+        this.rebuilding = false;
         this.errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
         };
@@ -279,7 +300,7 @@ var DocBuilderLive = (function () {
 
                         if (!foundNext) {
                             // there are no more iframes to load
-                            this.startRefreshCycle("load completed");
+                            this.rebuilding = false;
                         }
 
                         sourceIframe.parentElement.removeChild(sourceIframe);
@@ -294,47 +315,142 @@ var DocBuilderLive = (function () {
 
         this.updateEditSpecLink(specId);
 
-        updateInitialMessage("Getting PressGang revision information", true);
+        this.getSpec(function (spec) {
+            _this.buildToc(spec);
+            var specNodes = _this.getAllChildrenInFlatOrder(spec);
+            _this.getTopics(specNodes);
 
-        this.getLastModifiedTime(function (lastRevisionDate) {
-            _this.lastRevisionDate = lastRevisionDate;
-
-            updateInitialMessage("Expanding content specification", true);
-
-            _this.getSpec(function (spec) {
-                _this.buildToc(spec);
-                var specNodes = _this.getAllChildrenInFlatOrder(spec);
-                _this.getTopics(specNodes);
-            }, _this.errorCallback);
+            /*
+            Kick off the loop that listens for updated topics
+            */
+            _this.listenForUpdates();
         }, this.errorCallback);
     }
-    DocBuilderLive.prototype.updateEditSpecLink = function (specId) {
-        jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId);
-    };
-
-    DocBuilderLive.prototype.getLastModifiedTime = function (callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
+    DocBuilderLive.prototype.listenForUpdates = function () {
         var _this = this;
-        var success = function (data) {
-            callback.bind(_this)(new Date(data.lastRevisionDate));
+        var getMessages = function (url) {
+            // Step 2: Do a POST to the URL in the msg-pull-subscriptions header
+            jQuery.ajax({
+                type: 'POST',
+                url: url,
+                headers: {
+                    "Accept-Wait": WAIT_FOR_MESSAGE
+                },
+                dataType: "text",
+                success: pullSubscriptionSuccess,
+                error: pullSubscriptionError,
+                context: this
+            });
         };
 
-        var error = function () {
-            if (retryCount < RETRY_COUNT) {
-                _this.getLastModifiedTime(callback, errorCallback, ++retryCount);
+        var pullSubscriptionError = function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 503) {
+                /*
+                There were no messages, so try again
+                */
+                var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
+                if (msgConsumeNext !== null) {
+                    getMessages(msgConsumeNext);
+                } else {
+                    _this.listenForUpdates();
+                }
             } else {
-                errorCallback.bind(_this)("Connection Error", "An error occurred while getting the server settings. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                /*
+                Anything else and we'll run through the JMS topic joining process
+                again
+                */
+                _this.listenForUpdates();
             }
         };
 
+        var pullSubscriptionSuccess = function (data, textStatus, jqXHR) {
+            /*
+            There were some messages in the queue to be processed
+            */
+            var topics = data.split(",");
+            this.topicsUpdated = _.union(_.filter(topics, function (num) {
+                return specTopicIds.indexOf(parseInt(num)) !== -1;
+            }), this.topicsUpdated);
+
+            if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
+                if (this.timeoutRefresh !== null) {
+                    window.clearTimeout(this.timeoutRefresh);
+                    this.timeoutRefresh = null;
+                }
+
+                this.rebuilding = true;
+                this.syncDomWithTopics(this.topicsUpdated);
+            }
+
+            var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
+            if (msgConsumeNext !== null) {
+                getMessages(msgConsumeNext);
+            } else {
+                this.listenForUpdates();
+            }
+        }.bind(this);
+
+        var joinTopicSuccess = function (data, textStatus, jqXHR) {
+            /*
+            Find the url that we need to POST to join the JMS topic
+            */
+            var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
+
+            if (msgConsumeNext !== null) {
+                // Do a POST to join the JMS topic
+                jQuery.ajax({
+                    type: 'POST',
+                    headers: {
+                        "Accept-Wait": WAIT_FOR_MESSAGE
+                    },
+                    url: msgConsumeNext,
+                    dataType: "text",
+                    success: pullSubscriptionSuccess,
+                    error: pullSubscriptionError,
+                    context: this
+                });
+            } else {
+                this.listenForUpdates();
+            }
+        };
+
+        /*
+        In the even of an error, attempt to join the JMS topic again
+        */
+        var initialConnectionError = function (jqXHR, textStatus, errorThrown) {
+            window.setTimeout(function () {
+                this.listenForUpdates();
+            }.bind(this), 10000);
+        };
+
+        var initialConnectionSuccess = function (data, textStatus, jqXHR) {
+            var msgPullSubscriptions = jqXHR.getResponseHeader("msg-pull-subscriptions");
+
+            // Do a POST to join the JMS topic
+            jQuery.ajax({
+                type: 'POST',
+                url: msgPullSubscriptions,
+                dataType: "text",
+                success: joinTopicSuccess,
+                error: initialConnectionError,
+                context: this
+            });
+        };
+
+        // Do a GET to the endpoint url. If this is successful, we will have a URL that we can POST to
+        // to join the JMS topic
         jQuery.ajax({
             type: 'GET',
-            url: SERVER + REVISION_DETAILS_REST,
-            dataType: "json",
-            success: success,
-            error: error,
+            url: UPDATED_TOPICS_JMS_TOPIC,
+            dataType: "text",
+            success: initialConnectionSuccess,
+            error: initialConnectionError,
             context: this
         });
+    };
+
+    DocBuilderLive.prototype.updateEditSpecLink = function (specId) {
+        jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId);
     };
 
     /**
@@ -670,6 +786,7 @@ var DocBuilderLive = (function () {
     * @param spec The spec with all children expanded
     */
     DocBuilderLive.prototype.getTopics = function (specTopics) {
+        var _this = this;
         jQuery("#loading").remove();
 
         var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
@@ -682,8 +799,8 @@ var DocBuilderLive = (function () {
         }, 0, this);
 
         this.timeoutRefresh = window.setTimeout(function () {
-            this.startRefreshCycle("initial topic load");
-        }.bind(this), delay);
+            _this.rebuilding = false;
+        }, delay);
     };
 
     DocBuilderLive.prototype.buildToc = function (spec) {
@@ -748,163 +865,14 @@ var DocBuilderLive = (function () {
         jQuery(document.body).append(tocDiv);
     };
 
-    DocBuilderLive.prototype.startRefreshCycle = function (source) {
+    DocBuilderLive.prototype.rebuildSpec = function (errorCallback) {
         var _this = this;
-        if (this.timeoutRefresh !== null) {
-            window.clearTimeout(this.timeoutRefresh);
-            this.timeoutRefresh = null;
-        }
-
-        if (this.timeoutUpdate !== null) {
-            window.clearTimeout(this.timeoutUpdate);
-            this.timeoutUpdate = null;
-            message("Cancelled last refresh.");
-        }
-
-        if (this.refreshUpdateInterval !== null) {
-            window.clearInterval(this.refreshUpdateInterval);
-            this.refreshUpdateInterval = null;
-            jQuery("#refreshin").text("");
-        }
-
-        message("Will refresh in " + (REFRESH_DELAY / 1000) + " seconds from " + source);
-        this.timeoutUpdate = window.setTimeout(function () {
-            _this.findUpdates();
-            _this.timeoutUpdate = null;
-        }, REFRESH_DELAY);
-
-        this.refreshIn = REFRESH_DELAY;
-
-        if (this.refreshUpdateInterval === null) {
-            this.refreshUpdateInterval = window.setInterval(function () {
-                _this.refreshIn = _this.refreshIn - 1000;
-                if (_this.refreshIn >= 0) {
-                    jQuery("#refreshin").text("Refresh in " + (_this.refreshIn / 1000) + " seconds");
-                }
-            }, 1000);
-        }
-    };
-
-    DocBuilderLive.prototype.findUpdates = function () {
-        var _this = this;
-        var errorCallback = function (title, message) {
-            _this.startRefreshCycle("update error");
-        };
-
-        this.getLastModifiedTime(function (lastRevisionDate) {
-            _this.findUpdatesToSpec(function (updatedSpec) {
-                _this.findUpdatesToTopics(function (updatedTopic) {
-                    if (!updatedSpec && !updatedTopic) {
-                        _this.startRefreshCycle("update done with no changes");
-                    }
-
-                    _this.lastRevisionDate = lastRevisionDate;
-                }, errorCallback);
+        this.getSpec(function (spec) {
+            _this.expandSpec(spec, function (expandedSpec) {
+                _this.syncDomWithSpec(expandedSpec);
+                _this.buildToc(expandedSpec);
             }, errorCallback);
-        }, errorCallback);
-    };
-
-    DocBuilderLive.prototype.findUpdatesToSpec = function (callback, errorCallback) {
-        var _this = this;
-        this.findUpdatedSpec(function (spec) {
-            /*
-            Searches will return specs that were edited on or after the date specified. We only
-            want specs edited after the date specified.
-            */
-            var specIsUpdated = spec.items.length !== 0 && new Date(spec.items[0].item.lastModified) > _this.lastRevisionDate;
-            if (specIsUpdated) {
-                var updatedSpec = spec.items[0].item;
-                _this.expandSpec(updatedSpec, function (expandedSpec) {
-                    _this.syncDomWithSpec(expandedSpec);
-                    _this.buildToc(expandedSpec);
-                }, errorCallback);
-            }
-            callback(specIsUpdated);
-        }, errorCallback);
-    };
-
-    DocBuilderLive.prototype.findUpdatedSpec = function (callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
-        var _this = this;
-        var startEditDate = moment(this.lastRevisionDate).format(DATE_TIME_FORMAT);
-        var url = SERVER + SPECS_REST.replace(CONTENT_SPEC_ID_MARKER, this.specId.toString()).replace(CONTENT_SPEC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) + "?expand=" + encodeURIComponent(JSON.stringify(SPECS_REST_EXPAND));
-
-        jQuery.ajax({
-            type: 'GET',
-            url: url,
-            dataType: "json",
-            context: this,
-            success: function (data) {
-                callback.bind(_this)(data);
-            },
-            error: function () {
-                if (retryCount < RETRY_COUNT) {
-                    _this.findUpdatedSpec(callback, errorCallback, ++retryCount);
-                } else {
-                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
-                }
-            }
-        });
-    };
-
-    DocBuilderLive.prototype.findUpdatesToTopics = function (callback, errorCallback) {
-        var _this = this;
-        this.findUpdatedTopics(function (topics) {
-            var updatedTopics = _.filter(topics.items, function (topicItem) {
-                var topic = topicItem.item;
-                return new Date(topic.lastModified) > this.lastRevisionDate;
-            }, _this);
-
-            var updatedTopicsExist = updatedTopics.length !== 0;
-            if (updatedTopicsExist) {
-                _this.syncDomWithTopics(updatedTopics);
-            }
-
-            callback(updatedTopicsExist);
-        }, errorCallback);
-    };
-
-    DocBuilderLive.prototype.findUpdatedTopics = function (callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
-        var _this = this;
-        var startEditDate = moment(this.lastRevisionDate).format(DATE_TIME_FORMAT);
-
-        var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS);
-        var floatingTopicDivs = _.filter(topicDivs, function (topicDiv) {
-            return topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_REV) === null;
-        });
-        var floatingTopicIds = _.reduce(floatingTopicDivs, function (floatingTopicIds, topicDiv) {
-            var topicId = topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_ID);
-
-            if (topicId === null) {
-                throw "All topic divs should have the " + SPEC_TOPIC_DIV_TOPIC_ID + " attribute set";
-            }
-
-            if (floatingTopicIds.length !== 0) {
-                floatingTopicIds += ",";
-            }
-            floatingTopicIds += topicId;
-            return floatingTopicIds;
-        }, "");
-
-        var url = SERVER + TOPICS_REST.replace(TOPIC_IDS_MARKER, floatingTopicIds).replace(TOPIC_EDIT_DATE_MARKER, encodeURIComponent(encodeURIComponent(startEditDate))) + "?expand=" + encodeURIComponent(JSON.stringify(TOPICS_REST_EXPAND));
-
-        jQuery.ajax({
-            type: 'GET',
-            url: url,
-            dataType: "json",
-            context: this,
-            success: function (data) {
-                callback.bind(_this)(data);
-            },
-            error: function () {
-                if (retryCount < RETRY_COUNT) {
-                    _this.findUpdatedTopics(callback, errorCallback, ++retryCount);
-                } else {
-                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the topic details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
-                }
-            }
-        });
+        }, this.errorCallback);
     };
 
     DocBuilderLive.prototype.syncDomWithTopics = function (updatedTopics) {
@@ -915,7 +883,7 @@ var DocBuilderLive = (function () {
             /*
             Get every topic div that references this node
             */
-            var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS + "[" + SPEC_TOPIC_DIV_TOPIC_ID + "='" + topicItem.item.id + "']");
+            var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS + "[" + SPEC_TOPIC_DIV_TOPIC_ID + "='" + topicItem + "']");
 
             /*
             Remove the divs that have static revisions
@@ -1073,7 +1041,7 @@ var DocBuilderLive = (function () {
         Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
         */
         this.timeoutRefresh = window.setTimeout(function () {
-            _this.startRefreshCycle("updated spec");
+            _this.rebuilding = false;
         }, delay);
 
         function divsAreEqual(node1, node2) {
