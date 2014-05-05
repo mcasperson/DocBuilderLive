@@ -2,6 +2,7 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/moment.d.ts" />
 /// <reference path="collections.ts" />
+/// <reference path="HornetQRestListener.ts" />
 
 /**
  * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
@@ -391,130 +392,32 @@ class DocBuilderLive {
     }
 
     listenForUpdates():void {
-        var getMessages = function(url) {
-            // Step 2: Do a POST to the URL in the msg-pull-subscriptions header
-            jQuery.ajax({
-                type: 'POST',
-                url: url,
-                headers: {
-                    "Accept-Wait": WAIT_FOR_MESSAGE
-                },
-                dataType: "text",
-                success: pullSubscriptionSuccess,
-                error: pullSubscriptionError,
-                context: this
-            });
-        }
-
-        var pullSubscriptionError = (jqXHR, textStatus, errorThrown):void => {
-
-            if (jqXHR.status === 503) {
-                /*
-                    There were no messages, so try again
-                 */
-                var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
-                if (msgConsumeNext !== null) {
-                    getMessages(msgConsumeNext);
-                } else {
-                    this.listenForUpdates();
-                }
-            } else {
-                /*
-                    Anything else and we'll run through the JMS topic joining process
-                    again
-                 */
-                this.listenForUpdates();
-            }
-        }
-
-        var pullSubscriptionSuccess = function(data, textStatus, jqXHR) {
-            /*
-                There were some messages in the queue to be processed
-             */
-
-            var topics = data.split(",");
-            this.topicsUpdated = _.union(
-                _.filter(topics, function(num:string) {
-                    return this.specTopicIds.indexOf(parseInt(num)) !== -1;
-                }.bind(this)),
-                this.topicsUpdated
-            );
-
-            if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
-                if (this.timeoutRefresh !== null) {
-                    window.clearTimeout(this.timeoutRefresh);
-                    this.timeoutRefresh = null;
-                }
-
-                this.rebuilding = true;
-                this.syncDomWithTopics(this.topicsUpdated);
-            }
-
-            var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
-            if (msgConsumeNext !== null) {
-                getMessages(msgConsumeNext);
-            } else {
-                this.listenForUpdates();
-            }
-        }.bind(this);
-
-        var joinTopicSuccess = function(data, textStatus, jqXHR) {
-            /*
-                Find the url that we need to POST to join the JMS topic
-             */
-            var msgConsumeNext = jqXHR.getResponseHeader("msg-consume-next");
-
-            if (msgConsumeNext !== null) {
-                // Do a POST to join the JMS topic
-                jQuery.ajax({
-                    type: 'POST',
-                    headers: {
-                        "Accept-Wait": WAIT_FOR_MESSAGE
-                    },
-                    url: msgConsumeNext,
-                    dataType: "text",
-                    success: pullSubscriptionSuccess,
-                    error: pullSubscriptionError,
-                    context: this
-                });
-            } else {
-                this.listenForUpdates();
-            }
-        }
-
         /*
-         In the even of an error, attempt to join the JMS topic again
+            Create a new instance of the HornetQRestListener class. This will create an async cycle of
+            calls to the HornetQ REST API, and call the supplied callback when a message is found.
          */
-        var initialConnectionError = function(jqXHR, textStatus, errorThrown) {
-            window.setTimeout(function() {
-                this.listenForUpdates();
-            }.bind(this), 10000);
-        }
+        new HornetQRestListener(
+            UPDATED_TOPICS_JMS_TOPIC,
+            (data) => {
+                var topics = data.split(",");
+                this.topicsUpdated = _.union(
+                    _.filter(topics, function(num:string) {
+                        return this.specTopicIds.indexOf(parseInt(num)) !== -1;
+                    }.bind(this)),
+                    this.topicsUpdated
+                );
 
-        var initialConnectionSuccess = function(data, textStatus, jqXHR) {
-            var msgPullSubscriptions = jqXHR.getResponseHeader("msg-pull-subscriptions");
+                if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
+                    if (this.timeoutRefresh !== null) {
+                        window.clearTimeout(this.timeoutRefresh);
+                        this.timeoutRefresh = null;
+                    }
 
-            // Do a POST to join the JMS topic
-            jQuery.ajax({
-                type: 'POST',
-                url: msgPullSubscriptions,
-                dataType: "text",
-                success: joinTopicSuccess,
-                error: initialConnectionError,
-                context: this
-            });
-        }
-
-        // Do a GET to the endpoint url. If this is successful, we will have a URL that we can POST to
-        // to join the JMS topic
-        jQuery.ajax({
-            type: 'GET',
-            url: UPDATED_TOPICS_JMS_TOPIC,
-            dataType: "text",
-            success: initialConnectionSuccess,
-            error: initialConnectionError,
-            context: this
-        });
+                    this.rebuilding = true;
+                    this.syncDomWithTopics(this.topicsUpdated);
+                }
+            }
+        );
     }
 
     updateEditSpecLink(specId):void {

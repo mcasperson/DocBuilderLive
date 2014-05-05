@@ -2,8 +2,7 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/themes/scripts/docbuilder.js" />
-        <item url="file://$PROJECT_DIR$/themes/scripts/collections.js" />
+        <item url="file://$PROJECT_DIR$/HornetQRestListener.js" />
         <item url="file://$PROJECT_DIR$/scripts/collections.js" />
         <item url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       </sourceFilesUrls>
@@ -11,6 +10,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/themes/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/themes/scripts/collections.js" />
+      <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/scripts/collections.js" />
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
     </CLASSES>
