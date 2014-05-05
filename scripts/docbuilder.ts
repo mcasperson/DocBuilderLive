@@ -418,6 +418,21 @@ class DocBuilderLive {
                 }
             }
         );
+
+        /*
+         Create a new instance of the HornetQRestListener class. This will create an async cycle of
+         calls to the HornetQ REST API, and call the supplied callback when a message is found.
+         */
+        new HornetQRestListener(
+            UPDATED_SPECS_JMS_TOPIC,
+            (data) => {
+                var topics = data.split(",");
+
+                if (topics.indexOf(this.specId.toString()) !== -1) {
+                    this.rebuildSpec(this.errorCallback);
+                }
+            }
+        );
     }
 
     updateEditSpecLink(specId):void {

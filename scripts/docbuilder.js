@@ -346,6 +346,18 @@ var DocBuilderLive = (function () {
                 _this.syncDomWithTopics(_this.topicsUpdated);
             }
         });
+
+        /*
+        Create a new instance of the HornetQRestListener class. This will create an async cycle of
+        calls to the HornetQ REST API, and call the supplied callback when a message is found.
+        */
+        new HornetQRestListener(UPDATED_SPECS_JMS_TOPIC, function (data) {
+            var topics = data.split(",");
+
+            if (topics.indexOf(_this.specId.toString()) !== -1) {
+                _this.rebuildSpec(_this.errorCallback);
+            }
+        });
     };
 
     DocBuilderLive.prototype.updateEditSpecLink = function (specId) {
