@@ -111,8 +111,9 @@ var TOPIC_NODE_TYPES = [TOPIC, INITIAL_CONTENT_TOPIC];
 var RETRY_COUNT = 5;
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
-var SERVER = "http://localhost:8080";
+var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
+
+//var SERVER:string = "http://localhost:8080"
 var REST_BASE = "/pressgang-ccms/rest/1";
 var REVISION_DETAILS_REST = REST_BASE + "/sysinfo/get/json";
 var SPEC_REST = REST_BASE + "/contentspec/get/json/";
