@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="pressgang-ccms-docbuilderlive:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="pressgang-ccms-docbuilderlive.war">
+      <element id="artifact" artifact-name="pressgang-ccms-docbuilderlive:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DocBuilderLive.iml" filepath="$PROJECT_DIR$/DocBuilderLive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pressgang-ccms-docbuilderlive.iml" filepath="$PROJECT_DIR$/pressgang-ccms-docbuilderlive.iml" />
     </modules>
   </component>
 </project>
