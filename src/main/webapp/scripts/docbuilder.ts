@@ -28,12 +28,12 @@ var TOPIC_ICON = "images/file.png";
  * a timeout is reached. This is how long each iframe should wait before the timeout is reached.
  * @type {number}
  */
-var DELAY_BETWEEN_IFRAME_SRC_CALLS = 2000;
+var DELAY_BETWEEN_IFRAME_SRC_CALLS = 10000;
 /**
  * This is how many iframes should be downloading the XML at any one time
  * @type {number}
  */
-var CONCURRENT_IFRAME_DOWNLOADS = 1;
+var CONCURRENT_IFRAME_DOWNLOADS = 2;
 /**
  * This is the name of the property assigned to the DIVs that display any spec data. This property
  * holds references to the divs used for internal anchors.
@@ -159,6 +159,7 @@ class TreeNode {
     text:string;
     icon:string;
     data:string;
+    a_attr:{};
     state:TreeNodeState;
     children:TreeNode[] = [];
 }
@@ -298,19 +299,10 @@ class DocBuilderLive {
                              The iframes have their src set either when the iframe before them
                              finishes loading, or when a timeout occurs.
                              */
-                            var nextIFrame = jQuery(sourceIframe);
-                            var foundNext = false;
-                            while ((nextIFrame = nextIFrame.next("iframe")).length !== 0) {
-                                var nextIFrameElement:HTMLIFrameElement = <HTMLIFrameElement>nextIFrame[0];
-                                if (nextIFrameElement["setSrc"] === undefined) {
-                                    nextIFrameElement["setSrc"] = true;
-                                    nextIFrameElement.src = nextIFrameElement["url"];
-                                    foundNext = true;
-                                    break;
-                                }
-                            }
-
-                            if (!foundNext) {
+                            var nextDivs = jQuery("div[data-loading='true']");
+                            if (nextDivs.length !== 0) {
+                                this.createIFrameAndLoadDiv(nextDivs[0]);
+                            } else {
                                 // there are no more iframes to load
                                 this.rebuilding = false;
                             }
@@ -445,7 +437,7 @@ class DocBuilderLive {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
-                updateInitialMessage("Expanded " + count + " child containers", true);
+                updateInitialMessage("Loading Content Specification: Expanded " + count + " Child Containers", true);
                 var element:SpecNode = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     this.populateChild(
@@ -670,6 +662,7 @@ class DocBuilderLive {
          Create the div that will be filled with the HTML sent by the iframe.
          */
         var div = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
+        // this attribute identifies the div as waiting to be populated with the topic HTML
         div.addClass(LOADING_TOPIC_DIV_CLASS);
         div.addClass(DIV_BOOK_INDEX_ID_PREFIX);
         div.html(LOADING_HTML);
@@ -721,6 +714,15 @@ class DocBuilderLive {
         return div;
     }
 
+    createIFrameAndLoadDiv(div:HTMLDivElement):void {
+        if (div.getAttribute("data-loading") === "true") {
+            var iFrame = this.buildIFrame(div);
+            iFrame.src = div.getAttribute("url");
+            div.removeAttribute("url");
+            div.setAttribute("data-loading", "false");
+        }
+    }
+
     /**
      * Builds and iFrame and sets the src attribute to the topics XML+XSLT endpoint.
      * @param iFrame
@@ -728,13 +730,21 @@ class DocBuilderLive {
      * @param count
      */
     setIFrameSrc(div:HTMLDivElement, url:string, delay:number, count:number):void {
+
+        /*
+            We use this attribute to determine if this div has already been loaded, because it can be loaded
+            either by the timeout set here, or when the div before it is loaded.
+         */
+        div.setAttribute("data-loading", "true");
+        /*
+            We'll use this url to initialise the iframe when it is time
+         */
+        div.setAttribute("url", url);
         /*
          We want to start a few iframes downloading the xml concurrently.
          */
         if (count < CONCURRENT_IFRAME_DOWNLOADS) {
-            var iFrame = this.buildIFrame(div);
-            iFrame.src = url;
-            iFrame["setSrc"] = true;
+            this.createIFrameAndLoadDiv(div);
         } else {
             /*
              The iframes have their src set either when the iframe before them
@@ -742,11 +752,7 @@ class DocBuilderLive {
              This gives us a fallback in case an iframe didn't load properly.
              */
             window.setTimeout(function () {
-                var iFrame = this.buildIFrame(div);
-                if (iFrame["setSrc"] === undefined) {
-                    iFrame.src = url;
-                    iFrame["setSrc"] = true;
-                }
+                this.createIFrameAndLoadDiv(div);
             }.bind(this), delay);
         }
 
@@ -765,7 +771,7 @@ class DocBuilderLive {
         var delay = _.reduce(topicsAndContainers, function(delay:number, element, index) {
             var url = this.buildUrl(element);
             var div = this.buildDiv(element);
-            this.setIFrameSrc(div, url, delay, index);
+            this.setIFrameSrc(div[0], url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
@@ -898,6 +904,7 @@ class DocBuilderLive {
                         .replace(CSNODE_ID_MARKER, csNodeId.toString())
                         .replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 }
+
                 this.setIFrameSrc(topicDiv, url, delay, index);
                 return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
             }, 0, this);

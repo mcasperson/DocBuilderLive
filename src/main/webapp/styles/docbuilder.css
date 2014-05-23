@@ -5,7 +5,7 @@ iframe {
 #book {
     position: fixed;
     top: 50px;
-    left: 350px;
+    left: 400px;
     right: 10px;
     bottom: 10px;
     overflow: auto;
@@ -18,7 +18,7 @@ iframe {
     left: 10px;
     top: 40px;
     bottom: 10px;
-    width: 330px;
+    width: 380px;
     border-bottom-style: none;
     font-family: "Open Sans";
     color: #393f44;
