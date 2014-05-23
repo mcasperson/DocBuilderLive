@@ -4,6 +4,10 @@
 /// <reference path="collections.ts" />
 /// <reference path="HornetQRestListener.ts" />
 
+//var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
+var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
+//var SERVER:string = "http://localhost:8080"
+
 /**
  * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
  * @type {string}
@@ -83,9 +87,6 @@ var INITIAL_CONTENT_TOPIC:string = "INITIAL_CONTENT_TOPIC";
 var TOPIC:string = "TOPIC";
 var TOPIC_NODE_TYPES:string[] = [TOPIC, INITIAL_CONTENT_TOPIC];
 var RETRY_COUNT:number = 5;
-//var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
-//var SERVER:string = "http://localhost:8080"
 var REST_BASE:string = "/pressgang-ccms/rest/1"
 var SPEC_REST:string= REST_BASE + "/contentspec/get/json/";
 var SPEC_REST_EXPAND:Object={
