@@ -488,27 +488,28 @@ class DocBuilderLive {
     }
 
     expandSpec(spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void {
-        var expandChildren = (index:number):void => {
+        var expandChildren = (index:number, count:number):void => {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
+                updateInitialMessage("Expanded " + count + " children containers", true);
                 var element:SpecNode = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     this.populateChild(
                         element.id,
                         (node:SpecNode):void => {
                             spec.children_OTM.items[index].item.children_OTM = node.children_OTM;
-                            expandChildren(++index);
+                            expandChildren(++index, ++count);
                         },
                         errorCallback
                     );
                 } else {
-                    expandChildren(++index);
+                    expandChildren(++index, ++count);
                 }
             }
         }
 
-        expandChildren(0);
+        expandChildren(0, 1);
     }
 
     /**
@@ -525,6 +526,7 @@ class DocBuilderLive {
             dataType: "json",
             context: this,
             success: (data:SpecNodeCollectionParent):void => {
+                updateInitialMessage("Top level of content spec loaded", true);
                 this.expandSpec(data, callback, errorCallback);
             },
             error: ()=>{

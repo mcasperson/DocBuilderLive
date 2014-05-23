@@ -6,7 +6,29 @@ hr {
     border-top: none;
 }
 
-.filename {
+.filename, .classname, .code {
     color: #333333;
     font-weight: bold;
+}
+
+td {
+    border-color: #D1D1D1;
+    border-width: 1px;
+    border-style: solid;
+}
+
+th, td {
+    padding: 10px;
+}
+
+thead {
+    background-image: linear-gradient(rgb(250, 250, 250) 0%, rgb(237, 237, 237) 100%);
+}
+
+.chapter .titlepage .title {
+    font-size: 46px;
+}
+
+.chapter .titlepage .title {
+    font-size: 20px;
 }

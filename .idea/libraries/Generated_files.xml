@@ -3,6 +3,8 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -12,6 +14,8 @@
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

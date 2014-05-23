@@ -411,23 +411,24 @@ var DocBuilderLive = (function () {
 
     DocBuilderLive.prototype.expandSpec = function (spec, callback, errorCallback) {
         var _this = this;
-        var expandChildren = function (index) {
+        var expandChildren = function (index, count) {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
+                updateInitialMessage("Expanded " + count + " children containers", true);
                 var element = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     _this.populateChild(element.id, function (node) {
                         spec.children_OTM.items[index].item.children_OTM = node.children_OTM;
-                        expandChildren(++index);
+                        expandChildren(++index, ++count);
                     }, errorCallback);
                 } else {
-                    expandChildren(++index);
+                    expandChildren(++index, ++count);
                 }
             }
         };
 
-        expandChildren(0);
+        expandChildren(0, 1);
     };
 
     /**
@@ -445,6 +446,7 @@ var DocBuilderLive = (function () {
             dataType: "json",
             context: this,
             success: function (data) {
+                updateInitialMessage("Top level of content spec loaded", true);
                 _this.expandSpec(data, callback, errorCallback);
             },
             error: function () {
