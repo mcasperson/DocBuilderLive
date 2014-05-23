@@ -1,0 +1,95 @@
+div.warning:before {
+    content:url(../images/warning.png);
+    padding-left: 5px;
+}
+
+div.note:before {
+    content:url(../images/note.png);
+    padding-left: 5px;
+}
+
+div.important:before {
+    content:url(../images/important.png);
+    padding-left: 5px;
+}
+
+div.warning, div.note, div.important {
+    color: black;
+    margin: 0px;
+    padding: 0px;
+    background: none;
+    background-color: white;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #aaaaaa;
+    page-break-inside: avoid;
+}
+
+div.admonition_header p {
+    margin: 0px;
+    padding: 0px;
+    color: #eeeeec;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 1.4em;
+    line-height: 1.4em;
+    font-size: 17px;
+    display:inline;
+}
+
+div.admonition_header {
+    background-origin:content-box;
+    clear: both;
+    margin: 0px;
+    padding: 0px;
+    margin-top: -40px;
+    padding-left: 58px;
+    line-height: 1.0px;
+    font-size: 1.0px;
+}
+
+div.warning div.admonition_header {
+    background: url(../images/red.png) top left repeat-x;
+    background-color: #590000;
+    background: -webkit-linear-gradient(#a40000,#590000);
+    background: linear-gradient(#a40000,#590000);
+}
+
+div.note div.admonition_header {
+    background: url(../images/green.png) top right repeat-x;
+    background-color: #597800;
+    background: -webkit-linear-gradient(#769f00,#597800);
+    background: linear-gradient(#769f00,#597800);
+}
+
+div.important div.admonition_header {
+    background: url(../images/yellow.png) top right repeat-x;
+    background-color: #a6710f;
+    background: -webkit-linear-gradient(#d08e13,#a6710f);
+    background: linear-gradient(#d08e13,#a6710f);
+}
+
+div.warning p:first-child,
+div.warning div.para:first-child,
+div.note p:first-child,
+div.note div.para:first-child,
+div.important p:first-child,
+div.important div.para:first-child {
+    padding: 0px;
+    margin: 0px;
+}
+
+div.admonition {
+    border: none;
+    border-left: 1px solid #aaaaaa;
+    border-right: 1px solid #aaaaaa;
+    padding:0px;
+    margin:0px;
+    padding-top: 1.5em;
+    padding-bottom: 1em;
+    padding-left: 2em;
+    padding-right: 1em;
+    background-color: #eeeeec;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+}

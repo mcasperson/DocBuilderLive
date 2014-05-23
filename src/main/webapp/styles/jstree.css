@@ -1,0 +1,4 @@
+.jstree-ocl {
+    /* Disable the folder close widgets */
+    width:0px !important
+}

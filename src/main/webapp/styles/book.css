@@ -1,3 +1,7 @@
+.pficon {
+    font-size: 20px
+}
+
 .title {
     color: #00618A;
 }
@@ -6,7 +10,7 @@ hr {
     border-top: none;
 }
 
-.filename, .classname, .code {
+.filename, .classname, code {
     color: #333333;
     font-weight: bold;
 }

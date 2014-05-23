@@ -81,7 +81,8 @@ var TOPIC_ID_MARKER:string = "#TOPICID#";
 var CSNODE_ID_MARKER:string = "#CSNODEID#";
 var CSNODE_REV_MARKER:string = "#CSNODEREV#";
 var INITIAL_CONTENT_CONTAINER = "INITIAL_CONTENT";
-var CONTAINER_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
+var CHAPTER_NODE_TYPE = "CHAPTER";
+var CONTAINER_NODE_TYPES:string[] = [CHAPTER_NODE_TYPE, "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
 var TITLE_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
 var INITIAL_CONTENT_TOPIC:string = "INITIAL_CONTENT_TOPIC";
 var TOPIC:string = "TOPIC";
@@ -132,6 +133,10 @@ function nodeIsTopic(specNode:SpecNode):boolean {
 
 function nodeIsContainer(specNode:SpecNode):boolean {
     return CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsChapter(specNode:SpecNode):boolean {
+    return specNode.nodeType === CHAPTER_NODE_TYPE;
 }
 
 function nodeIsTitleContainer(specNode:SpecNode):boolean {
@@ -776,6 +781,7 @@ class DocBuilderLive {
 
         var addChildren = (specNode:SpecNode, parent:TreeNode):void => {
             var isContainer = nodeIsTitleContainer(specNode);
+            var isChapter = nodeIsChapter(specNode);
             var isTopic = nodeIsTopic(specNode);
             var isInitialContainer = nodeIsInitialContainer(specNode);
 

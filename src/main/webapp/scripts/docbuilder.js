@@ -90,7 +90,8 @@ var TOPIC_ID_MARKER = "#TOPICID#";
 var CSNODE_ID_MARKER = "#CSNODEID#";
 var CSNODE_REV_MARKER = "#CSNODEREV#";
 var INITIAL_CONTENT_CONTAINER = "INITIAL_CONTENT";
-var CONTAINER_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
+var CHAPTER_NODE_TYPE = "CHAPTER";
+var CONTAINER_NODE_TYPES = [CHAPTER_NODE_TYPE, "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
 var TITLE_NODE_TYPES = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
 var INITIAL_CONTENT_TOPIC = "INITIAL_CONTENT_TOPIC";
 var TOPIC = "TOPIC";
@@ -141,6 +142,10 @@ function nodeIsTopic(specNode) {
 
 function nodeIsContainer(specNode) {
     return CONTAINER_NODE_TYPES.indexOf(specNode.nodeType) !== -1;
+}
+
+function nodeIsChapter(specNode) {
+    return specNode.nodeType === CHAPTER_NODE_TYPE;
 }
 
 function nodeIsTitleContainer(specNode) {
@@ -673,6 +678,7 @@ var DocBuilderLive = (function () {
 
         var addChildren = function (specNode, parent) {
             var isContainer = nodeIsTitleContainer(specNode);
+            var isChapter = nodeIsChapter(specNode);
             var isTopic = nodeIsTopic(specNode);
             var isInitialContainer = nodeIsInitialContainer(specNode);
 
