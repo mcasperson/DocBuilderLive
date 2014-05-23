@@ -36,7 +36,7 @@ var DELAY_BETWEEN_IFRAME_SRC_CALLS = 10000;
 * This is how many iframes should be downloading the XML at any one time
 * @type {number}
 */
-var CONCURRENT_IFRAME_DOWNLOADS = 2;
+var CONCURRENT_IFRAME_DOWNLOADS = 3;
 
 /**
 * This is the name of the property assigned to the DIVs that display any spec data. This property

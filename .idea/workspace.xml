@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js.map" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/jstree.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/jstree.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -123,13 +120,13 @@
       <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3328786" vertical-offset="281" max-vertical-offset="17640">
+            <state vertical-scroll-proportion="0.59345156" vertical-offset="90" max-vertical-offset="17640">
               <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1400815592582" expanded="false" signature="2970:2982" placeholder="..." />
-                <marker date="1400815592582" expanded="false" signature="2996:3023" placeholder="..." />
-                <marker date="1400815592582" expanded="false" signature="25616:25628" placeholder="..." />
+                <marker date="1400815796627" expanded="false" signature="2970:2982" placeholder="..." />
+                <marker date="1400815796627" expanded="false" signature="2996:3023" placeholder="..." />
+                <marker date="1400815796627" expanded="false" signature="25616:25628" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -843,7 +840,7 @@
       <workItem from="1398304837130" duration="7514000" />
       <workItem from="1399252776190" duration="6766000" />
       <workItem from="1400563313733" duration="500000" />
-      <workItem from="1400806150748" duration="8676000" />
+      <workItem from="1400806150748" duration="9469000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1121,11 +1118,15 @@
       <created>1400812965408</created>
       <updated>1400812965408</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="Fixing loading of topics">
+      <created>1400815612965</created>
+      <updated>1400815612965</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="132428000" />
+    <option name="totallyTimeSpent" value="133221000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1204,7 +1205,8 @@
     <MESSAGE value="Updating styles" />
     <MESSAGE value="Cleaning up the code" />
     <MESSAGE value="Fixing styles" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing styles" />
+    <MESSAGE value="Fixing loading of topics" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing loading of topics" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1236,9 +1238,9 @@
           <caret line="84" column="110" selection-start-line="84" selection-start-column="99" selection-end-line="84" selection-end-column="110" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1400815592582" expanded="false" signature="2970:2982" placeholder="..." />
-            <marker date="1400815592582" expanded="false" signature="2996:3023" placeholder="..." />
-            <marker date="1400815592582" expanded="false" signature="25616:25628" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="2970:2982" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="2996:3023" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="25616:25628" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1491,13 +1493,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3328786" vertical-offset="281" max-vertical-offset="17640">
+        <state vertical-scroll-proportion="0.59345156" vertical-offset="90" max-vertical-offset="17640">
           <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1400815592582" expanded="false" signature="2970:2982" placeholder="..." />
-            <marker date="1400815592582" expanded="false" signature="2996:3023" placeholder="..." />
-            <marker date="1400815592582" expanded="false" signature="25616:25628" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="2970:2982" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="2996:3023" placeholder="..." />
+            <marker date="1400815796627" expanded="false" signature="25616:25628" placeholder="..." />
           </folding>
         </state>
       </provider>
