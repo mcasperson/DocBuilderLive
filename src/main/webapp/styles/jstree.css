@@ -2,3 +2,11 @@
     /* Disable the folder close widgets */
     width:0px !important
 }
+
+a[data-containertreenode] {
+    font-size: 14px;
+}
+
+a[data-chaptertreenode] {
+    font-size: 16px;
+}

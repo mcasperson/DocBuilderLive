@@ -800,6 +800,15 @@ class DocBuilderLive {
                 treeNode.icon = isContainer ? FOLDER_ICON : TOPIC_ICON;
                 treeNode.data = childIndex.toString();
                 treeNode.state = {opened: true};
+                treeNode.a_attr = {};
+
+                if (isContainer) {
+                    treeNode.a_attr["data-containertreenode"] = "true";
+                }
+
+                if (isChapter) {
+                    treeNode.a_attr["data-chaptertreenode"] = "true";
+                }
 
                 ++childIndex;
 
