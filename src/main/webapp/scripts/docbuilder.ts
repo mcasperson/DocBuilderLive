@@ -20,26 +20,16 @@ var FOLDER_ICON = "pficon pficon-folder-open";
  */
 var TOPIC_ICON = "images/file.png";
 /**
- * This is the date format used for queries against the rest server
- * @type {string}
- */
-var DATE_TIME_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ";
-/**
- * This is how long to wait before polling the server for an updated spec or updated topics
- * @type {number}
- */
-var REFRESH_DELAY = 10000;
-/**
  * iframes have their src value set either when the iframe before them is updated, or when
  * a timeout is reached. This is how long each iframe should wait before the timeout is reached.
  * @type {number}
  */
-var DELAY_BETWEEN_IFRAME_SRC_CALLS = 1000;
+var DELAY_BETWEEN_IFRAME_SRC_CALLS = 2000;
 /**
  * This is how many iframes should be downloading the XML at any one time
  * @type {number}
  */
-var CONCURRENT_IFRAME_DOWNLOADS = 2;
+var CONCURRENT_IFRAME_DOWNLOADS = 1;
 /**
  * This is the name of the property assigned to the DIVs that display any spec data. This property
  * holds references to the divs used for internal anchors.
@@ -84,13 +74,8 @@ var DIV_ID_PREFIX = "divId";
 var DIV_BOOK_INDEX_ID_PREFIX = "divBookIndex";
 var LOADING_HTML = "<div style='width: 100%;'><img style='display:block; margin:auto;' src='images/loading.gif'/></div>";
 var TOPIC_ID_MARKER:string = "#TOPICID#";
-var TOPIC_REV_MARKER:string = "#TOPICREV#";
 var CSNODE_ID_MARKER:string = "#CSNODEID#";
 var CSNODE_REV_MARKER:string = "#CSNODEREV#";
-var CONTENT_SPEC_ID_MARKER:string = "#CONTENTSPECID#";
-var TOPIC_IDS_MARKER:string = "#TOPICIDS#";
-var CONTENT_SPEC_EDIT_DATE_MARKER:string = "#CONTENTSPECEDITDATE#";
-var TOPIC_EDIT_DATE_MARKER:string = "#TOPICEDITDATE#";
 var INITIAL_CONTENT_CONTAINER = "INITIAL_CONTENT";
 var CONTAINER_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX", INITIAL_CONTENT_CONTAINER];
 var TITLE_NODE_TYPES:string[] = ["CHAPTER", "SECTION", "PART", "APPENDIX"];
@@ -102,7 +87,6 @@ var RETRY_COUNT:number = 5;
 var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
 //var SERVER:string = "http://localhost:8080"
 var REST_BASE:string = "/pressgang-ccms/rest/1"
-var REVISION_DETAILS_REST:string = REST_BASE + "/sysinfo/get/json";
 var SPEC_REST:string= REST_BASE + "/contentspec/get/json/";
 var SPEC_REST_EXPAND:Object={
     branches: [
@@ -121,46 +105,9 @@ var SPEC_REST_EXPAND:Object={
     ]
 }
 var SPECNODE_REST:string = REST_BASE + "/contentspecnode/get/json/";
-var TOPIC_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
-var TOPIC_REV_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/r/" + TOPIC_REV_MARKER + "/xslt+xml";
 var CSNODE_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/" + CSNODE_ID_MARKER + "/xslt+xml";
-var CSNODE_REV_XSLTXML_REST:string = REST_BASE + "/contentspecnode/get/" + CSNODE_ID_MARKER + "/r/" + CSNODE_REV_MARKER + "/xslt+xml";
-var TOPIC_XSLTXML_REST:string = REST_BASE + "/topic/get/xml/" + TOPIC_ID_MARKER + "/xslt+xml";
 var ECHO_XML_REST:string = REST_BASE + "/echoxml";
-var SPECS_REST:string= REST_BASE + "/contentspecs/get/json/query;logic=And;contentSpecIds=" + CONTENT_SPEC_ID_MARKER + ";startEditDate=" + CONTENT_SPEC_EDIT_DATE_MARKER;
-var SPECS_REST_EXPAND:Object={
-    branches: [
-        {
-            trunk: {
-                name: "contentSpecs"
-            },
-            branches: [
-                {
-                    trunk: {
-                        name: "children_OTM"
-                    },
-                    branches: [
-                        {
-                            trunk: {
-                                name: "nextNode"
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-var TOPICS_REST:string= REST_BASE + "/topics/get/json/query;logic=And;topicIds=" + TOPIC_IDS_MARKER + ";startEditDate=" + TOPIC_EDIT_DATE_MARKER;
-var TOPICS_REST_EXPAND:Object={
-    branches: [
-        {
-            trunk: {
-                name: "topics"
-            }
-        }
-    ]
-}
+
 /**
  * The URL to open when a topic is to be edited
  * @type {string}
@@ -492,7 +439,7 @@ class DocBuilderLive {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
-                updateInitialMessage("Expanded " + count + " children containers", true);
+                updateInitialMessage("Expanded " + count + " child containers", true);
                 var element:SpecNode = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     this.populateChild(
