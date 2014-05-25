@@ -56,9 +56,9 @@ div.warning div.admonition_header {
 
 div.note div.admonition_header {
     background: url(docbookimages/green.png) top right repeat-x;
-    background-color: #597800;
-    background: -webkit-linear-gradient(#769f00,#597800);
-    background: linear-gradient(#769f00,#597800);
+    background-color: #00618a;
+    background: -webkit-linear-gradient(#0099d3,#00618a);
+    background: linear-gradient(#0099d3,#00618a);
 }
 
 div.important div.admonition_header {

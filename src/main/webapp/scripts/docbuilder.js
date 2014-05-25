@@ -4,9 +4,9 @@
 /// <reference path="collections.ts" />
 /// <reference path="HornetQRestListener.ts" />
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
+//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
+var SERVER = "http://localhost:8080";
 
-//var SERVER:string = "http://localhost:8080"
 /**
 * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
 * @type {string}
@@ -130,7 +130,7 @@ var UPDATED_TOPICS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.to
 var UPDATED_SPECS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedSpec";
 
 function error(message) {
-    window.alert(message);
+    bootbox.alert(message);
 }
 
 function message(message) {
@@ -920,7 +920,7 @@ var DocBuilderLive = (function () {
         var delay = _.reduce(specNodesMissingDiv, function (delay, element, index) {
             var url = this.buildUrl(element);
             var div = this.buildDiv(element);
-            this.setIFrameSrc(div, url, delay, index);
+            this.setIFrameSrc(div[0], url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
