@@ -1,15 +1,15 @@
 div.warning:before {
-    content:url(../images/warning.png);
+    content:url(docbookimages/warning.png);
     padding-left: 5px;
 }
 
 div.note:before {
-    content:url(../images/note.png);
+    content:url(docbookimages/note.png);
     padding-left: 5px;
 }
 
 div.important:before {
-    content:url(../images/important.png);
+    content:url(docbookimages/important.png);
     padding-left: 5px;
 }
 
@@ -48,21 +48,21 @@ div.admonition_header {
 }
 
 div.warning div.admonition_header {
-    background: url(../images/red.png) top left repeat-x;
+    background: url(docbookimages/red.png) top left repeat-x;
     background-color: #590000;
     background: -webkit-linear-gradient(#a40000,#590000);
     background: linear-gradient(#a40000,#590000);
 }
 
 div.note div.admonition_header {
-    background: url(../images/green.png) top right repeat-x;
+    background: url(docbookimages/green.png) top right repeat-x;
     background-color: #597800;
     background: -webkit-linear-gradient(#769f00,#597800);
     background: linear-gradient(#769f00,#597800);
 }
 
 div.important div.admonition_header {
-    background: url(../images/yellow.png) top right repeat-x;
+    background: url(docbookimages/yellow.png) top right repeat-x;
     background-color: #a6710f;
     background: -webkit-linear-gradient(#d08e13,#a6710f);
     background: linear-gradient(#d08e13,#a6710f);
