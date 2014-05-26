@@ -4,6 +4,8 @@
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
       </sourceFilesUrls>
     </properties>
@@ -13,8 +15,11 @@
       <root url="file://$PROJECT_DIR$/scripts/collections.js" />
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
     </CLASSES>
     <JAVADOC />
