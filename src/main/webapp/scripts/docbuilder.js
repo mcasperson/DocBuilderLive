@@ -190,6 +190,13 @@ var IdRevPair = (function () {
     return IdRevPair;
 })();
 
+function firstElement(jquery) {
+    if (jquery.length === 0) {
+        return null;
+    }
+    return jquery.get(0);
+}
+
 var DocBuilderLive = (function () {
     function DocBuilderLive(specId) {
         var _this = this;
@@ -243,7 +250,7 @@ var DocBuilderLive = (function () {
                         */
                         var nextDivs = jQuery("div[data-loading='true']");
                         if (nextDivs.length !== 0) {
-                            this.createIFrameAndLoadDiv(nextDivs[0]);
+                            this.createIFrameAndLoadDiv(firstElement(nextDivs));
                         } else {
                             // there are no more iframes to load
                             this.rebuilding = false;
@@ -584,18 +591,18 @@ var DocBuilderLive = (function () {
         div.addClass(LOADING_TOPIC_DIV_CLASS);
         div.addClass(DIV_BOOK_INDEX_ID_PREFIX);
         div.html(LOADING_HTML);
-        div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
-        div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
+        firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
+        firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
 
         if (element.entityId !== null) {
             var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
-            div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(idLinkTarget);
+            firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(idLinkTarget);
             jQuery("#book").append(idLinkTarget);
         }
 
         if (element.targetId !== null) {
             var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
-            div[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
+            firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
             jQuery("#book").append(nameLinkTarget);
         }
 
@@ -624,7 +631,7 @@ var DocBuilderLive = (function () {
         */
         if (nodeIsTopic(element)) {
             var editTopic = jQuery("<div style='display:none'><a href='" + SERVER + EDIT_TOPIC_LINK.replace(TOPIC_ID_MARKER, element.entityId.toString()) + "'>Edit this topic</a></div>");
-            div[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].push(editTopic);
+            firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].push(editTopic);
             jQuery("#book").append(editTopic);
         }
 
@@ -688,7 +695,7 @@ var DocBuilderLive = (function () {
         var delay = _.reduce(topicsAndContainers, function (delay, element, index) {
             var url = this.buildUrl(element);
             var div = this.buildDiv(element);
-            this.setIFrameSrc(div[0], url, delay, index);
+            this.setIFrameSrc(firstElement(div), url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
@@ -759,7 +766,7 @@ var DocBuilderLive = (function () {
             }
         }).on('changed.jstree', function (e, data) {
             if (data.selected.length !== 0) {
-                var treeNode = data.instance.get_node(data.selected[0]);
+                var treeNode = data.instance.get_node(firstElement(data.selected));
                 var div = document.getElementById(DIV_BOOK_INDEX_ID_PREFIX + treeNode.data);
                 if (div !== null) {
                     div.scrollIntoView(true);
@@ -938,7 +945,7 @@ var DocBuilderLive = (function () {
         var delay = _.reduce(specNodesMissingDiv, function (delay, element, index) {
             var url = this.buildUrl(element);
             var div = this.buildDiv(element);
-            this.setIFrameSrc(div[0], url, delay, index);
+            this.setIFrameSrc(firstElement(div), url, delay, index);
             return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
         }, 0, this);
 
@@ -958,7 +965,7 @@ var DocBuilderLive = (function () {
                 return false;
             }
 
-            return node1[0].id === node2[0].id;
+            return firstElement(node1).id === firstElement(node2).id;
         }
 
         function getActualChild(specNode) {
@@ -988,9 +995,13 @@ var DocBuilderLive = (function () {
                 throw "nthSpecDiv.length should always be 1, because all divs should be attached to the dom at this point";
             }
 
+            if (previousSibling != null || previousSibling.length > 1) {
+                throw "previousSibling should always be null previousSibling.length should be one 1, because we can only have 0 or 1 previous children";
+            }
+
             if (!divsAreEqual(nthSpecDiv, actualChild)) {
                 /*
-                Remove all divs
+                Remove all divs that are used to represent the topic or title that movde
                 */
                 actualChild.remove();
                 _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
@@ -1004,37 +1015,37 @@ var DocBuilderLive = (function () {
                     /*
                     prepend to start of book
                     */
-                    _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                    _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
                         jQuery(document.body).prepend(linkTarget);
                     });
                     jQuery("#book").prepend(actualChild);
-                    _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                    _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
                         jQuery(document.body).prepend(linkTarget);
                     });
                 } else {
-                    var previousSiblingBottomLinksLength = previousSibling[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].length;
+                    var previousSiblingBottomLinksLength = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].length;
                     if (previousSiblingBottomLinksLength !== 0) {
-                        var previousSiblingLastBottomElement = previousSibling[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY][previousSiblingBottomLinksLength - 1];
+                        var previousSiblingLastBottomElement = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY][previousSiblingBottomLinksLength - 1];
 
                         /*
                         insert after previous child
                         */
-                        _.each(actualChild[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
                             previousSiblingLastBottomElement.after(linkTarget);
                         });
                         previousSiblingLastBottomElement.after(actualChild);
-                        _.each(actualChild[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
                             previousSiblingLastBottomElement.after(linkTarget);
                         });
                     } else {
                         /*
                         insert after previous child
                         */
-                        _.each(actualChild[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
                             previousSibling.after(linkTarget);
                         });
                         previousSibling.after(actualChild);
-                        _.each(actualChild[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
                             previousSibling.after(linkTarget);
                         });
                     }

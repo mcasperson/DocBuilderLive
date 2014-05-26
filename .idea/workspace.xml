@@ -121,13 +121,13 @@
       <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5989086" vertical-offset="16766" max-vertical-offset="18150">
-              <caret line="1147" column="116" selection-start-line="1147" selection-start-column="116" selection-end-line="1147" selection-end-column="116" />
+            <state vertical-scroll-proportion="0.44747612" vertical-offset="17582" max-vertical-offset="18315">
+              <caret line="1194" column="13" selection-start-line="1194" selection-start-column="11" selection-end-line="1194" selection-end-column="13" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1401075724984" expanded="false" signature="3226:3238" placeholder="..." />
-                <marker date="1401075724984" expanded="false" signature="3252:3279" placeholder="..." />
-                <marker date="1401075724984" expanded="true" signature="26412:26424" placeholder="..." />
+                <marker date="1401076373822" expanded="false" signature="3226:3238" placeholder="..." />
+                <marker date="1401076373822" expanded="false" signature="3252:3279" placeholder="..." />
+                <marker date="1401076373822" expanded="true" signature="26593:26605" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -810,7 +810,7 @@
       <workItem from="1399252776190" duration="6766000" />
       <workItem from="1400563313733" duration="500000" />
       <workItem from="1400806150748" duration="9480000" />
-      <workItem from="1401055644004" duration="13218000" />
+      <workItem from="1401055644004" duration="13800000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1112,11 +1112,15 @@
       <created>1401071109807</created>
       <updated>1401071109807</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="Fixing bug with rearranging spec elements">
+      <created>1401075818311</created>
+      <updated>1401075818311</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="146450000" />
+    <option name="totallyTimeSpent" value="147032000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1164,7 +1168,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24121405" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15522704" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15522704" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1199,7 +1203,8 @@
     <MESSAGE value="Fixed a bug with automatic updating" />
     <MESSAGE value="Fixing styles" />
     <MESSAGE value="Fixing edit topic links" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing edit topic links" />
+    <MESSAGE value="Fixing bug with rearranging spec elements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing bug with rearranging spec elements" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1255,9 +1260,9 @@
           <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401075724984" expanded="false" signature="3226:3238" placeholder="..." />
-            <marker date="1401075724984" expanded="false" signature="3252:3279" placeholder="..." />
-            <marker date="1401075724984" expanded="true" signature="26412:26424" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3226:3238" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3252:3279" placeholder="..." />
+            <marker date="1401076373822" expanded="true" signature="26593:26605" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1310,9 +1315,9 @@
           <caret line="84" column="110" selection-start-line="84" selection-start-column="99" selection-end-line="84" selection-end-column="110" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401075724984" expanded="false" signature="3226:3238" placeholder="..." />
-            <marker date="1401075724984" expanded="false" signature="3252:3279" placeholder="..." />
-            <marker date="1401075724984" expanded="true" signature="26412:26424" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3226:3238" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3252:3279" placeholder="..." />
+            <marker date="1401076373822" expanded="true" signature="26593:26605" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1561,13 +1566,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5989086" vertical-offset="16766" max-vertical-offset="18150">
-          <caret line="1147" column="116" selection-start-line="1147" selection-start-column="116" selection-end-line="1147" selection-end-column="116" />
+        <state vertical-scroll-proportion="0.44747612" vertical-offset="17582" max-vertical-offset="18315">
+          <caret line="1194" column="13" selection-start-line="1194" selection-start-column="11" selection-end-line="1194" selection-end-column="13" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401075724984" expanded="false" signature="3226:3238" placeholder="..." />
-            <marker date="1401075724984" expanded="false" signature="3252:3279" placeholder="..." />
-            <marker date="1401075724984" expanded="true" signature="26412:26424" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3226:3238" placeholder="..." />
+            <marker date="1401076373822" expanded="false" signature="3252:3279" placeholder="..." />
+            <marker date="1401076373822" expanded="true" signature="26593:26605" placeholder="..." />
           </folding>
         </state>
       </provider>
