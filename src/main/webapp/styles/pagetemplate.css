@@ -1,0 +1,36 @@
+#content {
+    position: fixed;
+    top: 50px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    overflow: auto;
+}
+
+#header {
+    top: 0;
+    left:0;
+    position: fixed;
+    width:100%;
+    font-family: "Open Sans";
+}
+
+.navbar-nav, .navbar-nav > li, .navbar-nav > li > a, .navbar-nav > li > span {
+    height: 100%
+}
+
+.navbar-nav > li > a {
+    border-bottom-style: none;
+}
+.navbar-nav > li > span {
+    display: block;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    line-height: 11px;
+}
+
+.navbar-brand {
+    line-height: 10px;
+}

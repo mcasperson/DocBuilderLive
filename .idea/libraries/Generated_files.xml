@@ -2,12 +2,8 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/constants.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>

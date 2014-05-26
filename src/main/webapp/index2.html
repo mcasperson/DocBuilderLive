@@ -1,14 +1,24 @@
 <!doctype html>
 <html lang="en" ng-app="docbuilderFrontPage">
 <head>
-    <script src="docbuilder/constants.js"></script>
-    <script src="angular/angular.min.js"></script>
-    <script src="angular/angular-route.min.js"></script>
-    <script src="angular/angular-resource.min.js"></script>
-    <script src="docbuilder/speclistcontroller.js"></script>
-    <script src="docbuilder/routing.js"></script>
+    <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
+    <link rel="stylesheet" href="styles/pagetemplate.css" />
+    <link rel="stylesheet" href="styles/jstree.css" />
+
+    <script type="application/javascript" src="jquery/jquery-2.1.0.min.js"></script>
+    <script type="application/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="patternfly/js/patternfly.min.js"></script>
+    <script type="application/javascript" src="bootstrap/bootbox.min.js"></script>
+    <script type="application/javascript" src="moment/moment-with-langs.min.js"></script>
+    <script type="application/javascript" src="docbuilder/collections.js"></script>
+    <script type="application/javascript" src="docbuilder/constants.js"></script>
+    <script type="application/javascript" src="angular/angular.min.js"></script>
+    <script type="application/javascript" src="angular/angular-route.min.js"></script>
+    <script type="application/javascript" src="angular/angular-resource.min.js"></script>
+    <script type="application/javascript" src="docbuilder/speclistcontroller.js"></script>
+    <script type="application/javascript" src="docbuilder/routing.js"></script>
 </head>
 <body>
-<div ng-view></div>
+<div id="content" ng-view></div>
 </body>
 </html>

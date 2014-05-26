@@ -32,5 +32,13 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                 $scope.allSpecs = data;
             }
         );
+
+        $scope.links = [
+            {
+                id: "BugReport",
+                href: "https://bugzilla.redhat.com/enter_bug.cgi?alias=&assigned_to=pressgang-ccms-dev%40redhat.com&bug_status=NEW&component=DocBook-builder&product=PressGang%20CCMS&version=1.6",
+                text: "Report Bug"
+            }
+        ]
     }
 ]);
