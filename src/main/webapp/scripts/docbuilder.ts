@@ -1128,16 +1128,31 @@ class DocBuilderLive {
                         jQuery(document.body).prepend(linkTarget);
                     });
                 } else {
-                    /*
-                        insert after previous child
-                     */
-                    _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
-                        previousSibling.after(linkTarget);
-                    });
-                    previousSibling.after(actualChild);
-                    _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function(linkTarget:JQuery) {
-                        previousSibling.after(linkTarget);
-                    });
+                    var previousSiblingBottomLinksLength = previousSibling[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].length;
+                    if (previousSiblingBottomLinksLength !== 0) {
+                        var previousSiblingLastBottomElement = previousSibling[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY][previousSiblingBottomLinksLength - 1];
+                        /*
+                         insert after previous child
+                         */
+                        _.each(actualChild[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget:JQuery) {
+                            previousSiblingLastBottomElement.after(linkTarget);
+                        });
+                        previousSiblingLastBottomElement.after(actualChild);
+                        _.each(actualChild[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget:JQuery) {
+                            previousSiblingLastBottomElement.after(linkTarget);
+                        });
+                    } else {
+                        /*
+                         insert after previous child
+                         */
+                        _.each(actualChild[0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget:JQuery) {
+                            previousSibling.after(linkTarget);
+                        });
+                        previousSibling.after(actualChild);
+                        _.each(actualChild[0][SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget:JQuery) {
+                            previousSibling.after(linkTarget);
+                        });
+                    }
                 }
             }
         });
