@@ -1,3 +1,5 @@
-<div ng-init="specs=specListController.pressgangRestAPI.query()">
-
+<div>
+    <div ng-repeat="spec in specListController.allSpecs.items">
+        {{spec.item.id}}
+    </div>
 </div>
