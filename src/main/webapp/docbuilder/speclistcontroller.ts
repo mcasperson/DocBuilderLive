@@ -5,15 +5,10 @@ var SPEC_COLLECTION_EXPAND:Object={
     branches: [
         {
             trunk: {
-                name: "contentSpecs"
-            },
-            branches: [
-                {
-                    trunk: {
-                        name: "children_OTM"
-                    }
-                }
-            ]
+                name: "contentSpecs",
+                start: 0,
+                end: 10
+            }
         }
     ]
 }
@@ -21,7 +16,13 @@ var SPEC_COLLECTION_EXPAND:Object={
 var specListModule = angular.module('specListModule', ['ngResource']);
 
 specListModule.factory('getAllSpecs', ['$resource', function($resource) {
-        return $resource(SERVER + REST_BASE + "/contentspecs/get/json/all?expand=" + encodeURIComponent(JSON.stringify(SPEC_COLLECTION_EXPAND)));
+        return $resource(
+            SERVER + REST_BASE + "/contentspecs/get/json/all?expand=" + encodeURIComponent(JSON.stringify(SPEC_COLLECTION_EXPAND)),
+            {},
+            {
+                query: { method: "GET", isArray: false }
+            }
+        );
     }
 ]);
 

@@ -17,12 +17,12 @@
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/constants.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/collections.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/routing.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/collections.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
