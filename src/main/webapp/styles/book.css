@@ -12,7 +12,7 @@ hr {
     background-color: transparent;
 }
 
-td {
+td, th {
     border-color: #D1D1D1;
     border-width: 1px;
     border-style: solid;
