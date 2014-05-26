@@ -5,8 +5,8 @@
 /// <reference path="HornetQRestListener.ts" />
 
 //var SERVER:string = "http://pressgang.lab.eng.pnq.redhat.com:8080";
-//var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
-var SERVER:string = "http://localhost:8080"
+var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
+//var SERVER:string = "http://localhost:8080"
 
 /**
  * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript

@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/admonition.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/admonition.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/book.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/book.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js.map" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts" afterPath="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/index.html" afterPath="$PROJECT_DIR$/src/main/webapp/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -100,11 +99,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="book.css" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="book.css" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/book.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.77619666" vertical-offset="0" max-vertical-offset="773">
+              <caret line="40" column="1" selection-start-line="40" selection-start-column="1" selection-end-line="40" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -120,16 +119,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="docbuilder.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="docbuilder.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.39427012" vertical-offset="15251" max-vertical-offset="17640">
-              <caret line="1036" column="36" selection-start-line="1036" selection-start-column="36" selection-end-line="1036" selection-end-column="36" />
+            <state vertical-scroll-proportion="-4.4444447" vertical-offset="0" max-vertical-offset="17640">
+              <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1401061859415" expanded="false" signature="2970:2982" placeholder="..." />
-                <marker date="1401061859415" expanded="false" signature="2996:3023" placeholder="..." />
-                <marker date="1401061859415" expanded="false" signature="25617:25629" placeholder="..." />
+                <marker date="1401062591922" expanded="false" signature="2970:2982" placeholder="..." />
+                <marker date="1401062591922" expanded="false" signature="2996:3023" placeholder="..." />
+                <marker date="1401062591922" expanded="false" signature="25617:25629" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -192,12 +191,12 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.ts" />
-        <option value="$PROJECT_DIR$/src/main/webapp/styles/book.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/jstree.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/index.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/admonition.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts" />
+        <option value="$PROJECT_DIR$/src/main/webapp/styles/book.css" />
       </list>
     </option>
   </component>
@@ -812,7 +811,7 @@
       <workItem from="1399252776190" duration="6766000" />
       <workItem from="1400563313733" duration="500000" />
       <workItem from="1400806150748" duration="9480000" />
-      <workItem from="1401055644004" duration="3562000" />
+      <workItem from="1401055644004" duration="4557000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1102,11 +1101,15 @@
       <created>1401056210589</created>
       <updated>1401056210589</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="Fixed a bug with automatic updating">
+      <created>1401061902975</created>
+      <updated>1401061902975</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="136794000" />
+    <option name="totallyTimeSpent" value="137789000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1187,7 +1190,8 @@
     <MESSAGE value="Fixing styles" />
     <MESSAGE value="Fixing loading of topics" />
     <MESSAGE value="Fixing styling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing styling" />
+    <MESSAGE value="Fixed a bug with automatic updating" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug with automatic updating" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1243,9 +1247,9 @@
           <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401061859415" expanded="false" signature="2970:2982" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="2996:3023" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="25617:25629" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2970:2982" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2996:3023" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="25617:25629" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1298,9 +1302,9 @@
           <caret line="84" column="110" selection-start-line="84" selection-start-column="99" selection-end-line="84" selection-end-column="110" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401061859415" expanded="false" signature="2970:2982" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="2996:3023" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="25617:25629" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2970:2982" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2996:3023" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="25617:25629" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1515,14 +1519,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/book.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="773">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1890">
@@ -1549,14 +1545,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39427012" vertical-offset="15251" max-vertical-offset="17640">
-          <caret line="1036" column="36" selection-start-line="1036" selection-start-column="36" selection-end-line="1036" selection-end-column="36" />
+        <state vertical-scroll-proportion="-4.4444447" vertical-offset="0" max-vertical-offset="17640">
+          <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1401061859415" expanded="false" signature="2970:2982" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="2996:3023" placeholder="..." />
-            <marker date="1401061859415" expanded="false" signature="25617:25629" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2970:2982" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="2996:3023" placeholder="..." />
+            <marker date="1401062591922" expanded="false" signature="25617:25629" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/book.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.77619666" vertical-offset="0" max-vertical-offset="773">
+          <caret line="40" column="1" selection-start-line="40" selection-start-column="1" selection-end-line="40" selection-end-column="1" />
+          <folding />
         </state>
       </provider>
     </entry>
