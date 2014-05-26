@@ -8,6 +8,14 @@ var SERVER = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080";
 
 //var SERVER:string = "http://localhost:8080"
 /**
+* This is a message send to either the topic or spec update JMS topics that
+* indicates the server was restarted. This means we have to do a complete
+* refresh of the book.
+* @type {string}
+*/
+var SERVER_RESTART_MARKER = "SERVER_RESTART";
+
+/**
 * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
 * @type {string}
 */
@@ -222,7 +230,7 @@ var DocBuilderLive = (function () {
                             /*
                             The bottom links, like "Edit this topic", are hidden until the topic is rendered.
                             */
-                            _.each(sourceIframe["div"][0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (div) {
+                            _.each(sourceIframe["div"][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (div) {
                                 div.css("display", "");
                             });
                         } catch (ex) {
@@ -271,19 +279,24 @@ var DocBuilderLive = (function () {
         calls to the HornetQ REST API, and call the supplied callback when a message is found.
         */
         new HornetQRestListener(UPDATED_TOPICS_JMS_TOPIC, function (data) {
-            var topics = data.split(",");
-            _this.topicsUpdated = _.union(_.filter(topics, function (num) {
-                return this.specTopicIds.indexOf(parseInt(num)) !== -1;
-            }.bind(_this)), _this.topicsUpdated);
+            if (data === SERVER_RESTART_MARKER) {
+                console.log("Server was restarted, so rebuilding spec");
+                _this.rebuildSpec(_this.errorCallback);
+            } else {
+                var topics = data.split(",");
+                _this.topicsUpdated = _.union(_.filter(topics, function (num) {
+                    return this.specTopicIds.indexOf(parseInt(num)) !== -1;
+                }.bind(_this)), _this.topicsUpdated);
 
-            if (_this.topicsUpdated.length !== 0 && !_this.rebuilding) {
-                if (_this.timeoutRefresh !== null) {
-                    window.clearTimeout(_this.timeoutRefresh);
-                    _this.timeoutRefresh = null;
+                if (_this.topicsUpdated.length !== 0 && !_this.rebuilding) {
+                    if (_this.timeoutRefresh !== null) {
+                        window.clearTimeout(_this.timeoutRefresh);
+                        _this.timeoutRefresh = null;
+                    }
+
+                    _this.rebuilding = true;
+                    _this.syncDomWithTopics(_this.topicsUpdated);
                 }
-
-                _this.rebuilding = true;
-                _this.syncDomWithTopics(_this.topicsUpdated);
             }
         });
 
@@ -292,10 +305,15 @@ var DocBuilderLive = (function () {
         calls to the HornetQ REST API, and call the supplied callback when a message is found.
         */
         new HornetQRestListener(UPDATED_SPECS_JMS_TOPIC, function (data) {
-            var topics = data.split(",");
-
-            if (topics.indexOf(_this.specId.toString()) !== -1) {
+            if (data === SERVER_RESTART_MARKER) {
+                console.log("Server was restarted, so rebuilding spec");
                 _this.rebuildSpec(_this.errorCallback);
+            } else {
+                var topics = data.split(",");
+
+                if (topics.indexOf(_this.specId.toString()) !== -1) {
+                    _this.rebuildSpec(_this.errorCallback);
+                }
             }
         });
     };

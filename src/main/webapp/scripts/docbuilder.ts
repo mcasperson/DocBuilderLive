@@ -9,6 +9,14 @@ var SERVER:string = "http://topicindex-dev.ecs.eng.bne.redhat.com:8080"
 //var SERVER:string = "http://localhost:8080"
 
 /**
+ * This is a message send to either the topic or spec update JMS topics that
+ * indicates the server was restarted. This means we have to do a complete
+ * refresh of the book.
+ * @type {string}
+ */
+var SERVER_RESTART_MARKER:string = "SERVER_RESTART";
+
+/**
  * This is used so messages can be passed back to the main html page when the XML is rendered into HTML and javascript
  * @type {string}
  */
@@ -288,7 +296,7 @@ class DocBuilderLive {
                                 /*
                                  The bottom links, like "Edit this topic", are hidden until the topic is rendered.
                                  */
-                                _.each(sourceIframe["div"][0][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (div:JQuery) {
+                                _.each(sourceIframe["div"][SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (div:JQuery) {
                                     div.css("display", "");
                                 });
                             } catch (ex) {
@@ -344,22 +352,28 @@ class DocBuilderLive {
         new HornetQRestListener(
             UPDATED_TOPICS_JMS_TOPIC,
             (data) => {
-                var topics = data.split(",");
-                this.topicsUpdated = _.union(
-                    _.filter(topics, function(num:string) {
-                        return this.specTopicIds.indexOf(parseInt(num)) !== -1;
-                    }.bind(this)),
-                    this.topicsUpdated
-                );
+                if (data === SERVER_RESTART_MARKER) {
+                    console.log("Server was restarted, so rebuilding spec");
+                    this.rebuildSpec(this.errorCallback);
+                } else {
 
-                if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
-                    if (this.timeoutRefresh !== null) {
-                        window.clearTimeout(this.timeoutRefresh);
-                        this.timeoutRefresh = null;
+                    var topics = data.split(",");
+                    this.topicsUpdated = _.union(
+                        _.filter(topics, function (num:string) {
+                            return this.specTopicIds.indexOf(parseInt(num)) !== -1;
+                        }.bind(this)),
+                        this.topicsUpdated
+                    );
+
+                    if (this.topicsUpdated.length !== 0 && !this.rebuilding) {
+                        if (this.timeoutRefresh !== null) {
+                            window.clearTimeout(this.timeoutRefresh);
+                            this.timeoutRefresh = null;
+                        }
+
+                        this.rebuilding = true;
+                        this.syncDomWithTopics(this.topicsUpdated);
                     }
-
-                    this.rebuilding = true;
-                    this.syncDomWithTopics(this.topicsUpdated);
                 }
             }
         );
@@ -371,10 +385,15 @@ class DocBuilderLive {
         new HornetQRestListener(
             UPDATED_SPECS_JMS_TOPIC,
             (data) => {
-                var topics = data.split(",");
-
-                if (topics.indexOf(this.specId.toString()) !== -1) {
+                if (data === SERVER_RESTART_MARKER) {
+                    console.log("Server was restarted, so rebuilding spec");
                     this.rebuildSpec(this.errorCallback);
+                } else {
+                    var topics = data.split(",");
+
+                    if (topics.indexOf(this.specId.toString()) !== -1) {
+                        this.rebuildSpec(this.errorCallback);
+                    }
                 }
             }
         );
