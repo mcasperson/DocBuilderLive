@@ -995,7 +995,7 @@ var DocBuilderLive = (function () {
                 throw "nthSpecDiv.length should always be 1, because all divs should be attached to the dom at this point";
             }
 
-            if (previousSibling != null || previousSibling.length > 1) {
+            if (previousSibling !== null && previousSibling.length > 1) {
                 throw "previousSibling should always be null previousSibling.length should be one 1, because we can only have 0 or 1 previous children";
             }
 
