@@ -766,7 +766,7 @@ var DocBuilderLive = (function () {
             }
         }).on('changed.jstree', function (e, data) {
             if (data.selected.length !== 0) {
-                var treeNode = data.instance.get_node(firstElement(data.selected));
+                var treeNode = data.instance.get_node(data.selected[0]);
                 var div = document.getElementById(DIV_BOOK_INDEX_ID_PREFIX + treeNode.data);
                 if (div !== null) {
                     div.scrollIntoView(true);
