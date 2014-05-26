@@ -3,6 +3,7 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/constants.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
@@ -17,6 +18,7 @@
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/constants.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/speclistcontroller.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/scripts/routing.js" />
