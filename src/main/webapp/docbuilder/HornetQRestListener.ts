@@ -13,10 +13,12 @@ class HornetQRestListener {
 
     private topicResourceURL:string;
     private messageCallback:(message:string) => void;
+    private acceptWait:boolean;
 
-    constructor(topicResourceURL:string, messageCallback:(message:string) => void) {
+    constructor(acceptWait:boolean, topicResourceURL:string, messageCallback:(message:string) => void) {
         this.topicResourceURL = topicResourceURL;
         this.messageCallback = messageCallback;
+        this.acceptWait = acceptWait;
         this.listenForMessages();
     }
 
@@ -68,12 +70,13 @@ class HornetQRestListener {
         var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
 
         if (msgConsumeNext !== null) {
+            var headers = this.acceptWait ? {"Accept-Wait": this.WAIT_FOR_MESSAGE} : {};
+
             // Do a POST to join the JMS topic
             jQuery.ajax({
                 type: 'POST',
-                headers: {
-                    "Accept-Wait": this.WAIT_FOR_MESSAGE
-                },
+                // Uncomment this to allow the client to open a connection that will wait for a message
+                headers: headers,
                 url: msgConsumeNext,
                 dataType: "text",
                 success: this.pullSubscriptionSuccess,
@@ -98,7 +101,14 @@ class HornetQRestListener {
              */
             var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
             if (msgConsumeNext !== null) {
-                this.joinTopicSuccess(null, null, jqXHR);
+                if (this.acceptWait) {
+                    this.joinTopicSuccess(null, null, jqXHR);
+                } else {
+                    window.setTimeout(function() {
+                        this.joinTopicSuccess(null, null, jqXHR);
+                    }.bind(this), this.RETRY_TIMEOUT);
+                }
+
             } else {
                 this.listenForMessages();
             }

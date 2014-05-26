@@ -354,6 +354,7 @@ class DocBuilderLive {
             calls to the HornetQ REST API, and call the supplied callback when a message is found.
          */
         new HornetQRestListener(
+            ACCEPT_WAIT,
             UPDATED_TOPICS_JMS_TOPIC,
             (data) => {
                 if (data === SERVER_RESTART_MARKER) {
@@ -387,6 +388,7 @@ class DocBuilderLive {
          calls to the HornetQ REST API, and call the supplied callback when a message is found.
          */
         new HornetQRestListener(
+            ACCEPT_WAIT,
             UPDATED_SPECS_JMS_TOPIC,
             (data) => {
                 if (data === SERVER_RESTART_MARKER) {

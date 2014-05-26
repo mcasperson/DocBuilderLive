@@ -5,13 +5,14 @@
 * encapsulates this cycle of calls.
 */
 var HornetQRestListener = (function () {
-    function HornetQRestListener(topicResourceURL, messageCallback) {
+    function HornetQRestListener(acceptWait, topicResourceURL, messageCallback) {
         this.MSG_PULL_SUBSCRIPTIONS_HEADER = "msg-pull-subscriptions";
         this.MSG_CONSUME_NEXT_HEADER = "msg-consume-next";
         this.WAIT_FOR_MESSAGE = 60;
         this.RETRY_TIMEOUT = 10000;
         this.topicResourceURL = topicResourceURL;
         this.messageCallback = messageCallback;
+        this.acceptWait = acceptWait;
         this.listenForMessages();
     }
     HornetQRestListener.prototype.listenForMessages = function () {
@@ -62,12 +63,13 @@ var HornetQRestListener = (function () {
         var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
 
         if (msgConsumeNext !== null) {
+            var headers = this.acceptWait ? { "Accept-Wait": this.WAIT_FOR_MESSAGE } : {};
+
             // Do a POST to join the JMS topic
             jQuery.ajax({
                 type: 'POST',
-                headers: {
-                    "Accept-Wait": this.WAIT_FOR_MESSAGE
-                },
+                // Uncomment this to allow the client to open a connection that will wait for a message
+                headers: headers,
                 url: msgConsumeNext,
                 dataType: "text",
                 success: this.pullSubscriptionSuccess,
@@ -91,7 +93,13 @@ var HornetQRestListener = (function () {
             */
             var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
             if (msgConsumeNext !== null) {
-                this.joinTopicSuccess(null, null, jqXHR);
+                if (this.acceptWait) {
+                    this.joinTopicSuccess(null, null, jqXHR);
+                } else {
+                    window.setTimeout(function () {
+                        this.joinTopicSuccess(null, null, jqXHR);
+                    }.bind(this), this.RETRY_TIMEOUT);
+                }
             } else {
                 this.listenForMessages();
             }

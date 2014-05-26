@@ -282,7 +282,7 @@ var DocBuilderLive = (function () {
         Create a new instance of the HornetQRestListener class. This will create an async cycle of
         calls to the HornetQ REST API, and call the supplied callback when a message is found.
         */
-        new HornetQRestListener(UPDATED_TOPICS_JMS_TOPIC, function (data) {
+        new HornetQRestListener(ACCEPT_WAIT, UPDATED_TOPICS_JMS_TOPIC, function (data) {
             if (data === SERVER_RESTART_MARKER) {
                 console.log("Server was restarted, so rebuilding spec");
                 _this.rebuildSpec(_this.errorCallback);
@@ -308,7 +308,7 @@ var DocBuilderLive = (function () {
         Create a new instance of the HornetQRestListener class. This will create an async cycle of
         calls to the HornetQ REST API, and call the supplied callback when a message is found.
         */
-        new HornetQRestListener(UPDATED_SPECS_JMS_TOPIC, function (data) {
+        new HornetQRestListener(ACCEPT_WAIT, UPDATED_SPECS_JMS_TOPIC, function (data) {
             if (data === SERVER_RESTART_MARKER) {
                 console.log("Server was restarted, so rebuilding spec");
                 _this.rebuildSpec(_this.errorCallback);
@@ -334,8 +334,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
         var _this = this;
+        if (typeof retryCount === "undefined") { retryCount = 0; }
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -399,8 +399,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
         var _this = this;
+        if (typeof retryCount === "undefined") { retryCount = 0; }
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
