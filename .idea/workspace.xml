@@ -106,12 +106,13 @@
       <file leaf-file-name="speclist.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.708334" vertical-offset="268" max-vertical-offset="1080">
-              <caret line="51" column="125" selection-start-line="51" selection-start-column="125" selection-end-line="51" selection-end-column="125" />
+            <state vertical-scroll-proportion="-15.708333" vertical-offset="298" max-vertical-offset="1185">
+              <caret line="45" column="60" selection-start-line="45" selection-start-column="49" selection-end-line="45" selection-end-column="60" />
               <folding>
                 <element signature="n#style#0;n#span#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#div#1;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#div#3;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -120,8 +121,8 @@
       <file leaf-file-name="speclistcontroller.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.31442663" vertical-offset="525" max-vertical-offset="3315">
-              <caret line="52" column="29" selection-start-line="52" selection-start-column="29" selection-end-line="52" selection-end-column="29" />
+            <state vertical-scroll-proportion="0.55487055" vertical-offset="360" max-vertical-offset="3660">
+              <caret line="54" column="44" selection-start-line="54" selection-start-column="44" selection-end-line="54" selection-end-column="44" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -697,7 +698,7 @@
       <workItem from="1400806150748" duration="9480000" />
       <workItem from="1401055644004" duration="19929000" />
       <workItem from="1401086351197" duration="2395000" />
-      <workItem from="1401143180950" duration="28603000" />
+      <workItem from="1401143180950" duration="29392000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1143,11 +1144,15 @@
       <created>1401176790970</created>
       <updated>1401176790970</updated>
     </task>
-    <option name="localTasksCounter" value="112" />
+    <task id="LOCAL-00112" summary="Adding angularjs support">
+      <created>1401222182471</created>
+      <updated>1401222182471</updated>
+    </task>
+    <option name="localTasksCounter" value="113" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="184159000" />
+    <option name="totallyTimeSpent" value="184948000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1195,7 +1200,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28168264" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15362865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15362865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1606,20 +1611,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.708334" vertical-offset="268" max-vertical-offset="1080">
-          <caret line="51" column="125" selection-start-line="51" selection-start-column="125" selection-end-line="51" selection-end-column="125" />
+        <state vertical-scroll-proportion="-15.708333" vertical-offset="298" max-vertical-offset="1185">
+          <caret line="45" column="60" selection-start-line="45" selection-start-column="49" selection-end-line="45" selection-end-column="60" />
           <folding>
             <element signature="n#style#0;n#span#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#div#1;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#div#3;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31442663" vertical-offset="525" max-vertical-offset="3315">
-          <caret line="52" column="29" selection-start-line="52" selection-start-column="29" selection-end-line="52" selection-end-column="29" />
+        <state vertical-scroll-proportion="0.55487055" vertical-offset="360" max-vertical-offset="3660">
+          <caret line="54" column="44" selection-start-line="54" selection-start-column="44" selection-end-line="54" selection-end-column="44" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

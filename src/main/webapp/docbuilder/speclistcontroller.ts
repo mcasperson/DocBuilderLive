@@ -6,6 +6,14 @@
 var CONTENT_SPEC_LIST_CACHE_KEY = "ContentSpecList";
 var ZIP_FILE_NAME = "specs.json";
 var REST_RETRY_COUNT = 5;
+
+var UI_SETTING_KEY_PREFIX = "UISetting";
+var UI_PRODUCT_NAME_FILTER_VAR = "productNameFilter";
+var UI_VERSION_FILTER_VAR = "versionFilter";
+var UI_SPEC_ID_FILTER_VAR = "idFilter";
+var UI_TITLE_FILTER_VAR = "titleFilter";
+var UI_FILTER_VARS = [UI_PRODUCT_NAME_FILTER_VAR, UI_VERSION_FILTER_VAR, UI_SPEC_ID_FILTER_VAR, UI_TITLE_FILTER_VAR];
+
 /*
     This AngularJS Controller is used to populate the list of content specs
  */
@@ -37,6 +45,21 @@ var specListModule = angular.module('specListModule', ['ngResource', 'LocalStora
 
 specListModule.controller('specListController', ['$scope', '$resource', 'localStorageService',
     function($scope, $resource, localStorageService) {
+
+        _.each(UI_FILTER_VARS, function(element) {
+            var localStorageKey =  UI_SETTING_KEY_PREFIX + element;
+
+            if (localStorageService.keys().indexOf(localStorageKey) !== -1) {
+                var value = localStorageService.get(localStorageKey);
+                if (value !== null) {
+                    $scope[element] = value;
+                }
+            }
+
+            $scope.$watch(element, function() {
+                localStorageService.set(localStorageKey, $scope[element]);
+            });
+        });
 
         var specListResource = $resource(
                 SERVER + REST_BASE + "/contentspecs/get/json/all",
