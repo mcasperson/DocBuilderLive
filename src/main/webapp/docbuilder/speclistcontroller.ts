@@ -45,7 +45,7 @@ specListModule.controller('specListController', ['$scope', '$resource',
             }
         );
 
-        var getSpecs = (index, specs) => {
+        var getSpecs = function(index, specs, callback) {
             new specListResource(SPEC_COLLECTION_EXPAND(index)).$query(function(data) {
                     if (specs !== undefined) {
                         jQuery.merge(specs, data.items);
@@ -54,18 +54,19 @@ specListModule.controller('specListController', ['$scope', '$resource',
                     }
 
                     if (data.endExpandIndex === data.size)  {
-                        $scope.allSpecs = specs;
-                        this.updateProductAndVersions();
+                        callback(specs);
                     } else {
                         $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
-                        getSpecs(index + PAGING, specs);
+                        getSpecs(index + PAGING, specs, callback);
                     }
-
                 }
             );
         }
 
-        getSpecs(0, []);
+        getSpecs(0, [], function(specs) {
+            $scope.allSpecs = specs;
+            updateProductAndVersions();
+        });
 
         $scope.links = [
             {
