@@ -1,50 +1,71 @@
 /// <reference path="../definitions/angular.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
+/// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="constants.ts" />
 
 /*
     This AngularJS Controller is used to populate the list of content specs
  */
-
-var SPEC_COLLECTION_EXPAND:Object={
-    branches: [
-        {
-            trunk: {
-                name: "contentSpecs",
-                start: 0,
-                end: 10
-            },
+var PAGING = 100;
+var SPEC_COLLECTION_EXPAND = function(start) {
+    return {
+        expand: JSON.stringify({
             branches: [
                 {
                     trunk: {
-                        name: "children_OTM"
-                    }
+                        name: "contentSpecs",
+                        start: start,
+                        end: start + PAGING
+                    },
+                    branches: [
+                        {
+                            trunk: {
+                                name: "children_OTM"
+                            }
+                        }
+                    ]
                 }
             ]
-        }
-    ]
+        })
+    };
 }
 
 var specListModule = angular.module('specListModule', ['ngResource']);
 
-specListModule.factory('getAllSpecs', ['$resource', function($resource) {
-        return $resource(
-            SERVER + REST_BASE + "/contentspecs/get/json/all?expand=" + encodeURIComponent(JSON.stringify(SPEC_COLLECTION_EXPAND)),
-            {},
+specListModule.controller('specListController', ['$scope', '$resource',
+    function($scope, $resource) {
+
+        var specListResource = $resource(
+            SERVER + REST_BASE + "/contentspecs/get/json/all",
+            {
+                expand: '@expand'
+            },
             {
                 query: { method: "GET", isArray: false }
             }
         );
-    }
-]);
 
-specListModule.controller('specListController', ['$scope', 'getAllSpecs',
-    function($scope, getAllSpecs) {
-        getAllSpecs.query(function(data) {
-                $scope.allSpecs = data;
-                updateProductAndVersions();
-            }
-        );
+        var getSpecs = (index, specs) => {
+            new specListResource(SPEC_COLLECTION_EXPAND(index)).$query(function(data) {
+                    if (specs !== undefined) {
+                        jQuery.merge(specs, data.items);
+                    } else {
+                        specs = data.items;
+                    }
+
+                    if (data.endExpandIndex === data.size)  {
+                        $scope.allSpecs = specs;
+                        this.updateProductAndVersions();
+                    } else {
+                        $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
+                        getSpecs(index + PAGING, specs);
+                    }
+
+                }
+            );
+        }
+
+        getSpecs(0, []);
 
         $scope.links = [
             {
@@ -64,7 +85,7 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
         $scope.productAndVersions = [];
 
         $scope.getSpecByProdAndVer = function(prod, ver) {
-            var specs = _.filter($scope.allSpecs.items, function (specElement) {
+            var specs = _.filter($scope.allSpecs, function (specElement) {
                 var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
                     return  specElementChild.item.nodeType === "META_DATA" &&
                         specElementChild.item.title === "Product";
@@ -96,7 +117,7 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
 
         function updateProductAndVersions() {
             if ($scope.allSpecs !== undefined) {
-                _.each($scope.allSpecs.items, function (specElement) {
+                _.each($scope.allSpecs, function (specElement) {
                     var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
                         return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Product";
                     });
