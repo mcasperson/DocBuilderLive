@@ -1,7 +1,14 @@
 <ng-include src="'headertemplate.html'"></ng-include>
 
-<h1 class="text-center" ng-if="allSpecs === undefined">
-   Loading Content Specification List {{specLoadProgress}}
+<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+   Loading Initial Content Specification List {{specLoadProgress}}
+</h1>
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+    Please wait while the initial list of content specs is loaded.
+</h2>
+
+<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined">
+    Refreshing Content Specification List {{specLoadProgress}}
 </h1>
 
 <div class="row">

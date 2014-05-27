@@ -3,6 +3,7 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="constants.ts" />
 
+var CONTENT_SPEC_LIST_CACHE_KEY = "ContentSpecList";
 /*
     This AngularJS Controller is used to populate the list of content specs
  */
@@ -30,10 +31,15 @@ var SPEC_COLLECTION_EXPAND = function(start) {
     };
 }
 
-var specListModule = angular.module('specListModule', ['ngResource']);
+var specListModule = angular.module('specListModule', ['ngResource', 'LocalStorageModule']);
 
-specListModule.controller('specListController', ['$scope', '$resource',
-    function($scope, $resource) {
+specListModule.controller('specListController', ['$scope', '$resource', 'localStorageService',
+    function($scope, $resource, localStorageService) {
+
+        if (localStorageService.get(CONTENT_SPEC_LIST_CACHE_KEY)) {
+            $scope.cachedSpecs = JSON.parse(localStorageService.get(CONTENT_SPEC_LIST_CACHE_KEY));
+            updateProductAndVersions();
+        }
 
         var specListResource = $resource(
             SERVER + REST_BASE + "/contentspecs/get/json/all",
@@ -65,6 +71,7 @@ specListModule.controller('specListController', ['$scope', '$resource',
 
         getSpecs(0, [], function(specs) {
             $scope.allSpecs = specs;
+            localStorageService.add(CONTENT_SPEC_LIST_CACHE_KEY, JSON.stringify(specs));
             updateProductAndVersions();
         });
 
@@ -117,8 +124,10 @@ specListModule.controller('specListController', ['$scope', '$resource',
         }
 
         function updateProductAndVersions() {
-            if ($scope.allSpecs !== undefined) {
-                _.each($scope.allSpecs, function (specElement) {
+            var specList = $scope.allSpecs === undefined ? $scope.cachedSpecs : $scope.allSpecs;
+
+            if (specList !== undefined) {
+                _.each(specList, function (specElement) {
                     var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
                         return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Product";
                     });
