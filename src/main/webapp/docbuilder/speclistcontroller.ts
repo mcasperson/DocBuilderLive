@@ -63,6 +63,24 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
 
         $scope.productAndVersions = [];
 
+        $scope.getSpecByProdAndVer = function(prod, ver) {
+            return _.filter($scope.productAndVersions, function (specElement) {
+                var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
+                    return  specElementChild.item.nodeType === "META_DATA" &&
+                        specElementChild.item.title === "Product";
+                });
+
+                var version = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
+                    return  specElementChild.item.nodeType === "META_DATA" &&
+                        specElementChild.item.title === "Version";
+                });
+
+                return product.length === 1 && product[0].item.additionalText === prod &&
+                    ((ver === null && version.length === 0) ||
+                        (ver !== null && version.length === 1));
+            });
+        }
+
         function updateProductAndVersions() {
             if ($scope.allSpecs !== undefined) {
                 _.each($scope.allSpecs.items, function (specElement) {
@@ -86,7 +104,7 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                 });
             }
 
-            $scope.productAndVersions.sort(function(a, b) {
+            $scope.productAndVersions.sort(function(a, b):number {
                 if (a.product < b.product) {
                     return -1;
                 } else if (a.product > b.product) {
