@@ -64,7 +64,7 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
         $scope.productAndVersions = [];
 
         $scope.getSpecByProdAndVer = function(prod, ver) {
-            return _.filter($scope.productAndVersions, function (specElement) {
+            var specs = _.filter($scope.allSpecs.items, function (specElement) {
                 var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
                     return  specElementChild.item.nodeType === "META_DATA" &&
                         specElementChild.item.title === "Product";
@@ -79,6 +79,19 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                     ((ver === null && version.length === 0) ||
                         (ver !== null && version.length === 1));
             });
+
+            var retValue = [];
+            _.each(specs, function(element) {
+                var title = _.filter(element.item.children_OTM.items, function (specElementChild) {
+                    return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Title";
+                });
+
+                if (title.length === 1) {
+                    retValue.push({id: element.item.id, title: title[0].item.additionalText})
+                }
+            });
+
+            return retValue;
         }
 
         function updateProductAndVersions() {
@@ -115,8 +128,10 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                     return 1;
                 } else if (a.version !== null && b.version === null) {
                     return 1;
+                } else if (a.version > b.version) {
+                    return  1;
                 } else {
-                    return a.version > b.version;
+                    return -1;
                 }
             })
         }
