@@ -2,19 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.ts" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/webapp/index.html" afterPath="$PROJECT_DIR$/src/main/webapp/renderedspec.html" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/webapp/index2.html" afterPath="$PROJECT_DIR$/src/main/webapp/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/routing.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/routing.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/speclist.html" afterPath="$PROJECT_DIR$/src/main/webapp/speclist.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -78,10 +67,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="renderedspec.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="renderedspec.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/renderedspec.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="825">
+            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="315">
               <caret line="0" column="53" selection-start-line="0" selection-start-column="53" selection-end-line="0" selection-end-column="53" />
               <folding />
             </state>
@@ -113,19 +102,21 @@
       <file leaf-file-name="speclist.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="150">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="53" />
+            <state vertical-scroll-proportion="-1.875" vertical-offset="0" max-vertical-offset="150">
+              <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="speclistcontroller.ts" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="speclistcontroller.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="735">
-              <caret line="42" column="5" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-              <folding />
+            <state vertical-scroll-proportion="0.7715311" vertical-offset="360" max-vertical-offset="1260">
+              <caret line="67" column="99" selection-start-line="67" selection-start-column="99" selection-end-line="67" selection-end-column="99" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -222,16 +213,16 @@
         <option value="$PROJECT_DIR$/src/main/webapp/index2.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/pagetemplate.html" />
-        <option value="$PROJECT_DIR$/src/main/webapp/speclist.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/routing.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.ts" />
-        <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
         <option value="$PROJECT_DIR$/src/main/webapp/index.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/renderedspec.html" />
+        <option value="$PROJECT_DIR$/src/main/webapp/speclist.html" />
+        <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
       </list>
     </option>
   </component>
@@ -377,6 +368,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="docbuilder" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pressgang-ccms-docbuilderlive" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DocBuilderLive" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="definitions" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -678,7 +695,7 @@
       <workItem from="1400806150748" duration="9480000" />
       <workItem from="1401055644004" duration="19929000" />
       <workItem from="1401086351197" duration="2395000" />
-      <workItem from="1401143180950" duration="4485000" />
+      <workItem from="1401143180950" duration="6031000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1032,11 +1049,15 @@
       <created>1401143617078</created>
       <updated>1401143617078</updated>
     </task>
-    <option name="localTasksCounter" value="89" />
+    <task id="LOCAL-00089" summary="Adding angularjs support">
+      <created>1401151404502</created>
+      <updated>1401151404502</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="160041000" />
+    <option name="totallyTimeSpent" value="161587000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1083,7 +1104,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28168264" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28168264" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15362865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1124,7 +1145,8 @@
     <MESSAGE value="Fixed bug with the toc selection" />
     <MESSAGE value="Started work on AngularJS integration" />
     <MESSAGE value="Added support for either using accept-wait headers, or continuous polling of the server" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added support for either using accept-wait headers, or continuous polling of the server" />
+    <MESSAGE value="Adding angularjs support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding angularjs support" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1443,14 +1465,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="735">
-          <caret line="42" column="5" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="450">
@@ -1493,19 +1507,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="150">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="53" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/renderedspec.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="825">
           <caret line="0" column="53" selection-start-line="0" selection-start-column="53" selection-end-line="0" selection-end-column="53" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.875" vertical-offset="0" max-vertical-offset="150">
+          <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7715311" vertical-offset="360" max-vertical-offset="1260">
+          <caret line="67" column="99" selection-start-line="67" selection-start-column="99" selection-end-line="67" selection-end-column="99" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

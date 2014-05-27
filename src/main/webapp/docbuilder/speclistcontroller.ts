@@ -1,5 +1,10 @@
 /// <reference path="../definitions/angular.d.ts" />
+/// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="constants.ts" />
+
+/*
+    This AngularJS Controller is used to populate the list of content specs
+ */
 
 var SPEC_COLLECTION_EXPAND:Object={
     branches: [
@@ -8,7 +13,14 @@ var SPEC_COLLECTION_EXPAND:Object={
                 name: "contentSpecs",
                 start: 0,
                 end: 10
-            }
+            },
+            branches: [
+                {
+                    trunk: {
+                        name: "children_OTM"
+                    }
+                }
+            ]
         }
     ]
 }
@@ -40,5 +52,28 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                 text: "Report Bug"
             }
         ]
+
+        $scope.getProductAndVersion = function() {
+            var retValue = [];
+            if ($scope.allSpecs !== undefined) {
+                _.each($scope.allSpecs.items, function (specElement) {
+                    var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
+                        return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Product";
+                    });
+                    var version = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
+                        return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Version";
+                    });
+
+                    if (product.length === 1 && version.length === 1) {
+                        var productVersion = product[0].item.additionalText + " " + version[0].item.additionalText;
+                        if (retValue.indexOf(productVersion) === -1) {
+                            retValue.push(productVersion);
+                        }
+                    }
+
+                });
+            }
+            return retValue;
+        }
     }
 ]);
