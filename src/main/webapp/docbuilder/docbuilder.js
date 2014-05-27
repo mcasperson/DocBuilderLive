@@ -1062,9 +1062,9 @@ var DocBuilderLive = (function () {
 
 function updateInitialMessage(message, showLoadingImage) {
     if (showLoadingImage) {
-        jQuery("#loading").html('<div class="loadingContent">' + message + '</div><div class="loadingContent"><img class="loadingImage" src="images/loading.gif"/></div>');
+        jQuery("#loading").html('<h1 class="text-center">' + message + '</h1><div class="loadingContent"><img class="loadingImage" src="images/loading.gif"/></div>');
     } else {
-        jQuery("#loading").html('<div class="loadingContent">' + message + '</div>');
+        jQuery("#loading").html('<h1 class="text-center">' + message + '</h1>');
     }
 }
 /*var qs = (function(a) {
