@@ -372,11 +372,24 @@ var DocBuilderLive = (function () {
 
     DocBuilderLive.prototype.expandSpec = function (spec, callback, errorCallback) {
         var _this = this;
+        var countContainers = function (spec) {
+            var total = 0;
+            if (spec.children_OTM) {
+                _.each(spec.children_OTM.items, function (element) {
+                    if (nodeIsContainer(element.item)) {
+                        ++total;
+                        total += countContainers(element.item);
+                    }
+                });
+            }
+            return total;
+        };
+
         var expandChildren = function (index, count) {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
-                updateInitialMessage("Loading Content Specification: Expanded " + count + " Child Containers", true);
+                updateInitialMessage("Loading Content Specification: Expanded " + count + " of " + countContainers(spec) + " Child Containers", true);
                 var element = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     _this.populateChild(element.id, function (node) {

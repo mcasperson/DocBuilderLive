@@ -458,11 +458,24 @@ class DocBuilderLive {
     }
 
     expandSpec(spec:SpecNodeCollectionParent, callback: (spec:SpecNodeCollectionParent) => void, errorCallback: (title:string, message:string) => void):void {
+        var countContainers = (spec:SpecNodeCollectionParent) => {
+            var total = 0;
+            if (spec.children_OTM) {
+                _.each(spec.children_OTM.items, function(element) {
+                    if (nodeIsContainer(element.item)) {
+                        ++total;
+                        total += countContainers(element.item);
+                    }
+                });
+            }
+            return total;
+        }
+
         var expandChildren = (index:number, count:number):void => {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
-                updateInitialMessage("Loading Content Specification: Expanded " + count + " Child Containers", true);
+                updateInitialMessage("Loading Content Specification: Expanded " + count + " of " + countContainers(spec) + " Child Containers", true);
                 var element:SpecNode = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     this.populateChild(
