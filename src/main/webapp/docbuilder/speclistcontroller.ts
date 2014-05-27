@@ -42,6 +42,7 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
     function($scope, getAllSpecs) {
         getAllSpecs.query(function(data) {
                 $scope.allSpecs = data;
+                updateProductAndVersions();
             }
         );
 
@@ -53,8 +54,9 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
             }
         ]
 
-        $scope.getProductAndVersion = function() {
-            var retValue = [];
+        $scope.productAndVersions = [];
+
+        function updateProductAndVersions() {
             if ($scope.allSpecs !== undefined) {
                 _.each($scope.allSpecs.items, function (specElement) {
                     var product = _.filter(specElement.item.children_OTM.items, function (specElementChild) {
@@ -64,16 +66,18 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                         return  specElementChild.item.nodeType === "META_DATA" && specElementChild.item.title === "Version";
                     });
 
-                    if (product.length === 1 && version.length === 1) {
-                        var productVersion = product[0].item.additionalText + " " + version[0].item.additionalText;
-                        if (retValue.indexOf(productVersion) === -1) {
-                            retValue.push(productVersion);
+                    if (product.length === 1 && (version.length === 1 || version.length === 0)) {
+                        var prodVer = {
+                            product: product[0].item.additionalText,
+                            version: version.length === 1 ? version[0].item.additionalText : null
+                        }
+                        if (_.findWhere($scope.productAndVersions, prodVer) === undefined) {
+                            $scope.productAndVersions.push(prodVer);
                         }
                     }
 
                 });
             }
-            return retValue;
         }
     }
 ]);
