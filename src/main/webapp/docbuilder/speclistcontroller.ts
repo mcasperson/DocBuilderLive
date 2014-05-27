@@ -52,7 +52,14 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
                 href: "https://bugzilla.redhat.com/enter_bug.cgi?alias=&assigned_to=pressgang-ccms-dev%40redhat.com&bug_status=NEW&component=DocBook-builder&product=PressGang%20CCMS&version=1.6",
                 text: "Report Bug"
             }
-        ]
+        ];
+
+        $scope.range = function(min, max, step){
+            step = (step === undefined) ? 1 : step;
+            var input = [];
+            for (var i = min; i <= max; i += step) input.push(i);
+            return input;
+        };
 
         $scope.productAndVersions = [];
 
@@ -78,6 +85,22 @@ specListModule.controller('specListController', ['$scope', 'getAllSpecs',
 
                 });
             }
+
+            $scope.productAndVersions.sort(function(a, b) {
+                if (a.product < b.product) {
+                    return -1;
+                } else if (a.product > b.product) {
+                    return 1;
+                } else if (a.version === b.version) {
+                    return 0;
+                } else if (a.version === null && b.version !== null) {
+                    return 1;
+                } else if (a.version !== null && b.version === null) {
+                    return 1;
+                } else {
+                    return a.version > b.version;
+                }
+            })
         }
     }
 ]);

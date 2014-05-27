@@ -1,5 +1,8 @@
 <ng-include src="'headertemplate.html'"></ng-include>
 
-<div ng-repeat="prodAndVer in productAndVersions">
-    {{prodAndVer.product}} {{prodAndVer.version}}
+<div width="100%">
+    <div class="row" ng-repeat="n in range(0, productAndVersions.length - 1, 2)">
+        <div class="col-md-6"><h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1></div>
+        <div class="col-md-6" ng-if="n <  productAndVersions.length - 1"><h1 class="text-center">{{productAndVersions[n+1].product}} {{productAndVersions[n+1].version}}</h1></div>
+    </div>
 </div>

@@ -34,3 +34,12 @@
 .navbar-brand {
     line-height: 10px;
 }
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+h1 {
+    font-size: 46px;
+}
