@@ -23,39 +23,39 @@
             <form>
                 <div class="input-group">
                     <span class="input-group-addon" style="min-width: 150px">Product Filter</span>
-                    <input type="text" class="form-control" placeholder="Product Name">
+                    <input type="text" ng-model="productNameFilter" class="form-control" placeholder="Product Name" ng-change="filteredProductAndVersions = (productAndVersions | filter:{product:productNameFilter, version:versionFilter})">
                 </div>
                 <br>
                 <div class="input-group">
                     <span class="input-group-addon" style="min-width: 150px">Version Filter</span>
-                    <input type="text" class="form-control" placeholder="Version">
+                    <input type="text" ng-model="versionFilter" class="form-control" placeholder="Version" ng-change="filteredProductAndVersions = (productAndVersions | filter:{product:productNameFilter, version:versionFilter})">
                 </div>
                 <br>
                 <div class="input-group">
                     <span class="input-group-addon" style="min-width: 150px">Book Title Filter</span>
-                    <input type="text" class="form-control" placeholder="Book Title">
+                    <input type="text" ng-model="titleFilter" class="form-control" placeholder="Book Title">
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="row">
+<div class="row" ng-init="filteredProductAndVersions = (productAndVersions | filter:{product:productNameFilter, version:versionFilter})">
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(0, productAndVersions.length - 1, 2)">
-            <div class="col-md-12">
-                <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
-                <div class="row" ng-repeat="spec in productAndVersions[n].specs">
+        <div class="row" ng-repeat="n in range(0, filteredProductAndVersions.length - 1, 2)">
+            <div class="col-md-12" ng-if="filteredProductAndVersions[n].product">
+                <h1 class="text-center">{{filteredProductAndVersions[n].product}} {{filteredProductAndVersions[n].version}}</h1>
+                <div class="row" ng-repeat="spec in filteredProductAndVersions[n].specs | filter:{title:titleFilter}">
                     <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(1, productAndVersions.length - 1, 2)">
+        <div class="row" ng-repeat="n in range(1, filteredProductAndVersions.length - 1, 2)">
             <div class="col-md-12">
-                <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
-                <div class="row" ng-repeat="spec in productAndVersions[n].specs">
+                <h1 class="text-center">{{filteredProductAndVersions[n].product}} {{filteredProductAndVersions[n].version}}</h1>
+                <div class="row" ng-repeat="spec in filteredProductAndVersions[n].specs | filter:{title:titleFilter}">
                     <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
                 </div>
             </div>

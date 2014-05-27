@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css" afterPath="$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/speclist.html" afterPath="$PROJECT_DIR$/src/main/webapp/speclist.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -105,14 +102,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="speclist.html" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="speclist.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-21.25" vertical-offset="0" max-vertical-offset="1050">
-              <caret line="34" column="72" selection-start-line="34" selection-start-column="72" selection-end-line="34" selection-end-column="72" />
+            <state vertical-scroll-proportion="0.49876848" vertical-offset="225" max-vertical-offset="1050">
+              <caret line="42" column="135" selection-start-line="42" selection-start-column="135" selection-end-line="42" selection-end-column="135" />
               <folding>
                 <element signature="n#style#0;n#span#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#div#1;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -160,10 +158,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pagetemplate.css" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="pagetemplate.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.84805655" vertical-offset="0" max-vertical-offset="849">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="825">
               <caret line="48" column="24" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
               <folding />
             </state>
@@ -223,8 +221,8 @@
         <option value="$PROJECT_DIR$/src/main/webapp/index.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/docbuilder.css" />
-        <option value="$PROJECT_DIR$/src/main/webapp/speclist.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css" />
+        <option value="$PROJECT_DIR$/src/main/webapp/speclist.html" />
       </list>
     </option>
   </component>
@@ -802,7 +800,7 @@
       <workItem from="1400806150748" duration="9480000" />
       <workItem from="1401055644004" duration="19929000" />
       <workItem from="1401086351197" duration="2395000" />
-      <workItem from="1401143180950" duration="23664000" />
+      <workItem from="1401143180950" duration="25369000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1216,11 +1214,15 @@
       <created>1401171442068</created>
       <updated>1401171442069</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <task id="LOCAL-00104" summary="Adding angularjs support">
+      <created>1401172624514</created>
+      <updated>1401172624514</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="179220000" />
+    <option name="totallyTimeSpent" value="180925000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1679,22 +1681,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.25" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="34" column="72" selection-start-line="34" selection-start-column="72" selection-end-line="34" selection-end-column="72" />
-          <folding>
-            <element signature="n#style#0;n#span#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#div#1;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="825">
+          <caret line="48" column="24" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css">
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.84805655" vertical-offset="0" max-vertical-offset="849">
-          <caret line="48" column="24" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
-          <folding />
+        <state vertical-scroll-proportion="0.49876848" vertical-offset="225" max-vertical-offset="1050">
+          <caret line="42" column="135" selection-start-line="42" selection-start-column="135" selection-end-line="42" selection-end-column="135" />
+          <folding>
+            <element signature="n#style#0;n#span#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#div#1;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
