@@ -41,6 +41,7 @@ class HornetQRestListener {
         // Do a POST to join the JMS topic
         jQuery.ajax({
             type: 'POST',
+            data: "durable=true",
             url: msgPullSubscriptions,
             dataType: "text",
             success: this.joinTopicSuccess,

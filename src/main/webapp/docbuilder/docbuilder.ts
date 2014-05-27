@@ -876,7 +876,7 @@ class DocBuilderLive {
                 }
             }
         });
-        jQuery(document.body).append(tocDiv);
+        jQuery("#content").append(tocDiv);
     }
 
     rebuildSpec(errorCallback: (title:string, message:string) => void):void {
@@ -1184,7 +1184,7 @@ function updateInitialMessage(message, showLoadingImage) {
     }
 }
 
-var qs = (function(a) {
+/*var qs = (function(a) {
     if (a == "") return {};
     var b = {};
     for (var i = 0; i < a.length; ++i)
@@ -1211,4 +1211,4 @@ jQuery(document).ready(function(){
     } catch (ex) {
         updateInitialMessage(ex, false);
     }
-})
+})  */

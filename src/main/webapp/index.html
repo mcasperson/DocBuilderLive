@@ -1,57 +1,36 @@
-<!DOCTYPE html>
-<html>
-    <head lang="en">
-        <title>DocBuilder Live</title>
-        <meta charset="UTF-8">
+<!doctype html>
+<html lang="en" ng-app="docbuilderFrontPage">
+<head>
+    <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
+    <link rel="stylesheet" href="styles/pagetemplate.css" />
+    <link rel="stylesheet" href="styles/docbuilder.css" />
+    <link rel="stylesheet" href="styles/jstree.css" />
+    <link rel="stylesheet" href="styles/book.css" />
+    <link rel="stylesheet" href="styles/admonition.css" />
+    <link rel="stylesheet" href="themes/default/style.min.css" />
 
-        <link href="patternfly/css/patternfly.css" rel="stylesheet" media="screen, print">
-        <link rel="stylesheet" href="styles/docbuilder.css" />
-        <link rel="stylesheet" href="styles/jstree.css" />
-        <link rel="stylesheet" href="styles/book.css" />
-        <link rel="stylesheet" href="styles/admonition.css" />
-        <link rel="stylesheet" href="themes/default/style.min.css" />
-        <script type="application/javascript" src="angular/angular.min.js"></script>
-        <script type="application/javascript" src="angular/angular-route.min.js"></script>
-        <script type="application/javascript" src="jquery/jquery-2.1.0.min.js"></script>
-        <script type="application/javascript" src="underscore/underscore-min.js"></script>
-        <script src="bootstrap/js/bootstrap.min.js"></script>
-        <script src="patternfly/js/patternfly.min.js"></script>
-        <script type="application/javascript" src="bootbox/bootbox.min.js"></script>
-        <script type="application/javascript" src="moment/moment-with-langs.min.js"></script>
-        <script type="application/javascript" src="docbuilder/collections.js"></script>
-        <script type="application/javascript" src="docbuilder/HornetQRestListener.js"></script>
-        <script type="application/javascript" src="docbuilder/constants.js"></script>
-        <script type="application/javascript" src="docbuilder/docbuilder.js"></script>
-        <script type="application/javascript" src="jstree/jstree.min.js"></script>
-        <title></title>
-    </head>
-    <body>
-        <nav id="header" class="navbar navbar-default navbar-pf" role="navigation">
+    <script type="application/javascript" src="jquery/jquery-2.1.0.min.js"></script>
+    <script type="application/javascript" src="underscore/underscore-min.js"></script>
+    <script type="application/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="patternfly/js/patternfly.min.js"></script>
+    <script type="application/javascript" src="bootstrap/bootbox.min.js"></script>
+    <script type="application/javascript" src="moment/moment-with-langs.min.js"></script>
+    <script type="application/javascript" src="docbuilder/collections.js"></script>
+    <script type="application/javascript" src="docbuilder/constants.js"></script>
+    <script type="application/javascript" src="angular/angular.min.js"></script>
+    <script type="application/javascript" src="angular/angular-route.min.js"></script>
+    <script type="application/javascript" src="angular/angular-resource.min.js"></script>
+    <script type="application/javascript" src="docbuilder/speclistcontroller.js"></script>
+    <script type="application/javascript" src="docbuilder/renderedspeccontroller.js"></script>
+    <script type="application/javascript" src="docbuilder/routing.js"></script>
 
-            <div class="navbar-header">
-                <div class="navbar-brand">DOCBUILDER LIVE</div>
-            </div>
-
-            <div class="collapse navbar-collapse navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-utility">
-                    <li>
-                        <a id="editSpec" href="#">Edit Spec</a>
-                    </li>
-                    <li>
-                        <a href="https://bugzilla.redhat.com/enter_bug.cgi?alias=&assigned_to=pressgang-ccms-dev%40redhat.com&bug_status=NEW&component=DocBook-builder&product=PressGang%20CCMS&version=1.2">Report Bug</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <div id="loading">
-            <div class="loadingContent">
-                Loading Content Specification
-            </div>
-            <div class="loadingContent">
-                <img class="loadingImage" src='images/loading.gif'/>
-            </div>
-        </div>
-        <div id="book"></div>
-    </body>
+    <script type="application/javascript" src="docbuilder/collections.js"></script>
+    <script type="application/javascript" src="docbuilder/HornetQRestListener.js"></script>
+    <script type="application/javascript" src="docbuilder/constants.js"></script>
+    <script type="application/javascript" src="docbuilder/docbuilder.js"></script>
+    <script type="application/javascript" src="jstree/jstree.min.js"></script>
+</head>
+<body>
+<div id="content" ng-view></div>
+</body>
 </html>

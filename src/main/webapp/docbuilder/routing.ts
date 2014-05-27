@@ -3,15 +3,20 @@
 
 var docbuilderFrontPage = angular.module("docbuilderFrontPage", [
     'ngRoute',
-    'specListModule'
+    'specListModule',
+    'renderedSpecModule'
 ]);
 
 docbuilderFrontPage.config(['$routeProvider',
     function($routeProvider) {
-        $routeProvider.
-            when('/', {
+        $routeProvider
+            .when('/', {
                 templateUrl: 'speclist.html',
                 controller: 'specListController'
+            })
+            .when('/renderedContentSpec/:specId', {
+                templateUrl: 'renderedspec.html',
+                controller: 'renderedSpecController'
             });
     }
 ]);
