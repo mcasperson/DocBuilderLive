@@ -163,6 +163,10 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
                         }
                     });
 
+                    matchingSpecs.sort(function(a, b):int {
+                        return a.title.toLowerCase() > b.title.toLowerCase();
+                    });
+
                     prodVer.specs = matchingSpecs;
                 })
             }
@@ -170,9 +174,9 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
 
 
             $scope.productAndVersions.sort(function(a, b):number {
-                if (a.product < b.product) {
+                if (a.product.toLowerCase() < b.product.toLowerCase()) {
                     return -1;
-                } else if (a.product > b.product) {
+                } else if (a.product.toLowerCase() > b.product.toLowerCase()) {
                     return 1;
                 } else if (a.version === b.version) {
                     return 0;
