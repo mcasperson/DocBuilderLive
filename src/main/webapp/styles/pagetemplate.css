@@ -43,3 +43,8 @@
 h1 {
     font-size: 46px;
 }
+
+.input-group-addon, .form-control{
+    font-size: 16px;
+    line-height: normal;
+}

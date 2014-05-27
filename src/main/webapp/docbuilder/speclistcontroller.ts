@@ -171,8 +171,6 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
                 })
             }
 
-
-
             $scope.productAndVersions.sort(function(a, b):number {
                 if (a.product.toLowerCase() < b.product.toLowerCase()) {
                     return -1;

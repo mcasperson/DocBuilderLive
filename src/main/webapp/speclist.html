@@ -17,6 +17,29 @@
     The list below is being displayed from the cache.
 </h2>
 
+<div class="container">
+    <div class="row">
+        <div class=".col-md-6 .col-md-offset-3">
+            <form>
+                <div class="input-group">
+                    <span class="input-group-addon" style="min-width: 150px">Product Filter</span>
+                    <input type="text" class="form-control" placeholder="Product Name">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon" style="min-width: 150px">Version Filter</span>
+                    <input type="text" class="form-control" placeholder="Version">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon" style="min-width: 150px">Book Title Filter</span>
+                    <input type="text" class="form-control" placeholder="Book Title">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-6">
         <div class="row" ng-repeat="n in range(0, productAndVersions.length - 1, 2)">
