@@ -17,9 +17,9 @@
     The list below is being displayed from the cache.
 </h2>
 
-<div class="row" ng-init="pageSize=10;max=pageSize > productAndVersions.length - 1 ? productAndVersions.length - 1 : pageSize;">
+<div class="row">
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(0, max, 2)">
+        <div class="row" ng-repeat="n in range(0, productAndVersions.length - 1, 2)">
             <div class="col-md-12">
                 <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
                 <div class="row" ng-repeat="spec in productAndVersions[n].specs">
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(1, max, 2)">
+        <div class="row" ng-repeat="n in range(1, productAndVersions.length - 1, 2)">
             <div class="col-md-12">
                 <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
                 <div class="row" ng-repeat="spec in productAndVersions[n].specs">
