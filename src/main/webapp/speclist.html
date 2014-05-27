@@ -20,7 +20,7 @@
     {{restError}}
 </h1>
 
-<div class="container">
+<div class="container" ng-if="restError === undefined || allSpecs !== undefined || cachedSpecs !== undefined">
     <div class="row">
         <div class=".col-md-6 .col-md-offset-3">
             <form>
