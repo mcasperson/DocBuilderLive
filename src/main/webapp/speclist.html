@@ -72,3 +72,8 @@
         </div>
     </div>
 </div>
+
+<h2 class="text-center" ng-if="(filteredProductAndVersions | filter:{specs.title:titleFilter, specs.id:idFilter}).length === 0">
+    No content specifications match the filter.
+</h2>
+
