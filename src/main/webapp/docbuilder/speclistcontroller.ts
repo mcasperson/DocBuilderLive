@@ -130,7 +130,7 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
         $scope.range = function(min, max, step){
             step = (step === undefined) ? 1 : step;
             var input = [];
-            for (var i = min; i <= max; i += step) input.push(i);
+            for (var i = ~~min; i <= ~~max; i += step) input.push(i);
             return input;
         };
 
