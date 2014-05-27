@@ -83,7 +83,7 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
                         if (data.endExpandIndex === data.size) {
                             callback(specs);
                         } else {
-                            $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
+                            $scope.specLoadProgress = ": " + Math.floor(data.endExpandIndex / data.size * 100) + "% Complete";
                             getSpecs(index + PAGING, specs, 0, callback, errorCallback);
                         }
                     },

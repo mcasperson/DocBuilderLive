@@ -378,7 +378,6 @@ var DocBuilderLive = (function () {
                 _.each(spec.children_OTM.items, function (element) {
                     if (nodeIsContainer(element.item)) {
                         ++total;
-                        total += countContainers(element.item);
                     }
                 });
             }
@@ -389,7 +388,7 @@ var DocBuilderLive = (function () {
             if (index >= spec.children_OTM.items.length) {
                 callback(spec);
             } else {
-                updateInitialMessage("Loading Content Specification: Expanded " + count + " of " + countContainers(spec) + " Child Containers", true);
+                updateInitialMessage("Loading Content Specification: " + Math.floor(count / countContainers(spec) * 100) + "% Complete", true);
                 var element = spec.children_OTM.items[index].item;
                 if (nodeIsContainer(element)) {
                     _this.populateChild(element.id, function (node) {
@@ -397,7 +396,7 @@ var DocBuilderLive = (function () {
                         expandChildren(++index, ++count);
                     }, errorCallback);
                 } else {
-                    expandChildren(++index, ++count);
+                    expandChildren(++index, count);
                 }
             }
         };
