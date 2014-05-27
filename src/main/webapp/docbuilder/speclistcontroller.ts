@@ -5,6 +5,7 @@
 
 var CONTENT_SPEC_LIST_CACHE_KEY = "ContentSpecList";
 var ZIP_FILE_NAME = "specs.json";
+var REST_RETRY_COUNT = 5;
 /*
     This AngularJS Controller is used to populate the list of content specs
  */
@@ -47,33 +48,55 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
             }
         );
 
-        var getSpecs = function(index, specs, callback) {
-            new specListResource(SPEC_COLLECTION_EXPAND(index)).$query(function(data) {
-                    if (specs !== undefined) {
-                        jQuery.merge(specs, data.items);
-                    } else {
-                        specs = data.items;
-                    }
+        var getSpecs = function(index, specs, count, callback, errorCallback) {
+            if (count < REST_RETRY_COUNT) {
+                new specListResource(SPEC_COLLECTION_EXPAND(index)).$query(function (data) {
+                        if (specs !== undefined) {
+                            jQuery.merge(specs, data.items);
+                        } else {
+                            specs = data.items;
+                        }
 
-                    if (data.endExpandIndex === data.size)  {
-                        callback(specs);
-                    } else {
-                        $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
-                        getSpecs(index + PAGING, specs, callback);
+                        if (data.endExpandIndex === data.size) {
+                            callback(specs);
+                        } else {
+                            $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
+                            getSpecs(index + PAGING, specs, callback, errorCallback);
+                        }
+                    },
+                    function () {
+                        /*
+                         Error
+                         */
+                        getSpecs(index, specs, count + 1, callback, errorCallback);
                     }
-                }
-            );
+                );
+            } else {
+                errorCallback();
+            }
         }
 
         var getSpecsFromServer = function() {
-            getSpecs(0, [], function(specs) {
-                $scope.allSpecs = specs;
-                $scope.cachedSpecs = undefined;
-                var zip = new JSZip();
-                zip.file(ZIP_FILE_NAME, JSON.stringify(specs));
-                localStorageService.set(CONTENT_SPEC_LIST_CACHE_KEY, zip.generate({type: "string", compression: "DEFLATE"}));
-                updateProductAndVersions();
-            });
+            getSpecs(
+                0,
+                [],
+                0,
+                function(specs) {
+                    $scope.allSpecs = specs;
+                    $scope.cachedSpecs = undefined;
+                    var zip = new JSZip();
+                    zip.file(ZIP_FILE_NAME, JSON.stringify(specs));
+                    localStorageService.set(CONTENT_SPEC_LIST_CACHE_KEY, zip.generate({type: "string", compression: "DEFLATE"}));
+                    updateProductAndVersions();
+                },
+                function() {
+                    if ($scope.cachedSpecs !== undefined) {
+                        $scope.restError = "Could not contact the PressGang server. The list of content specifications shown below may be out of date. Please try again later."
+                    } else {
+                        $scope.restError = "Could not contact the PressGang server. Please try again later."
+                    }
+                }
+            );
         }
 
         $scope.productAndVersions = [];

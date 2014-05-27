@@ -1,21 +1,24 @@
 <ng-include src="'headertemplate.html'"></ng-include>
 
-<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined && restError === undefined">
    Loading Initial Content Specification List {{specLoadProgress}}
 </h1>
-<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined && restError === undefined">
     Please wait while the initial list of content specs is loaded.
 </h2>
-<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined && restError === undefined">
     This list will be cached once it is loaded, so you won't have to wait next time.
 </h2>
 
-<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined">
+<h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined && restError === undefined">
     Refreshing Content Specification List {{specLoadProgress}}
 </h1>
-<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined">
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined && restError === undefined">
     The list below is being displayed from the cache.
 </h2>
+<h1 class="text-center" ng-if="restError !== undefined">
+    {{restError}}
+</h1>
 
 <div class="container">
     <div class="row">
