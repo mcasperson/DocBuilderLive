@@ -6,27 +6,33 @@
 <h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
     Please wait while the initial list of content specs is loaded.
 </h2>
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs === undefined">
+    This list will be cached once it is loaded, so you won't have to wait next time.
+</h2>
 
 <h1 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined">
     Refreshing Content Specification List {{specLoadProgress}}
 </h1>
+<h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined">
+    The list below is being displayed from the cache.
+</h2>
 
-<div class="row">
+<div class="row" ng-init="pageSize=10;max=pageSize > productAndVersions.length - 1 ? productAndVersions.length - 1 : pageSize;">
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(0, productAndVersions.length - 1, 2)">
+        <div class="row" ng-repeat="n in range(0, max, 2)">
             <div class="col-md-12">
                 <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
-                <div class="row" ng-repeat="spec in getSpecByProdAndVer(productAndVersions[n].product, productAndVersions[n].version)">
+                <div class="row" ng-repeat="spec in productAndVersions[n].specs">
                     <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="row" ng-repeat="n in range(1, productAndVersions.length - 1, 2)">
+        <div class="row" ng-repeat="n in range(1, max, 2)">
             <div class="col-md-12">
                 <h1 class="text-center">{{productAndVersions[n].product}} {{productAndVersions[n].version}}</h1>
-                <div class="row" ng-repeat="spec in getSpecByProdAndVer(productAndVersions[n].product, productAndVersions[n].version)">
+                <div class="row" ng-repeat="spec in productAndVersions[n].specs">
                     <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
                 </div>
             </div>
