@@ -14,7 +14,7 @@
     Refreshing Content Specification List {{specLoadProgress}}
 </h1>
 <h2 class="text-center" ng-if="allSpecs === undefined && cachedSpecs !== undefined && restError === undefined">
-    The list below is being displayed from the cache.
+    The list below is being displayed from the cache, and may not be up to date.
 </h2>
 <h1 class="text-center" ng-if="restError !== undefined">
     {{restError}}
@@ -49,7 +49,7 @@
             <div class="col-md-12" ng-if="(filteredProductAndVersions[n].specs | filter:{title:titleFilter}).length !== 0">
                 <h1 class="text-center">{{filteredProductAndVersions[n].product}} {{filteredProductAndVersions[n].version}}</h1>
                 <div class="row" ng-repeat="spec in filteredProductAndVersions[n].specs | filter:{title:titleFilter}">
-                    <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
+                    <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.id + ': ' + spec.title}}</a></h2>
                 </div>
             </div>
         </div>
@@ -59,7 +59,7 @@
             <div class="col-md-12" ng-if="(filteredProductAndVersions[n].specs | filter:{title:titleFilter}).length !== 0">
                 <h1 class="text-center">{{filteredProductAndVersions[n].product}} {{filteredProductAndVersions[n].version}}</h1>
                 <div class="row" ng-repeat="spec in filteredProductAndVersions[n].specs | filter:{title:titleFilter}">
-                    <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.title}}</a></h2>
+                    <h2 class="text-center"> <a href="{{'#/renderedContentSpec/' + spec.id}}">{{spec.id + ': ' + spec.title}}</a></h2>
                 </div>
             </div>
         </div>

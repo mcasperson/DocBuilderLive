@@ -61,7 +61,7 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
                             callback(specs);
                         } else {
                             $scope.specLoadProgress = ": " + data.endExpandIndex + " of " + data.size;
-                            getSpecs(index + PAGING, specs, callback, errorCallback);
+                            getSpecs(index + PAGING, specs, 0, callback, errorCallback);
                         }
                     },
                     function () {
