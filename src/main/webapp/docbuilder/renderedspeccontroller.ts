@@ -11,6 +11,11 @@ specListModule.controller('renderedSpecController', ['$scope', '$routeParams',
 
         $scope.links = [
             {
+                id: "specList",
+                href: "#/",
+                text: "Spec List"
+            },
+            {
                 id: "editSpec",
                 href: "#",
                 text: "Edit Spec"
