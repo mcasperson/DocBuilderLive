@@ -334,8 +334,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
-        var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -411,8 +411,8 @@ var DocBuilderLive = (function () {
     * @param retryCount An internal count that tracks how many time to retry a particular call
     */
     DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
-        var _this = this;
         if (typeof retryCount === "undefined") { retryCount = 0; }
+        var _this = this;
         jQuery.ajax({
             type: 'GET',
             url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
@@ -1079,31 +1079,4 @@ function updateInitialMessage(message, showLoadingImage) {
         jQuery("#loading").html('<h1 class="text-center">' + message + '</h1>');
     }
 }
-/*var qs = (function(a) {
-if (a == "") return {};
-var b = {};
-for (var i = 0; i < a.length; ++i)
-{
-var p=a[i].split('=');
-if (p.length != 2) continue;
-b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-}
-return b;
-})(window.location.search.substr(1).split('&'));
-jQuery(document).ready(function(){
-try {
-if (qs["specId"] !== undefined) {
-var specId = parseInt(qs["specId"]);
-if (!isNaN(specId)) {
-var docBuilderLive = new DocBuilderLive(specId);
-} else {
-throw "The book could not be displayed because the specId query parameter is not an integer.";
-}
-} else {
-throw "The book could not be displayed because the specId query parameter is missing.";
-}
-} catch (ex) {
-updateInitialMessage(ex, false);
-}
-})  */
 //# sourceMappingURL=docbuilder.js.map
