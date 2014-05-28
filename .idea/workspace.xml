@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/speclist.html" afterPath="$PROJECT_DIR$/src/main/webapp/speclist.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -129,8 +125,8 @@
       <file leaf-file-name="speclist.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7942387" vertical-offset="546" max-vertical-offset="1335">
-              <caret line="75" column="62" selection-start-line="75" selection-start-column="62" selection-end-line="75" selection-end-column="62" />
+            <state vertical-scroll-proportion="0.7942387" vertical-offset="606" max-vertical-offset="1335">
+              <caret line="79" column="163" selection-start-line="79" selection-start-column="163" selection-end-line="79" selection-end-column="163" />
               <folding />
             </state>
           </provider>
@@ -844,7 +840,7 @@
       <workItem from="1401086351197" duration="2395000" />
       <workItem from="1401143180950" duration="33412000" />
       <workItem from="1401247455677" duration="888000" />
-      <workItem from="1401311387763" duration="321000" />
+      <workItem from="1401311387763" duration="950000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1314,11 +1310,15 @@
       <created>1401225671966</created>
       <updated>1401225671966</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="Adding angularjs support">
+      <created>1401311711653</created>
+      <updated>1401311711653</updated>
+    </task>
+    <option name="localTasksCounter" value="119" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="190177000" />
+    <option name="totallyTimeSpent" value="190806000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1767,8 +1767,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7942387" vertical-offset="546" max-vertical-offset="1335">
-          <caret line="75" column="62" selection-start-line="75" selection-start-column="62" selection-end-line="75" selection-end-column="62" />
+        <state vertical-scroll-proportion="0.7942387" vertical-offset="606" max-vertical-offset="1335">
+          <caret line="79" column="163" selection-start-line="79" selection-start-column="163" selection-end-line="79" selection-end-column="163" />
           <folding />
         </state>
       </provider>
