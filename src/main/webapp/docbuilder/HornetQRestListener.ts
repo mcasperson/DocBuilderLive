@@ -1,5 +1,7 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
+/// <reference path="../definitions/URI.d.ts" />
+/// <reference path="constants.ts" />
 
 /**
  * Interacting with the HornetQ REST interface requires a common sequence of API calls. This class
@@ -38,11 +40,19 @@ class HornetQRestListener {
     initialConnectionSuccess(data, textStatus, jqXHR):void {
         var msgPullSubscriptions = jqXHR.getResponseHeader(this.MSG_PULL_SUBSCRIPTIONS_HEADER);
 
+        /*
+            Sometimes the hostname in the pull subscriptions header can be wrong, like if the
+            application server is behind a proxy. So strip out the hostname and replace it
+            with what we know to be correct
+         */
+
+        var fixedMsgPullSubscriptions = SERVER + URI(msgPullSubscriptions).path();
+
         // Do a POST to join the JMS topic
         jQuery.ajax({
             type: 'POST',
             data: "durable=true",
-            url: msgPullSubscriptions,
+            url: fixedMsgPullSubscriptions,
             dataType: "text",
             success: this.joinTopicSuccess,
             error: this.connectionError,
@@ -70,7 +80,9 @@ class HornetQRestListener {
         */
         var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
 
-        if (msgConsumeNext !== null) {
+        var fixedMsgConsumeNext = SERVER + URI(msgConsumeNext).path();
+
+        if (fixedMsgConsumeNext !== null) {
             var headers = this.acceptWait ? {"Accept-Wait": this.WAIT_FOR_MESSAGE} : {};
 
             // Do a POST to join the JMS topic
@@ -78,7 +90,7 @@ class HornetQRestListener {
                 type: 'POST',
                 // Uncomment this to allow the client to open a connection that will wait for a message
                 headers: headers,
-                url: msgConsumeNext,
+                url: fixedMsgConsumeNext,
                 dataType: "text",
                 success: this.pullSubscriptionSuccess,
                 error: this.pullSubscriptionError,

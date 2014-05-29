@@ -1,6 +1,7 @@
 /// <reference path="../definitions/angular.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/jquery.d.ts" />
+/// <reference path="../definitions/URI.d.ts" />
 /// <reference path="constants.ts" />
 
 var CONTENT_SPEC_LIST_CACHE_KEY = "ContentSpecList";
@@ -17,7 +18,7 @@ var UI_FILTER_VARS = [UI_PRODUCT_NAME_FILTER_VAR, UI_VERSION_FILTER_VAR, UI_SPEC
 /*
     This AngularJS Controller is used to populate the list of content specs
  */
-var PAGING = 100;
+var PAGING = 25;
 var SPEC_COLLECTION_EXPAND = function(start) {
     return {
         expand: JSON.stringify({
