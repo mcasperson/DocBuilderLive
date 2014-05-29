@@ -83,8 +83,13 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
 
                         if (data.endExpandIndex === data.size) {
                             callback(specs);
+                            $scope.statuses = undefined;
                         } else {
-                            $scope.specLoadProgress = ": " + Math.floor(data.endExpandIndex / data.size * 100) + "% Complete";
+                            if ($scope.statuses === undefined) {
+                                $scope.statuses = [{text: "Refreshing", img:"images/smallloading.gif"}];
+                            }
+                            $scope.statuses[0].text = "Refreshing " + Math.floor(data.endExpandIndex / data.size * 100) + "%";
+
                             getSpecs(index + PAGING, specs, 0, callback, errorCallback);
                         }
                     },

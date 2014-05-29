@@ -16,7 +16,8 @@
 }
 
 .navbar-nav, .navbar-nav > li, .navbar-nav > li > a, .navbar-nav > li > span {
-    height: 100%
+    height: 100%;
+    color: #cfcfcf !important;
 }
 
 .navbar-nav > li > a {

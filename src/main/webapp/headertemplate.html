@@ -5,6 +5,9 @@
 
     <div class="collapse navbar-collapse navbar-collapse-1">
         <ul class="nav navbar-nav navbar-utility">
+            <li ng-repeat="status in statuses">
+                <span>{{status.text}} <img ng-if="status.img" src="{{status.img}}"/></span>
+            </li>
             <li ng-repeat="link in links">
                 <a id="{{link.id}}" href="{{link.href}}">{{link.text}}</a>
             </li>
