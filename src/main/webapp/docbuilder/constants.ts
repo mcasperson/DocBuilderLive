@@ -11,4 +11,4 @@ var REST_BASE:string = "/pressgang-ccms/rest/1"
  * If false, calls will be made to the messaging rest endpoints periodically without waiting
  * @type {boolean}
  */
-var ACCEPT_WAIT:boolean = false;
+var ACCEPT_WAIT:boolean = true;
