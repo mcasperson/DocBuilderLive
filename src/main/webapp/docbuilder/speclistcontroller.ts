@@ -44,8 +44,8 @@ var SPEC_COLLECTION_EXPAND = function(start) {
 
 var specListModule = angular.module('specListModule', ['ngResource', 'LocalStorageModule']);
 
-specListModule.controller('specListController', ['$scope', '$resource', 'localStorageService',
-    function($scope, $resource, localStorageService) {
+specListModule.controller('specListController', ['$scope', '$resource', 'localStorageService', '$filter',
+    function($scope, $resource, localStorageService, $filter) {
 
         _.each(UI_FILTER_VARS, function(element) {
             var localStorageKey =  UI_SETTING_KEY_PREFIX + element;
@@ -162,6 +162,14 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
             for (var i = ~~min; i <= ~~max; i += step) input.push(i);
             return input;
         };
+
+        $scope.specsMatchFilter = function() {
+            var matchingTopics = _.find($scope.productAndVersions, function(element) {
+                var collection = $filter('filter')(element.specs, {id: $scope.idFilter, title: $scope.titleFilter});
+                return collection.length !== 0;
+            });
+            return matchingTopics !== undefined;
+        }
 
         function updateProductAndVersions() {
             var specList = $scope.allSpecs === undefined ? $scope.cachedSpecs : $scope.allSpecs;

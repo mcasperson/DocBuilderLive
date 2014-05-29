@@ -71,7 +71,7 @@
     No content specifications are available.
 </h2>
 
-<h2 class="text-center" ng-if="productAndVersions.length !== 0 && ((filteredProductAndVersions | filter:{specs.title:titleFilter, specs.id:idFilter}).length === 0)">
-    No content specifications match the filter.
+<h2 class="text-center" ng-if="!specsMatchFilter()">
+    No content specifications matched the filter.
 </h2>
 
