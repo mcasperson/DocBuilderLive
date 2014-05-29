@@ -164,7 +164,8 @@ specListModule.controller('specListController', ['$scope', '$resource', 'localSt
         };
 
         $scope.specsMatchFilter = function() {
-            var matchingTopics = _.find($scope.productAndVersions, function(element) {
+            var matchingProdAndVer = $filter('filter')($scope.productAndVersions, {product: $scope.productNameFilter, version: $scope.versionFilter});
+            var matchingTopics = _.find(matchingProdAndVer, function(element) {
                 var collection = $filter('filter')(element.specs, {id: $scope.idFilter, title: $scope.titleFilter});
                 return collection.length !== 0;
             });

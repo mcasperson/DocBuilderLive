@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/speclist.html" afterPath="$PROJECT_DIR$/src/main/webapp/speclist.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -119,11 +118,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="speclist.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="speclist.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7863248" vertical-offset="543" max-vertical-offset="1245">
-              <caret line="73" column="32" selection-start-line="73" selection-start-column="32" selection-end-line="73" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.5882353" vertical-offset="360" max-vertical-offset="1245">
+              <caret line="22" column="66" selection-start-line="22" selection-start-column="49" selection-end-line="22" selection-end-column="66" />
               <folding />
             </state>
           </provider>
@@ -139,11 +138,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="speclistcontroller.ts" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="speclistcontroller.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.62963" vertical-offset="2137" max-vertical-offset="3870">
-              <caret line="167" column="113" selection-start-line="167" selection-start-column="113" selection-end-line="167" selection-end-column="113" />
+            <state vertical-scroll-proportion="0.38990182" vertical-offset="2227" max-vertical-offset="3885">
+              <caret line="167" column="58" selection-start-line="167" selection-start-column="58" selection-end-line="167" selection-end-column="58" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -216,8 +215,8 @@
         <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/constants.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/headertemplate.html" />
         <option value="$PROJECT_DIR$/src/main/webapp/styles/pagetemplate.css" />
-        <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
         <option value="$PROJECT_DIR$/src/main/webapp/speclist.html" />
+        <option value="$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts" />
       </list>
     </option>
   </component>
@@ -921,7 +920,7 @@
       <workItem from="1401247455677" duration="888000" />
       <workItem from="1401311387763" duration="1553000" />
       <workItem from="1401346160102" duration="3765000" />
-      <workItem from="1401393869809" duration="6769000" />
+      <workItem from="1401393869809" duration="6899000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1411,11 +1410,15 @@
       <created>1401396240732</created>
       <updated>1401396240732</updated>
     </task>
-    <option name="localTasksCounter" value="123" />
+    <task id="LOCAL-00123" summary="Cleaning up spec list page">
+      <created>1401401176490</created>
+      <updated>1401401176490</updated>
+    </task>
+    <option name="localTasksCounter" value="124" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="201943000" />
+    <option name="totallyTimeSpent" value="202073000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1850,21 +1853,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.62963" vertical-offset="2137" max-vertical-offset="3870">
-          <caret line="167" column="113" selection-start-line="167" selection-start-column="113" selection-end-line="167" selection-end-column="113" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.5882353" vertical-offset="360" max-vertical-offset="1245">
+          <caret line="22" column="66" selection-start-line="22" selection-start-column="49" selection-end-line="22" selection-end-column="66" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/webapp/speclist.html">
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7863248" vertical-offset="543" max-vertical-offset="1245">
-          <caret line="73" column="32" selection-start-line="73" selection-start-column="32" selection-end-line="73" selection-end-column="32" />
-          <folding />
+        <state vertical-scroll-proportion="0.38990182" vertical-offset="2227" max-vertical-offset="3885">
+          <caret line="167" column="58" selection-start-line="167" selection-start-column="58" selection-end-line="167" selection-end-column="58" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
