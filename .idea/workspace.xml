@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="380b304a-c011-4ca6-b98c-332eaba92d2c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/utils.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js.map" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts" afterPath="$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="DocBuilderLive.iws" />
@@ -87,7 +82,7 @@
       <file leaf-file-name="HornetQRestListener.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5025773" vertical-offset="450" max-vertical-offset="2280">
+            <state vertical-scroll-proportion="-0.25128865" vertical-offset="1035" max-vertical-offset="2280">
               <caret line="56" column="62" selection-start-line="56" selection-start-column="62" selection-end-line="56" selection-end-column="62" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -884,7 +879,7 @@
       <workItem from="1401311387763" duration="1553000" />
       <workItem from="1401346160102" duration="3765000" />
       <workItem from="1401393869809" duration="6899000" />
-      <workItem from="1401415057195" duration="2590000" />
+      <workItem from="1401415057195" duration="2641000" />
     </task>
     <task id="LOCAL-00001" summary="Working on DocBuilder Live prototype">
       <created>1395717813972</created>
@@ -1386,11 +1381,15 @@
       <created>1401417010597</created>
       <updated>1401417010597</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="Migrated docbuilder code to an angularjs controller">
+      <created>1401417652090</created>
+      <updated>1401417652090</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="204663000" />
+    <option name="totallyTimeSpent" value="204714000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1438,7 +1437,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28168264" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15205914" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15205914" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="1941" y="380" width="1878" height="312" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1853,7 +1852,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5025773" vertical-offset="450" max-vertical-offset="2280">
+        <state vertical-scroll-proportion="-0.25128865" vertical-offset="1035" max-vertical-offset="2280">
           <caret line="56" column="62" selection-start-line="56" selection-start-column="62" selection-end-line="56" selection-end-column="62" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
