@@ -4,6 +4,7 @@
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/utils.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
@@ -18,7 +19,9 @@
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/utils.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />

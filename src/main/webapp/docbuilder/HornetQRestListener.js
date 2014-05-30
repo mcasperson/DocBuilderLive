@@ -2,6 +2,7 @@
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/URI.d.ts" />
 /// <reference path="constants.ts" />
+/// <reference path="utils.ts" />
 /**
 * Interacting with the HornetQ REST interface requires a common sequence of API calls. This class
 * encapsulates this cycle of calls.
@@ -15,6 +16,7 @@ var HornetQRestListener = (function () {
         this.topicResourceURL = topicResourceURL;
         this.messageCallback = messageCallback;
         this.acceptWait = acceptWait;
+        this.subscriptionName = Utils.guid();
         this.listenForMessages();
     }
     HornetQRestListener.prototype.listenForMessages = function () {
@@ -38,12 +40,12 @@ var HornetQRestListener = (function () {
         application server is behind a proxy. So strip out the hostname and replace it
         with what we know to be correct
         */
-        var fixedMsgPullSubscriptions = SERVER + URI(msgPullSubscriptions).path();
+        var fixedMsgPullSubscriptions = SERVER + new URI(msgPullSubscriptions).path();
 
         // Do a POST to join the JMS topic
         jQuery.ajax({
             type: 'POST',
-            data: "durable=true",
+            data: "durable=true&name=" + this.subscriptionName,
             url: fixedMsgPullSubscriptions,
             dataType: "text",
             success: this.joinTopicSuccess,
@@ -72,7 +74,7 @@ var HornetQRestListener = (function () {
         */
         var msgConsumeNext = jqXHR.getResponseHeader(this.MSG_CONSUME_NEXT_HEADER);
 
-        var fixedMsgConsumeNext = SERVER + URI(msgConsumeNext).path();
+        var fixedMsgConsumeNext = SERVER + new URI(msgConsumeNext).path();
 
         if (fixedMsgConsumeNext !== null) {
             var headers = this.acceptWait ? { "Accept-Wait": this.WAIT_FOR_MESSAGE } : {};
@@ -99,7 +101,7 @@ var HornetQRestListener = (function () {
     * an actual error and this expected one.
     */
     HornetQRestListener.prototype.pullSubscriptionError = function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 503) {
+        if (jqXHR.status === 503 || jqXHR.status === 412) {
             /*
             There were no messages, so try again
             */
