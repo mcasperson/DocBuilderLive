@@ -71,7 +71,6 @@ var SPEC_TOPIC_DIV_CLASS = "contentSpecTopicDiv";
  * @type {string}
  */
 var SPEC_TITLE_DIV_CLASS = "contentSpecTitleDiv";
-var IFRAME_ID_PREFIX = "iframeId";
 /**
  * The ID assigned to a div that holds some spec content. This is followed by an integer (ie divId0)
  * that defines the position of the div in the linear flow of the book.
@@ -124,7 +123,6 @@ var ECHO_XML_REST:string = REST_BASE + "/echoxml";
  */
 var EDIT_TOPIC_LINK = "/pressgang-ccms-ui/#SearchResultsAndTopicView;query;topicIds=" + TOPIC_ID_MARKER;
 
-var WAIT_FOR_MESSAGE = "60";
 var UPDATED_TOPICS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedTopic";
 var UPDATED_SPECS_JMS_TOPIC = SERVER + "/pressgang-ccms-messaging/topics/jms.topic.UpdatedSpec";
 
