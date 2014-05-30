@@ -1,4 +1,6 @@
 /// <reference path="../definitions/jquery.d.ts" />
+/// <reference path="../definitions/jstree.d.ts" />
+/// <reference path="../definitions/bootbox.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/moment.d.ts" />
 /// <reference path="../definitions/angular.d.ts" />
