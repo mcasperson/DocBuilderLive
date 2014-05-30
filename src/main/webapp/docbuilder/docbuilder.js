@@ -1,6 +1,7 @@
 /// <reference path="../definitions/jquery.d.ts" />
 /// <reference path="../definitions/underscore.d.ts" />
 /// <reference path="../definitions/moment.d.ts" />
+/// <reference path="../definitions/angular.d.ts" />
 /// <reference path="collections.ts" />
 /// <reference path="HornetQRestListener.ts" />
 /// <reference path="constants.ts" />
@@ -194,30 +195,56 @@ function firstElement(jquery) {
     return jquery.get(0);
 }
 
-var DocBuilderLive = (function () {
-    function DocBuilderLive(specId) {
-        var _this = this;
-        this.timeoutRefresh = null;
-        this.rebuilding = false;
+var docbuilderModule = angular.module('docbuilderModule', ['ngResource']);
+
+docbuilderModule.controller('docbuilderController', [
+    '$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $scope.links = [
+            {
+                id: "specList",
+                href: "#/",
+                text: "Spec List"
+            },
+            {
+                id: "editSpec",
+                href: "#",
+                text: "Edit Spec"
+            },
+            {
+                id: "bugReport",
+                href: "https://bugzilla.redhat.com/enter_bug.cgi?alias=&assigned_to=pressgang-ccms-dev%40redhat.com&bug_status=NEW&component=DocBook-builder&product=PressGang%20CCMS&version=1.6",
+                text: "Report Bug"
+            }
+        ];
+
+        var specId = $routeParams.specId;
+        var timeoutRefresh = null;
+        var rebuilding = false;
+
         /**
         This will be true if the content spec being displayed is one of those that we were notifed of
         as being updated.
         */
-        this.specUpdated = false;
+        var specUpdated = false;
+
         /**
         *  This contains the topic ids of all floating (i.e. not frozen) topics included in the spec
         * @type {Array}
         */
-        this.specTopicIds = [];
+        var specTopicIds = [];
+
         /**
         * This contains the topic ids of all floating (i.e. not frozen) topics included in the spec that
         * have been updated.
         * @type {Array}
         */
-        this.topicsUpdated = [];
-        this.errorCallback = function (title, message) {
+        var topicsUpdated = [];
+
+        var errorCallback = function (title, message) {
             window.alert(title + "\n" + message);
         };
+
         window.addEventListener('message', function (e) {
             try  {
                 var message = JSON.parse(e.data);
@@ -247,10 +274,10 @@ var DocBuilderLive = (function () {
                         */
                         var nextDivs = jQuery("div[data-loading='true']");
                         if (nextDivs.length !== 0) {
-                            this.createIFrameAndLoadDiv(firstElement(nextDivs));
+                            createIFrameAndLoadDiv(firstElement(nextDivs));
                         } else {
                             // there are no more iframes to load
-                            this.rebuilding = false;
+                            rebuilding = false;
                         }
 
                         sourceIframe.parentElement.removeChild(sourceIframe);
@@ -261,188 +288,250 @@ var DocBuilderLive = (function () {
             }
         }.bind(this));
 
-        this.specId = specId;
+        updateEditSpecLink(specId);
 
-        this.updateEditSpecLink(specId);
-
-        this.getSpec(function (spec) {
-            _this.buildToc(spec);
-            var specNodes = _this.getAllChildrenInFlatOrder(spec);
-            _this.getTopics(specNodes);
+        getSpec(function (spec) {
+            buildToc(spec);
+            var specNodes = getAllChildrenInFlatOrder(spec);
+            getTopics(specNodes);
 
             /*
             Kick off the loop that listens for updated topics
             */
-            _this.listenForUpdates();
-        }, this.errorCallback);
-    }
-    DocBuilderLive.prototype.listenForUpdates = function () {
-        var _this = this;
-        /*
-        Create a new instance of the HornetQRestListener class. This will create an async cycle of
-        calls to the HornetQ REST API, and call the supplied callback when a message is found.
-        */
-        new HornetQRestListener(ACCEPT_WAIT, UPDATED_TOPICS_JMS_TOPIC, function (data) {
-            if (data === SERVER_RESTART_MARKER) {
-                console.log("Server was restarted, so rebuilding spec");
-                _this.rebuildSpec(_this.errorCallback);
-            } else {
-                var topics = data.split(",");
-                _this.topicsUpdated = _.union(_.filter(topics, function (num) {
-                    return this.specTopicIds.indexOf(parseInt(num)) !== -1;
-                }.bind(_this)), _this.topicsUpdated);
+            listenForUpdates();
+        }, errorCallback);
 
-                if (_this.topicsUpdated.length !== 0 && !_this.rebuilding) {
-                    if (_this.timeoutRefresh !== null) {
-                        window.clearTimeout(_this.timeoutRefresh);
-                        _this.timeoutRefresh = null;
+        function listenForUpdates() {
+            /*
+            Create a new instance of the HornetQRestListener class. This will create an async cycle of
+            calls to the HornetQ REST API, and call the supplied callback when a message is found.
+            */
+            new HornetQRestListener(ACCEPT_WAIT, UPDATED_TOPICS_JMS_TOPIC, function (data) {
+                if (data === SERVER_RESTART_MARKER) {
+                    console.log("Server was restarted, so rebuilding spec");
+                    rebuildSpec(errorCallback);
+                } else {
+                    var topics = data.split(",");
+                    topicsUpdated = _.union(_.filter(topics, function (num) {
+                        return specTopicIds.indexOf(parseInt(num)) !== -1;
+                    }.bind(this)), topicsUpdated);
+
+                    if (topicsUpdated.length !== 0 && !rebuilding) {
+                        if (timeoutRefresh !== null) {
+                            window.clearTimeout(timeoutRefresh);
+                            timeoutRefresh = null;
+                        }
+
+                        rebuilding = true;
+                        syncDomWithTopics(topicsUpdated);
                     }
-
-                    _this.rebuilding = true;
-                    _this.syncDomWithTopics(_this.topicsUpdated);
                 }
-            }
-        });
+            });
 
-        /*
-        Create a new instance of the HornetQRestListener class. This will create an async cycle of
-        calls to the HornetQ REST API, and call the supplied callback when a message is found.
+            /*
+            Create a new instance of the HornetQRestListener class. This will create an async cycle of
+            calls to the HornetQ REST API, and call the supplied callback when a message is found.
+            */
+            new HornetQRestListener(ACCEPT_WAIT, UPDATED_SPECS_JMS_TOPIC, function (data) {
+                if (data === SERVER_RESTART_MARKER) {
+                    console.log("Server was restarted, so rebuilding spec");
+                    rebuildSpec(errorCallback);
+                } else {
+                    var topics = data.split(",");
+
+                    if (topics.indexOf(specId.toString()) !== -1) {
+                        rebuildSpec(errorCallback);
+                    }
+                }
+            });
+        }
+
+        function updateEditSpecLink(specId) {
+            jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId);
+        }
+
+        /**
+        * Get a content spec node with all children expanded
+        * @param id The id of the spec node to expand
+        * @param callback Called with the fully expanded spec node
+        * @param errorCallback Called if there was a network error
+        * @param retryCount An internal count that tracks how many time to retry a particular call
         */
-        new HornetQRestListener(ACCEPT_WAIT, UPDATED_SPECS_JMS_TOPIC, function (data) {
-            if (data === SERVER_RESTART_MARKER) {
-                console.log("Server was restarted, so rebuilding spec");
-                _this.rebuildSpec(_this.errorCallback);
-            } else {
-                var topics = data.split(",");
-
-                if (topics.indexOf(_this.specId.toString()) !== -1) {
-                    _this.rebuildSpec(_this.errorCallback);
-                }
-            }
-        });
-    };
-
-    DocBuilderLive.prototype.updateEditSpecLink = function (specId) {
-        jQuery("#editSpec").attr("href", SERVER + "/pressgang-ccms-ui/#ContentSpecFilteredResultsAndContentSpecView;query;contentSpecIds=" + specId);
-    };
-
-    /**
-    * Get a content spec node with all children expanded
-    * @param id The id of the spec node to expand
-    * @param callback Called with the fully expanded spec node
-    * @param errorCallback Called if there was a network error
-    * @param retryCount An internal count that tracks how many time to retry a particular call
-    */
-    DocBuilderLive.prototype.populateChild = function (id, callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
-        var _this = this;
-        jQuery.ajax({
-            type: 'GET',
-            url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
-            dataType: "json",
-            context: this,
-            success: function (data) {
-                var expandChildren = function (index) {
-                    if (index >= data.children_OTM.items.length) {
-                        callback.bind(_this)(data);
-                    } else {
-                        var element = data.children_OTM.items[index].item;
-                        if (nodeIsContainer(element)) {
-                            _this.populateChild(element.id, function (node) {
-                                data.children_OTM.items[index].item.children_OTM = node.children_OTM;
-                                expandChildren(++index);
-                            }, errorCallback);
+        function populateChild(id, callback, errorCallback, retryCount) {
+            if (typeof retryCount === "undefined") { retryCount = 0; }
+            jQuery.ajax({
+                type: 'GET',
+                url: SERVER + SPECNODE_REST + id + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+                dataType: "json",
+                context: this,
+                success: function (data) {
+                    var expandChildren = function (index) {
+                        if (index >= data.children_OTM.items.length) {
+                            callback.bind(this)(data);
                         } else {
-                            expandChildren(++index);
+                            var element = data.children_OTM.items[index].item;
+                            if (nodeIsContainer(element)) {
+                                populateChild(element.id, function (node) {
+                                    data.children_OTM.items[index].item.children_OTM = node.children_OTM;
+                                    expandChildren(++index);
+                                }, errorCallback);
+                            } else {
+                                expandChildren(++index);
+                            }
+                        }
+                    };
+
+                    expandChildren(0);
+                },
+                error: function () {
+                    if (retryCount < RETRY_COUNT) {
+                        populateChild(id, callback, errorCallback, ++retryCount);
+                    } else {
+                        errorCallback.bind(this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                    }
+                }
+            });
+        }
+
+        function expandSpec(spec, callback, errorCallback) {
+            var countContainers = function (spec) {
+                var total = 0;
+                if (spec.children_OTM) {
+                    _.each(spec.children_OTM.items, function (element) {
+                        if (nodeIsContainer(element.item)) {
+                            ++total;
+                        }
+                    });
+                }
+                return total;
+            };
+
+            var expandChildren = function (index, count) {
+                if (index >= spec.children_OTM.items.length) {
+                    callback(spec);
+                } else {
+                    updateInitialMessage("Loading Content Specification: " + Math.floor(count / countContainers(spec) * 100) + "% Complete", true);
+                    var element = spec.children_OTM.items[index].item;
+                    if (nodeIsContainer(element)) {
+                        populateChild(element.id, function (node) {
+                            spec.children_OTM.items[index].item.children_OTM = node.children_OTM;
+                            expandChildren(++index, ++count);
+                        }, errorCallback);
+                    } else {
+                        expandChildren(++index, count);
+                    }
+                }
+            };
+
+            expandChildren(0, 1);
+        }
+
+        /**
+        * Get a spec with all child details expanded
+        * @param callback Called with the expanded spec object
+        * @param errorCallback Called if there was a network error
+        * @param retryCount An internal count that tracks how many time to retry a particular call
+        */
+        function getSpec(callback, errorCallback, retryCount) {
+            if (typeof retryCount === "undefined") { retryCount = 0; }
+            jQuery.ajax({
+                type: 'GET',
+                url: SERVER + SPEC_REST + specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
+                dataType: "json",
+                context: this,
+                success: function (data) {
+                    updateInitialMessage("Top level of content spec loaded", true);
+                    expandSpec(data, callback, errorCallback);
+                },
+                error: function () {
+                    if (retryCount < RETRY_COUNT) {
+                        getSpec(callback, errorCallback, ++retryCount);
+                    } else {
+                        errorCallback.bind(this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                    }
+                }
+            });
+        }
+
+        function getAllChildrenInFlatOrder(spec) {
+            /*
+            Get the list of topics that make up the spec in sequential order
+            */
+            function expandChild(node) {
+                /*
+                Find the one that has no nextNode
+                */
+                var lastChild;
+                var lastInitialTextChild;
+                _.each(node.children_OTM.items, function (childNode, index, list) {
+                    if (childNode.item.nextNode === null) {
+                        if (childNode.item.nodeType === INITIAL_CONTENT_TOPIC) {
+                            lastInitialTextChild = childNode.item;
+                        } else {
+                            lastChild = childNode.item;
                         }
                     }
-                };
+                });
 
-                expandChildren(0);
-            },
-            error: function () {
-                if (retryCount < RETRY_COUNT) {
-                    _this.populateChild(id, callback, errorCallback, ++retryCount);
-                } else {
-                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
+                if (lastChild === undefined && lastInitialTextChild == undefined) {
+                    throw "Could not find the last child in the linked list";
+                    return;
                 }
-            }
-        });
-    };
 
-    DocBuilderLive.prototype.expandSpec = function (spec, callback, errorCallback) {
-        var _this = this;
-        var countContainers = function (spec) {
-            var total = 0;
-            if (spec.children_OTM) {
-                _.each(spec.children_OTM.items, function (element) {
-                    if (nodeIsContainer(element.item)) {
-                        ++total;
+                var reverseChildren = [];
+                var entryNodes = [lastInitialTextChild, lastChild];
+                _.each(entryNodes, function (entryNode, index, array) {
+                    if (entryNode !== undefined) {
+                        if (nodeIsContainer(entryNode)) {
+                            jQuery.merge(reverseChildren, expandChild(entryNode));
+                        }
+
+                        reverseChildren.push(entryNode);
+
+                        while (true) {
+                            var nextLastChild = _.find(node.children_OTM.items, function (element) {
+                                return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === entryNode.id;
+                            });
+
+                            if (nextLastChild === undefined) {
+                                break;
+                            }
+
+                            entryNode = nextLastChild.item;
+
+                            if (nodeIsContainer(entryNode)) {
+                                jQuery.merge(reverseChildren, expandChild(entryNode));
+                            }
+
+                            reverseChildren.push(entryNode);
+                        }
                     }
                 });
-            }
-            return total;
-        };
 
-        var expandChildren = function (index, count) {
-            if (index >= spec.children_OTM.items.length) {
-                callback(spec);
-            } else {
-                updateInitialMessage("Loading Content Specification: " + Math.floor(count / countContainers(spec) * 100) + "% Complete", true);
-                var element = spec.children_OTM.items[index].item;
-                if (nodeIsContainer(element)) {
-                    _this.populateChild(element.id, function (node) {
-                        spec.children_OTM.items[index].item.children_OTM = node.children_OTM;
-                        expandChildren(++index, ++count);
-                    }, errorCallback);
-                } else {
-                    expandChildren(++index, count);
+                return reverseChildren;
+            }
+
+            var specTopics = expandChild(spec);
+
+            specTopics.reverse();
+
+            specTopicIds = [];
+            _.each(specTopics, function (childNode, index, list) {
+                if (childNode.entityRevision === null) {
+                    specTopicIds.push(childNode.entityId);
                 }
-            }
-        };
+            }.bind(this));
 
-        expandChildren(0, 1);
-    };
+            return specTopics;
+        }
 
-    /**
-    * Get a spec with all child details expanded
-    * @param callback Called with the expanded spec object
-    * @param errorCallback Called if there was a network error
-    * @param retryCount An internal count that tracks how many time to retry a particular call
-    */
-    DocBuilderLive.prototype.getSpec = function (callback, errorCallback, retryCount) {
-        if (typeof retryCount === "undefined") { retryCount = 0; }
-        var _this = this;
-        jQuery.ajax({
-            type: 'GET',
-            url: SERVER + SPEC_REST + this.specId + "?expand=" + encodeURIComponent(JSON.stringify(SPEC_REST_EXPAND)),
-            dataType: "json",
-            context: this,
-            success: function (data) {
-                updateInitialMessage("Top level of content spec loaded", true);
-                _this.expandSpec(data, callback, errorCallback);
-            },
-            error: function () {
-                if (retryCount < RETRY_COUNT) {
-                    _this.getSpec(callback, errorCallback, ++retryCount);
-                } else {
-                    errorCallback.bind(_this)("Connection Error", "An error occurred while getting the content spec details. This may be caused by an intermittent network failure. Try your import again, and if problem persist log a bug.");
-                }
-            }
-        });
-    };
-
-    DocBuilderLive.prototype.getAllChildrenInFlatOrder = function (spec) {
-        /*
-        Get the list of topics that make up the spec in sequential order
-        */
-        function expandChild(node) {
+        function getChildrenInOrder(parent) {
             /*
             Find the one that has no nextNode
             */
             var lastChild;
             var lastInitialTextChild;
-            _.each(node.children_OTM.items, function (childNode, index, list) {
+            _.each(parent.children_OTM.items, function (childNode, index, list) {
                 if (childNode.item.nextNode === null) {
                     if (childNode.item.nodeType === INITIAL_CONTENT_TOPIC) {
                         lastInitialTextChild = childNode.item;
@@ -454,21 +543,16 @@ var DocBuilderLive = (function () {
 
             if (lastChild === undefined && lastInitialTextChild == undefined) {
                 throw "Could not find the last child in the linked list";
-                return;
             }
 
             var reverseChildren = [];
             var entryNodes = [lastInitialTextChild, lastChild];
             _.each(entryNodes, function (entryNode, index, array) {
                 if (entryNode !== undefined) {
-                    if (nodeIsContainer(entryNode)) {
-                        jQuery.merge(reverseChildren, expandChild(entryNode));
-                    }
-
                     reverseChildren.push(entryNode);
 
                     while (true) {
-                        var nextLastChild = _.find(node.children_OTM.items, function (element) {
+                        var nextLastChild = _.find(parent.children_OTM.items, function (element) {
                             return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === entryNode.id;
                         });
 
@@ -478,605 +562,538 @@ var DocBuilderLive = (function () {
 
                         entryNode = nextLastChild.item;
 
-                        if (nodeIsContainer(entryNode)) {
-                            jQuery.merge(reverseChildren, expandChild(entryNode));
-                        }
-
                         reverseChildren.push(entryNode);
                     }
                 }
             });
 
+            reverseChildren.reverse();
             return reverseChildren;
         }
 
-        var specTopics = expandChild(spec);
+        function buildIFrame(div) {
+            /*
+            Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
+            HTML
+            */
+            var iFrame = document.createElement("iframe");
+            iFrame.style.display = "none";
+            document.body.appendChild(iFrame);
 
-        specTopics.reverse();
+            /*
+            Create the div that will be filled with the HTML sent by the iframe.
+            */
+            iFrame["div"] = div;
 
-        this.specTopicIds = [];
-        _.each(specTopics, function (childNode, index, list) {
-            if (childNode.entityRevision === null) {
-                this.specTopicIds.push(childNode.entityId);
-            }
-        }.bind(this));
-
-        return specTopics;
-    };
-
-    DocBuilderLive.prototype.getChildrenInOrder = function (parent) {
-        /*
-        Find the one that has no nextNode
-        */
-        var lastChild;
-        var lastInitialTextChild;
-        _.each(parent.children_OTM.items, function (childNode, index, list) {
-            if (childNode.item.nextNode === null) {
-                if (childNode.item.nodeType === INITIAL_CONTENT_TOPIC) {
-                    lastInitialTextChild = childNode.item;
-                } else {
-                    lastChild = childNode.item;
-                }
-            }
-        });
-
-        if (lastChild === undefined && lastInitialTextChild == undefined) {
-            throw "Could not find the last child in the linked list";
+            return iFrame;
         }
 
-        var reverseChildren = [];
-        var entryNodes = [lastInitialTextChild, lastChild];
-        _.each(entryNodes, function (entryNode, index, array) {
-            if (entryNode !== undefined) {
-                reverseChildren.push(entryNode);
+        function buildUrl(element) {
+            var url;
 
-                while (true) {
-                    var nextLastChild = _.find(parent.children_OTM.items, function (element) {
-                        return element.item.nextNode !== undefined && element.item.nextNode !== null && element.item.nextNode.id === entryNode.id;
-                    });
-
-                    if (nextLastChild === undefined) {
-                        break;
-                    }
-
-                    entryNode = nextLastChild.item;
-
-                    reverseChildren.push(entryNode);
+            if (nodeIsTopic(element)) {
+                if (element.revision === undefined) {
+                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                } else {
+                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
                 }
+            } else if (nodeIsTitleContainer(element)) {
+                var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
+                url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + LOCAL_URL;
             }
-        });
 
-        reverseChildren.reverse();
-        return reverseChildren;
-    };
+            return url;
+        }
 
-    DocBuilderLive.prototype.buildIFrame = function (div) {
-        /*
-        Create the hidden iframe that accepts the XML, transforms it, and posts a message back with the
-        HTML
+        function buildDiv(element) {
+            /*
+            Links to topics can be done through either the topic id or the target id. We
+            append two divs with these ids as link targets.
+            */
+            var existingSpecDivElementCount = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX).length;
+
+            /*
+            Create the div that will be filled with the HTML sent by the iframe.
+            */
+            var div = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
+
+            // this attribute identifies the div as waiting to be populated with the topic HTML
+            div.addClass(LOADING_TOPIC_DIV_CLASS);
+            div.addClass(DIV_BOOK_INDEX_ID_PREFIX);
+            div.html(LOADING_HTML);
+            firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
+            firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
+
+            if (element.entityId !== null) {
+                var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
+                firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(idLinkTarget);
+                jQuery("#book").append(idLinkTarget);
+            }
+
+            if (element.targetId !== null) {
+                var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
+                firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
+                jQuery("#book").append(nameLinkTarget);
+            }
+
+            if (nodeIsTopic(element)) {
+                div.addClass(SPEC_TOPIC_DIV_CLASS);
+                div.attr(SPEC_TOPIC_DIV_NODE_ID, element.id.toString());
+                div.attr(SPEC_TOPIC_DIV_TOPIC_ID, element.entityId.toString());
+
+                if (element.entityRevision !== null) {
+                    div.attr(SPEC_TOPIC_DIV_TOPIC_REV, element.entityId.toString());
+                }
+
+                if (element.revision !== undefined) {
+                    div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
+                }
+            } else if (nodeIsTitleContainer(element)) {
+                div.addClass(SPEC_TITLE_DIV_CLASS);
+                div.attr(SPEC_TITLE, element.title);
+                div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
+            }
+
+            jQuery("#book").append(div);
+
+            /*
+            Edit topic links are added below the main topic content
+            */
+            if (nodeIsTopic(element)) {
+                var editTopic = jQuery("<div style='display:none'><a href='" + SERVER + EDIT_TOPIC_LINK.replace(TOPIC_ID_MARKER, element.entityId.toString()) + "'>Edit this topic</a></div>");
+                firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].push(editTopic);
+                jQuery("#book").append(editTopic);
+            }
+
+            return div;
+        }
+
+        function createIFrameAndLoadDiv(div) {
+            if (div.getAttribute("data-loading") === "true") {
+                var iFrame = buildIFrame(div);
+                iFrame.src = div.getAttribute("url");
+                div.removeAttribute("url");
+                div.setAttribute("data-loading", "false");
+            }
+        }
+
+        /**
+        * Builds and iFrame and sets the src attribute to the topics XML+XSLT endpoint.
+        * @param iFrame
+        * @param delay
+        * @param count
         */
-        var iFrame = document.createElement("iframe");
-        iFrame.style.display = "none";
-        document.body.appendChild(iFrame);
+        function setIFrameSrc(div, url, delay, count) {
+            /*
+            We use this attribute to determine if this div has already been loaded, because it can be loaded
+            either by the timeout set here, or when the div before it is loaded.
+            */
+            div.setAttribute("data-loading", "true");
 
-        /*
-        Create the div that will be filled with the HTML sent by the iframe.
-        */
-        iFrame["div"] = div;
+            /*
+            We'll use this url to initialise the iframe when it is time
+            */
+            div.setAttribute("url", url);
 
-        return iFrame;
-    };
-
-    DocBuilderLive.prototype.buildUrl = function (element) {
-        var url;
-
-        if (nodeIsTopic(element)) {
-            if (element.revision === undefined) {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+            /*
+            We want to start a few iframes downloading the xml concurrently.
+            */
+            if (count < CONCURRENT_IFRAME_DOWNLOADS) {
+                createIFrameAndLoadDiv(div);
             } else {
-                url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, element.id.toString()).replace(CSNODE_REV_MARKER, element.revision.toString()) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                /*
+                The iframes have their src set either when the iframe before them
+                finishes loading (see the message listener in the constructor), or when a timeout occurs.
+                This gives us a fallback in case an iframe didn't load properly.
+                */
+                window.setTimeout(function () {
+                    createIFrameAndLoadDiv(div);
+                }.bind(this), delay);
             }
-        } else if (nodeIsTitleContainer(element)) {
-            var xml = "<?xml-stylesheet type='text/xsl' href='/pressgang-ccms-static/publican-docbook/html-single-diff.xsl'?>\n" + "<" + element.nodeType.toLowerCase() + ">\n" + "<title>" + element.title + "</title>\n" + "</" + element.nodeType.toLowerCase() + ">";
-            url = SERVER + ECHO_XML_REST + "?xml=" + encodeURIComponent(xml) + "&parentDomain=" + LOCAL_URL;
         }
 
-        return url;
-    };
-
-    DocBuilderLive.prototype.buildDiv = function (element) {
-        /*
-        Links to topics can be done through either the topic id or the target id. We
-        append two divs with these ids as link targets.
+        /**
+        * Given a spec, create iframes for all topics that have not been previously rendered
+        * @param spec The spec with all children expanded
         */
-        var existingSpecDivElementCount = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX).length;
+        function getTopics(specTopics) {
+            jQuery("#loading").remove();
 
-        /*
-        Create the div that will be filled with the HTML sent by the iframe.
-        */
-        var div = jQuery("<div id='" + DIV_BOOK_INDEX_ID_PREFIX + existingSpecDivElementCount + "'></div>");
+            var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
 
-        // this attribute identifies the div as waiting to be populated with the topic HTML
-        div.addClass(LOADING_TOPIC_DIV_CLASS);
-        div.addClass(DIV_BOOK_INDEX_ID_PREFIX);
-        div.html(LOADING_HTML);
-        firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY] = [];
-        firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY] = [];
-
-        if (element.entityId !== null) {
-            var idLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.entityId + "'></div>");
-            firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(idLinkTarget);
-            jQuery("#book").append(idLinkTarget);
-        }
-
-        if (element.targetId !== null) {
-            var nameLinkTarget = jQuery("<div id='" + DIV_ID_PREFIX + element.targetId + "'></div>");
-            firstElement(div)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY].push(nameLinkTarget);
-            jQuery("#book").append(nameLinkTarget);
-        }
-
-        if (nodeIsTopic(element)) {
-            div.addClass(SPEC_TOPIC_DIV_CLASS);
-            div.attr(SPEC_TOPIC_DIV_NODE_ID, element.id.toString());
-            div.attr(SPEC_TOPIC_DIV_TOPIC_ID, element.entityId.toString());
-
-            if (element.entityRevision !== null) {
-                div.attr(SPEC_TOPIC_DIV_TOPIC_REV, element.entityId.toString());
-            }
-
-            if (element.revision !== undefined) {
-                div.attr(SPEC_TOPIC_DIV_NODE_REV, element.revision.toString());
-            }
-        } else if (nodeIsTitleContainer(element)) {
-            div.addClass(SPEC_TITLE_DIV_CLASS);
-            div.attr(SPEC_TITLE, element.title);
-            div.attr(SPEC_TITLE_CONTAINER, element.nodeType.toLowerCase());
-        }
-
-        jQuery("#book").append(div);
-
-        /*
-        Edit topic links are added below the main topic content
-        */
-        if (nodeIsTopic(element)) {
-            var editTopic = jQuery("<div style='display:none'><a href='" + SERVER + EDIT_TOPIC_LINK.replace(TOPIC_ID_MARKER, element.entityId.toString()) + "'>Edit this topic</a></div>");
-            firstElement(div)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].push(editTopic);
-            jQuery("#book").append(editTopic);
-        }
-
-        return div;
-    };
-
-    DocBuilderLive.prototype.createIFrameAndLoadDiv = function (div) {
-        if (div.getAttribute("data-loading") === "true") {
-            var iFrame = this.buildIFrame(div);
-            iFrame.src = div.getAttribute("url");
-            div.removeAttribute("url");
-            div.setAttribute("data-loading", "false");
-        }
-    };
-
-    /**
-    * Builds and iFrame and sets the src attribute to the topics XML+XSLT endpoint.
-    * @param iFrame
-    * @param delay
-    * @param count
-    */
-    DocBuilderLive.prototype.setIFrameSrc = function (div, url, delay, count) {
-        /*
-        We use this attribute to determine if this div has already been loaded, because it can be loaded
-        either by the timeout set here, or when the div before it is loaded.
-        */
-        div.setAttribute("data-loading", "true");
-
-        /*
-        We'll use this url to initialise the iframe when it is time
-        */
-        div.setAttribute("url", url);
-
-        /*
-        We want to start a few iframes downloading the xml concurrently.
-        */
-        if (count < CONCURRENT_IFRAME_DOWNLOADS) {
-            this.createIFrameAndLoadDiv(div);
-        } else {
-            /*
-            The iframes have their src set either when the iframe before them
-            finishes loading (see the message listener in the constructor), or when a timeout occurs.
-            This gives us a fallback in case an iframe didn't load properly.
-            */
-            window.setTimeout(function () {
-                this.createIFrameAndLoadDiv(div);
-            }.bind(this), delay);
-        }
-    };
-
-    /**
-    * Given a spec, create iframes for all topics that have not been previously rendered
-    * @param spec The spec with all children expanded
-    */
-    DocBuilderLive.prototype.getTopics = function (specTopics) {
-        var _this = this;
-        jQuery("#loading").remove();
-
-        var topicsAndContainers = _.filter(specTopics, nodeIsTopicOrTitleContainer);
-
-        var delay = _.reduce(topicsAndContainers, function (delay, element, index) {
-            var url = this.buildUrl(element);
-            var div = this.buildDiv(element);
-            this.setIFrameSrc(firstElement(div), url, delay, index);
-            return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
-        }, 0, this);
-
-        this.timeoutRefresh = window.setTimeout(function () {
-            _this.rebuilding = false;
-        }, delay);
-    };
-
-    DocBuilderLive.prototype.buildToc = function (spec) {
-        var _this = this;
-        var childIndex = 0;
-
-        var addChildren = function (specNode, parent) {
-            var isContainer = nodeIsTitleContainer(specNode);
-            var isChapter = nodeIsChapter(specNode);
-            var isTopic = nodeIsTopic(specNode);
-            var isInitialContainer = nodeIsInitialContainer(specNode);
-
-            if (isInitialContainer) {
-                if (specNode.children_OTM !== null) {
-                    var children = _this.getChildrenInOrder(specNode);
-                    _.each(children, function (element) {
-                        // don't show in toc, but bump child count so the index is still valid
-                        // when entries belwo are clicked
-                        ++childIndex;
-                    });
-                }
-            } else if (isContainer || isTopic) {
-                var treeNode = new TreeNode();
-                treeNode.text = specNode.title;
-                treeNode.icon = isContainer ? FOLDER_ICON : TOPIC_ICON;
-                treeNode.data = childIndex.toString();
-                treeNode.state = { opened: true };
-                treeNode.a_attr = {};
-
-                if (isContainer) {
-                    treeNode.a_attr["data-containertreenode"] = "true";
-                }
-
-                if (isChapter) {
-                    treeNode.a_attr["data-chaptertreenode"] = "true";
-                }
-
-                ++childIndex;
-
-                parent.children.push(treeNode);
-                if (specNode.children_OTM !== null) {
-                    var children = _this.getChildrenInOrder(specNode);
-                    _.each(children, function (element) {
-                        addChildren(element, treeNode);
-                    });
-                }
-            }
-        };
-
-        var toc = new TreeNode();
-        var children = this.getChildrenInOrder(spec);
-        _.each(children, function (element) {
-            addChildren(element, toc);
-        });
-
-        jQuery("#toc").remove();
-
-        var tocDiv = jQuery("<div id='toc'></div>").jstree({
-            'core': {
-                'multiple': false,
-                'data': toc.children
-            }
-        }).on('changed.jstree', function (e, data) {
-            if (data.selected.length !== 0) {
-                var treeNode = data.instance.get_node(data.selected[0]);
-                var div = document.getElementById(DIV_BOOK_INDEX_ID_PREFIX + treeNode.data);
-                if (div !== null) {
-                    div.scrollIntoView(true);
-                }
-            }
-        });
-        jQuery("#content").append(tocDiv);
-    };
-
-    DocBuilderLive.prototype.rebuildSpec = function (errorCallback) {
-        var _this = this;
-        this.getSpec(function (spec) {
-            _this.expandSpec(spec, function (expandedSpec) {
-                _this.syncDomWithSpec(expandedSpec);
-                _this.buildToc(expandedSpec);
-            }, errorCallback);
-        }, this.errorCallback);
-    };
-
-    DocBuilderLive.prototype.syncDomWithTopics = function (updatedTopics) {
-        /*
-        Loop through each topic that has been updated since we last refreshed
-        */
-        _.each(updatedTopics, function (topicItem) {
-            /*
-            Get every topic div that references this node
-            */
-            var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS + "[" + SPEC_TOPIC_DIV_TOPIC_ID + "='" + topicItem + "']");
-
-            /*
-            Remove the divs that have static revisions
-            */
-            var filteredTopicDivs = _.filter(topicDivs, function (topicDiv) {
-                return topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_REV) === null;
-            });
-
-            if (filteredTopicDivs.length === 0) {
-                throw "Could not find the source topic div for an updated topic";
-            }
-
-            /*
-            Take every div that needs to be updated and create a iframe to recieve the XML
-            */
-            _.reduce(filteredTopicDivs, function (delay, topicDiv, index) {
-                var url = "";
-                var csNodeId = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_ID);
-                var csNodeRev = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_REV);
-                if (csNodeRev === null) {
-                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
-                } else {
-                    url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId.toString()).replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
-                }
-
-                this.setIFrameSrc(topicDiv, url, delay, index);
+            var delay = _.reduce(topicsAndContainers, function (delay, element, index) {
+                var url = buildUrl(element);
+                var div = buildDiv(element);
+                setIFrameSrc(firstElement(div), url, delay, index);
                 return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
             }, 0, this);
-        }, this);
-    };
 
-    /**
-    * Here we take the topics associated with the new version of the content spec, remove any existing displayed
-    * topics that are no longer present, and create new divs for missing topics, or reorder existing topics
-    * to match the layout of the new spec.
-    * @param updatedSpec
-    */
-    DocBuilderLive.prototype.syncDomWithSpec = function (updatedSpec) {
-        var _this = this;
-        function getTopicDiv(specNode) {
-            if (specNode.entityRevision === null) {
-                return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "']");
-            } else {
-                return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "'][" + SPEC_TOPIC_DIV_NODE_REV + "='" + specNode.revision + "']");
-            }
+            timeoutRefresh = window.setTimeout(function () {
+                rebuilding = false;
+            }, delay);
         }
 
-        function getTitleDiv(specNode) {
-            return jQuery("div[" + SPEC_TITLE + "='" + specNode.title + "'][" + SPEC_TITLE_CONTAINER + "='" + specNode.nodeType.toLowerCase() + "']");
-        }
+        function buildToc(spec) {
+            var childIndex = 0;
 
-        function specTopicDivExists(specNode) {
-            return getTopicDiv(specNode).length !== 0;
-        }
+            var addChildren = function (specNode, parent) {
+                var isContainer = nodeIsTitleContainer(specNode);
+                var isChapter = nodeIsChapter(specNode);
+                var isTopic = nodeIsTopic(specNode);
+                var isInitialContainer = nodeIsInitialContainer(specNode);
 
-        function specTitleDivExists(specNode) {
-            return getTitleDiv(specNode).length !== 0;
-        }
-
-        var specNodes = this.getAllChildrenInFlatOrder(updatedSpec);
-
-        /*
-        Remove any existing topics that are no longer present.
-        */
-        var existingSpecDivs = jQuery("." + DIV_BOOK_INDEX_ID_PREFIX);
-        var removeDivList = _.filter(existingSpecDivs, function (element) {
-            var jQueryElement = jQuery(element);
-            if (jQueryElement.hasClass(SPEC_TOPIC_DIV_CLASS)) {
-                /*
-                This div displays some topic info
-                */
-                var nodeId = parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_ID));
-                var nodeRev = jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV) !== null ? parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV)) : null;
-
-                var existingNode = _.find(specNodes, function (specNode) {
-                    if (!nodeIsTopic(specNode)) {
-                        return false;
-                    }
-
-                    if (specNode.id !== nodeId) {
-                        return false;
-                    }
-
-                    if (specNode.revision !== nodeRev) {
-                        return false;
-                    }
-
-                    return true;
-                });
-
-                return existingNode === undefined;
-            } else if (jQueryElement.hasClass(SPEC_TITLE_DIV_CLASS)) {
-                /*
-                This div displays some title info
-                */
-                var title = jQueryElement.attr(SPEC_TITLE);
-                var container = jQueryElement.attr(SPEC_TITLE_CONTAINER);
-
-                var existingNode = _.find(specNodes, function (specNode) {
-                    if (specNode.title !== title) {
-                        return false;
-                    }
-
-                    if (specNode.nodeType !== container.toUpperCase()) {
-                        return false;
-                    }
-
-                    return true;
-                });
-
-                return existingNode === undefined;
-            }
-
-            return false;
-        });
-
-        _.each(removeDivList, function (element) {
-            /*
-            Remove any link target div associated with the spec div
-            */
-            var linkTargets = element[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY];
-            _.each(linkTargets, function (linkTarget) {
-                linkTarget.remove();
-            });
-            var bottomLinks = element[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY];
-            _.each(bottomLinks, function (linkTarget) {
-                linkTarget.remove();
-            });
-
-            jQuery(element).remove();
-        });
-
-        /*
-        Create new iframes and divs for missing topics and titles
-        */
-        var specNodesMissingDiv = _.filter(specNodes, function (specNode) {
-            if (nodeIsTopic(specNode)) {
-                return !specTopicDivExists(specNode);
-            } else if (nodeIsTitleContainer(specNode)) {
-                return !specTitleDivExists(specNode);
-            }
-        });
-
-        /*
-        Set timeouts to load the iframes, in case the cascading loading triggered by
-        a successful XSL transform fails
-        */
-        var delay = _.reduce(specNodesMissingDiv, function (delay, element, index) {
-            var url = this.buildUrl(element);
-            var div = this.buildDiv(element);
-            this.setIFrameSrc(firstElement(div), url, delay, index);
-            return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
-        }, 0, this);
-
-        /*
-        Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
-        */
-        this.timeoutRefresh = window.setTimeout(function () {
-            _this.rebuilding = false;
-        }, delay);
-
-        function divsAreEqual(node1, node2) {
-            if (node1.length !== 1) {
-                return false;
-            }
-
-            if (node2.length !== 1) {
-                return false;
-            }
-
-            return firstElement(node1).id === firstElement(node2).id;
-        }
-
-        function getActualChild(specNode) {
-            if (nodeIsTopic(specNode)) {
-                return getTopicDiv(specNode);
-            } else if (nodeIsTitleContainer(specNode)) {
-                return getTitleDiv(specNode);
-            }
-
-            return null;
-        }
-
-        /*
-        Reorganise DOM to match new spec
-        */
-        var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrTitleContainer);
-        _.each(topicsAndContainers, function (specNode, index, list) {
-            var nthSpecDiv = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + index + ")");
-            var previousSibling = index === 0 ? null : jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + (index - 1) + ")");
-            var actualChild = getActualChild(specNode);
-
-            if (actualChild == null || actualChild.length !== 1) {
-                throw "actualChild.length should always be 1, because all divs should be attached to the dom at this point";
-            }
-
-            if (nthSpecDiv.length !== 1) {
-                throw "nthSpecDiv.length should always be 1, because all divs should be attached to the dom at this point";
-            }
-
-            if (previousSibling !== null && previousSibling.length > 1) {
-                throw "previousSibling should always be null previousSibling.length should be one 1, because we can only have 0 or 1 previous children";
-            }
-
-            if (!divsAreEqual(nthSpecDiv, actualChild)) {
-                /*
-                Remove all divs that are used to represent the topic or title that movde
-                */
-                actualChild.remove();
-                _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                    linkTarget.remove();
-                });
-                _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                    linkTarget.remove();
-                });
-
-                if (previousSibling === null) {
-                    /*
-                    prepend to start of book
-                    */
-                    _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                        jQuery(document.body).prepend(linkTarget);
-                    });
-                    jQuery("#book").prepend(actualChild);
-                    _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                        jQuery(document.body).prepend(linkTarget);
-                    });
-                } else {
-                    var previousSiblingBottomLinksLength = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].length;
-                    if (previousSiblingBottomLinksLength !== 0) {
-                        var previousSiblingLastBottomElement = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY][previousSiblingBottomLinksLength - 1];
-
-                        /*
-                        insert after previous child
-                        */
-                        _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                            previousSiblingLastBottomElement.after(linkTarget);
+                if (isInitialContainer) {
+                    if (specNode.children_OTM !== null) {
+                        var children = getChildrenInOrder(specNode);
+                        _.each(children, function (element) {
+                            // don't show in toc, but bump child count so the index is still valid
+                            // when entries belwo are clicked
+                            ++childIndex;
                         });
-                        previousSiblingLastBottomElement.after(actualChild);
-                        _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                            previousSiblingLastBottomElement.after(linkTarget);
-                        });
-                    } else {
-                        /*
-                        insert after previous child
-                        */
-                        _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                            previousSibling.after(linkTarget);
-                        });
-                        previousSibling.after(actualChild);
-                        _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
-                            previousSibling.after(linkTarget);
+                    }
+                } else if (isContainer || isTopic) {
+                    var treeNode = new TreeNode();
+                    treeNode.text = specNode.title;
+                    treeNode.icon = isContainer ? FOLDER_ICON : TOPIC_ICON;
+                    treeNode.data = childIndex.toString();
+                    treeNode.state = { opened: true };
+                    treeNode.a_attr = {};
+
+                    if (isContainer) {
+                        treeNode.a_attr["data-containertreenode"] = "true";
+                    }
+
+                    if (isChapter) {
+                        treeNode.a_attr["data-chaptertreenode"] = "true";
+                    }
+
+                    ++childIndex;
+
+                    parent.children.push(treeNode);
+                    if (specNode.children_OTM !== null) {
+                        var children = getChildrenInOrder(specNode);
+                        _.each(children, function (element) {
+                            addChildren(element, treeNode);
                         });
                     }
                 }
-            }
-        });
+            };
 
-        /*
-        Update the ids to reflect the position of the divs in the book.
+            var toc = new TreeNode();
+            var children = getChildrenInOrder(spec);
+            _.each(children, function (element) {
+                addChildren(element, toc);
+            });
+
+            jQuery("#toc").remove();
+
+            var tocDiv = jQuery("<div id='toc'></div>").jstree({
+                'core': {
+                    'multiple': false,
+                    'data': toc.children
+                }
+            }).on('changed.jstree', function (e, data) {
+                if (data.selected.length !== 0) {
+                    var treeNode = data.instance.get_node(data.selected[0]);
+                    var div = document.getElementById(DIV_BOOK_INDEX_ID_PREFIX + treeNode.data);
+                    if (div !== null) {
+                        div.scrollIntoView(true);
+                    }
+                }
+            });
+            jQuery("#content").append(tocDiv);
+        }
+
+        function rebuildSpec(errorCallback) {
+            getSpec(function (spec) {
+                expandSpec(spec, function (expandedSpec) {
+                    syncDomWithSpec(expandedSpec);
+                    buildToc(expandedSpec);
+                }, errorCallback);
+            }, errorCallback);
+        }
+
+        function syncDomWithTopics(updatedTopics) {
+            /*
+            Loop through each topic that has been updated since we last refreshed
+            */
+            _.each(updatedTopics, function (topicItem) {
+                /*
+                Get every topic div that references this node
+                */
+                var topicDivs = jQuery("div." + SPEC_TOPIC_DIV_CLASS + "[" + SPEC_TOPIC_DIV_TOPIC_ID + "='" + topicItem + "']");
+
+                /*
+                Remove the divs that have static revisions
+                */
+                var filteredTopicDivs = _.filter(topicDivs, function (topicDiv) {
+                    return topicDiv.getAttribute(SPEC_TOPIC_DIV_TOPIC_REV) === null;
+                });
+
+                if (filteredTopicDivs.length === 0) {
+                    throw "Could not find the source topic div for an updated topic";
+                }
+
+                /*
+                Take every div that needs to be updated and create a iframe to recieve the XML
+                */
+                _.reduce(filteredTopicDivs, function (delay, topicDiv, index) {
+                    var url = "";
+                    var csNodeId = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_ID);
+                    var csNodeRev = topicDiv.getAttribute(SPEC_TOPIC_DIV_NODE_REV);
+                    if (csNodeRev === null) {
+                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                    } else {
+                        url = SERVER + CSNODE_XSLTXML_REST.replace(CSNODE_ID_MARKER, csNodeId.toString()).replace(CSNODE_REV_MARKER, csNodeRev) + "?parentDomain=" + LOCAL_URL + "&baseUrl=%23divId%23TOPICID%23";
+                    }
+
+                    setIFrameSrc(topicDiv, url, delay, index);
+                    return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
+                }, 0, this);
+            }, this);
+        }
+
+        /**
+        * Here we take the topics associated with the new version of the content spec, remove any existing displayed
+        * topics that are no longer present, and create new divs for missing topics, or reorder existing topics
+        * to match the layout of the new spec.
+        * @param updatedSpec
         */
-        _.each(jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX), function (element, index) {
-            element.id = DIV_BOOK_INDEX_ID_PREFIX + index;
-        });
-    };
-    return DocBuilderLive;
-})();
+        function syncDomWithSpec(updatedSpec) {
+            function getTopicDiv(specNode) {
+                if (specNode.entityRevision === null) {
+                    return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "']");
+                } else {
+                    return jQuery("div[" + SPEC_TOPIC_DIV_NODE_ID + "='" + specNode.id + "'][" + SPEC_TOPIC_DIV_NODE_REV + "='" + specNode.revision + "']");
+                }
+            }
 
-function updateInitialMessage(message, showLoadingImage) {
-    if (showLoadingImage) {
-        jQuery("#loading").html('<h1 class="text-center">' + message + '</h1><div class="loadingContent"><img class="loadingImage" src="images/loading.gif"/></div>');
-    } else {
-        jQuery("#loading").html('<h1 class="text-center">' + message + '</h1>');
+            function getTitleDiv(specNode) {
+                return jQuery("div[" + SPEC_TITLE + "='" + specNode.title + "'][" + SPEC_TITLE_CONTAINER + "='" + specNode.nodeType.toLowerCase() + "']");
+            }
+
+            function specTopicDivExists(specNode) {
+                return getTopicDiv(specNode).length !== 0;
+            }
+
+            function specTitleDivExists(specNode) {
+                return getTitleDiv(specNode).length !== 0;
+            }
+
+            var specNodes = getAllChildrenInFlatOrder(updatedSpec);
+
+            /*
+            Remove any existing topics that are no longer present.
+            */
+            var existingSpecDivs = jQuery("." + DIV_BOOK_INDEX_ID_PREFIX);
+            var removeDivList = _.filter(existingSpecDivs, function (element) {
+                var jQueryElement = jQuery(element);
+                if (jQueryElement.hasClass(SPEC_TOPIC_DIV_CLASS)) {
+                    /*
+                    This div displays some topic info
+                    */
+                    var nodeId = parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_ID));
+                    var nodeRev = jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV) !== null ? parseInt(jQueryElement.attr(SPEC_TOPIC_DIV_NODE_REV)) : null;
+
+                    var existingNode = _.find(specNodes, function (specNode) {
+                        if (!nodeIsTopic(specNode)) {
+                            return false;
+                        }
+
+                        if (specNode.id !== nodeId) {
+                            return false;
+                        }
+
+                        if (specNode.revision !== nodeRev) {
+                            return false;
+                        }
+
+                        return true;
+                    });
+
+                    return existingNode === undefined;
+                } else if (jQueryElement.hasClass(SPEC_TITLE_DIV_CLASS)) {
+                    /*
+                    This div displays some title info
+                    */
+                    var title = jQueryElement.attr(SPEC_TITLE);
+                    var container = jQueryElement.attr(SPEC_TITLE_CONTAINER);
+
+                    var existingNode = _.find(specNodes, function (specNode) {
+                        if (specNode.title !== title) {
+                            return false;
+                        }
+
+                        if (specNode.nodeType !== container.toUpperCase()) {
+                            return false;
+                        }
+
+                        return true;
+                    });
+
+                    return existingNode === undefined;
+                }
+
+                return false;
+            });
+
+            _.each(removeDivList, function (element) {
+                /*
+                Remove any link target div associated with the spec div
+                */
+                var linkTargets = element[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY];
+                _.each(linkTargets, function (linkTarget) {
+                    linkTarget.remove();
+                });
+                var bottomLinks = element[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY];
+                _.each(bottomLinks, function (linkTarget) {
+                    linkTarget.remove();
+                });
+
+                jQuery(element).remove();
+            });
+
+            /*
+            Create new iframes and divs for missing topics and titles
+            */
+            var specNodesMissingDiv = _.filter(specNodes, function (specNode) {
+                if (nodeIsTopic(specNode)) {
+                    return !specTopicDivExists(specNode);
+                } else if (nodeIsTitleContainer(specNode)) {
+                    return !specTitleDivExists(specNode);
+                }
+            });
+
+            /*
+            Set timeouts to load the iframes, in case the cascading loading triggered by
+            a successful XSL transform fails
+            */
+            var delay = _.reduce(specNodesMissingDiv, function (delay, element, index) {
+                var url = buildUrl(element);
+                var div = buildDiv(element);
+                setIFrameSrc(firstElement(div), url, delay, index);
+                return delay + DELAY_BETWEEN_IFRAME_SRC_CALLS;
+            }, 0, this);
+
+            /*
+            Set a timeout to do the fallabck refresh, just i case an iframe doesn't load properly
+            */
+            timeoutRefresh = window.setTimeout(function () {
+                rebuilding = false;
+            }, delay);
+
+            function divsAreEqual(node1, node2) {
+                if (node1.length !== 1) {
+                    return false;
+                }
+
+                if (node2.length !== 1) {
+                    return false;
+                }
+
+                return firstElement(node1).id === firstElement(node2).id;
+            }
+
+            function getActualChild(specNode) {
+                if (nodeIsTopic(specNode)) {
+                    return getTopicDiv(specNode);
+                } else if (nodeIsTitleContainer(specNode)) {
+                    return getTitleDiv(specNode);
+                }
+
+                return null;
+            }
+
+            /*
+            Reorganise DOM to match new spec
+            */
+            var topicsAndContainers = _.filter(specNodes, nodeIsTopicOrTitleContainer);
+            _.each(topicsAndContainers, function (specNode, index, list) {
+                var nthSpecDiv = jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + index + ")");
+                var previousSibling = index === 0 ? null : jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX + ":eq(" + (index - 1) + ")");
+                var actualChild = getActualChild(specNode);
+
+                if (actualChild == null || actualChild.length !== 1) {
+                    throw "actualChild.length should always be 1, because all divs should be attached to the dom at this point";
+                }
+
+                if (nthSpecDiv.length !== 1) {
+                    throw "nthSpecDiv.length should always be 1, because all divs should be attached to the dom at this point";
+                }
+
+                if (previousSibling !== null && previousSibling.length > 1) {
+                    throw "previousSibling should always be null previousSibling.length should be one 1, because we can only have 0 or 1 previous children";
+                }
+
+                if (!divsAreEqual(nthSpecDiv, actualChild)) {
+                    /*
+                    Remove all divs that are used to represent the topic or title that movde
+                    */
+                    actualChild.remove();
+                    _.each(actualChild[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        linkTarget.remove();
+                    });
+                    _.each(actualChild[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                        linkTarget.remove();
+                    });
+
+                    if (previousSibling === null) {
+                        /*
+                        prepend to start of book
+                        */
+                        _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                            jQuery(document.body).prepend(linkTarget);
+                        });
+                        jQuery("#book").prepend(actualChild);
+                        _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                            jQuery(document.body).prepend(linkTarget);
+                        });
+                    } else {
+                        var previousSiblingBottomLinksLength = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY].length;
+                        if (previousSiblingBottomLinksLength !== 0) {
+                            var previousSiblingLastBottomElement = firstElement(previousSibling)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY][previousSiblingBottomLinksLength - 1];
+
+                            /*
+                            insert after previous child
+                            */
+                            _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                                previousSiblingLastBottomElement.after(linkTarget);
+                            });
+                            previousSiblingLastBottomElement.after(actualChild);
+                            _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                                previousSiblingLastBottomElement.after(linkTarget);
+                            });
+                        } else {
+                            /*
+                            insert after previous child
+                            */
+                            _.each(firstElement(actualChild)[SPEC_DIV_BOTTOM_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                                previousSibling.after(linkTarget);
+                            });
+                            previousSibling.after(actualChild);
+                            _.each(firstElement(actualChild)[SPEC_DIV_TOP_LINK_TARGETS_PROPERTY], function (linkTarget) {
+                                previousSibling.after(linkTarget);
+                            });
+                        }
+                    }
+                }
+            });
+
+            /*
+            Update the ids to reflect the position of the divs in the book.
+            */
+            _.each(jQuery("div." + DIV_BOOK_INDEX_ID_PREFIX), function (element, index) {
+                element.id = DIV_BOOK_INDEX_ID_PREFIX + index;
+            });
+        }
+
+        function updateInitialMessage(message, showLoadingImage) {
+            if (showLoadingImage) {
+                jQuery("#loading").html('<h1 class="text-center">' + message + '</h1><div class="loadingContent"><img class="loadingImage" src="images/loading.gif"/></div>');
+            } else {
+                jQuery("#loading").html('<h1 class="text-center">' + message + '</h1>');
+            }
+        }
     }
-}
+]);
 //# sourceMappingURL=docbuilder.js.map

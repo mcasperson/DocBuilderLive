@@ -4,7 +4,7 @@
 var docbuilderFrontPage = angular.module("docbuilderFrontPage", [
     'ngRoute',
     'specListModule',
-    'renderedSpecModule'
+    'docbuilderModule'
 ]);
 
 docbuilderFrontPage.config(['$routeProvider',
@@ -16,7 +16,7 @@ docbuilderFrontPage.config(['$routeProvider',
             })
             .when('/renderedContentSpec/:specId', {
                 templateUrl: 'renderedspec.html',
-                controller: 'renderedSpecController'
+                controller: 'docbuilderController'
             });
     }
 ]);
