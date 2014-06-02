@@ -2,14 +2,14 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/utils.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
-        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/routing.js" />
         <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/collections.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/utils.js" />
+        <item url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -19,15 +19,14 @@
       <root url="file://$PROJECT_DIR$/scripts/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/scripts/HornetQRestListener.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/routing.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/collections.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
+      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/HornetQRestListener.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/utils.js" />
       <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/constants.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/docbuilder.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/renderedspeccontroller.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/speclistcontroller.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/routing.js" />
-      <root url="file://$PROJECT_DIR$/src/main/webapp/docbuilder/collections.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
